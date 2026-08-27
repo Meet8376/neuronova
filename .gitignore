@@ -48,6 +48,9 @@ app.*.map.json
 # AI planning notes — internal only, not relevant to developers
 specs/
 
+# No markdown files on GitHub
+*.md
+
 # PRD and personal planning docs
 docs.md
 
