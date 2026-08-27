@@ -24,7 +24,7 @@ class DatabaseHelper {
     final path = join(dbPath, 'cognicare.db');
     return openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -151,11 +151,83 @@ class DatabaseHelper {
         )
       ''');
 
+      // ── Cognitive Scores & Trends (PRD FR-2.2) ───────────────────────────
+      await txn.execute('''
+        CREATE TABLE cognitive_scores (
+          id TEXT PRIMARY KEY,
+          patient_id TEXT NOT NULL DEFAULT 'p1',
+          computed_score REAL NOT NULL,
+          trend_direction TEXT NOT NULL,
+          accuracy_avg REAL NOT NULL,
+          response_time_avg REAL NOT NULL,
+          timestamp INTEGER NOT NULL,
+          sync_status INTEGER NOT NULL DEFAULT 0
+        )
+      ''');
+
+      // ── Patients list for ASHA / Health Worker (PRD FR-5.4) ─────────────
+      await txn.execute('''
+        CREATE TABLE patients (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          age INTEGER NOT NULL,
+          village TEXT NOT NULL,
+          status TEXT NOT NULL DEFAULT 'stable',
+          cognitive_index INTEGER NOT NULL DEFAULT 75,
+          last_active INTEGER NOT NULL,
+          missed_meds INTEGER NOT NULL DEFAULT 0
+        )
+      ''');
+
+      // ── Sync Queue (PRD FR-6.2) ───────────────────────────────────────────
+      await txn.execute('''
+        CREATE TABLE sync_queue (
+          id TEXT PRIMARY KEY,
+          entity_type TEXT NOT NULL,
+          payload TEXT NOT NULL,
+          created_at INTEGER NOT NULL,
+          synced INTEGER NOT NULL DEFAULT 0
+        )
+      ''');
+
       // Seed default settings
       await txn.insert('app_settings', {'key': 'text_size', 'value': 'medium'});
       await txn.insert('app_settings', {'key': 'tts_speed', 'value': 'normal'});
       await txn.insert('app_settings', {'key': 'language', 'value': 'en'});
       await txn.insert('app_settings', {'key': 'difficulty_rms', 'value': '1'});
+
+      // Seed initial patient records for ASHA Worker Demo
+      final now = DateTime.now().millisecondsSinceEpoch;
+      await txn.insert('patients', {
+        'id': 'p1',
+        'name': 'Rajan Kumar (Primary)',
+        'age': 72,
+        'village': 'Guwahati, Assam',
+        'status': 'stable',
+        'cognitive_index': 78,
+        'last_active': now,
+        'missed_meds': 0,
+      });
+      await txn.insert('patients', {
+        'id': 'p2',
+        'name': 'Aita Borah',
+        'age': 78,
+        'village': 'Majuli, Assam',
+        'status': 'attention_needed',
+        'cognitive_index': 62,
+        'last_active': now - (86400000 * 2),
+        'missed_meds': 2,
+      });
+      await txn.insert('patients', {
+        'id': 'p3',
+        'name': 'Ibotombi Singh',
+        'age': 81,
+        'village': 'Imphal West, Manipur',
+        'status': 'stable',
+        'cognitive_index': 84,
+        'last_active': now - 3600000,
+        'missed_meds': 0,
+      });
     });
   }
 
@@ -163,7 +235,6 @@ class DatabaseHelper {
   // Never drop tables or data — always migrate forward.
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
-      // Version 2: add care_reminders and care_logs tables
       await db.execute('''
         CREATE TABLE IF NOT EXISTS care_reminders (
           id TEXT PRIMARY KEY,
@@ -186,6 +257,41 @@ class DatabaseHelper {
           started_at INTEGER,
           done_at INTEGER,
           FOREIGN KEY (reminder_id) REFERENCES care_reminders(id)
+        )
+      ''');
+    }
+    if (oldVersion < 3) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS cognitive_scores (
+          id TEXT PRIMARY KEY,
+          patient_id TEXT NOT NULL DEFAULT 'p1',
+          computed_score REAL NOT NULL,
+          trend_direction TEXT NOT NULL,
+          accuracy_avg REAL NOT NULL,
+          response_time_avg REAL NOT NULL,
+          timestamp INTEGER NOT NULL,
+          sync_status INTEGER NOT NULL DEFAULT 0
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS patients (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          age INTEGER NOT NULL,
+          village TEXT NOT NULL,
+          status TEXT NOT NULL DEFAULT 'stable',
+          cognitive_index INTEGER NOT NULL DEFAULT 75,
+          last_active INTEGER NOT NULL,
+          missed_meds INTEGER NOT NULL DEFAULT 0
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS sync_queue (
+          id TEXT PRIMARY KEY,
+          entity_type TEXT NOT NULL,
+          payload TEXT NOT NULL,
+          created_at INTEGER NOT NULL,
+          synced INTEGER NOT NULL DEFAULT 0
         )
       ''');
     }

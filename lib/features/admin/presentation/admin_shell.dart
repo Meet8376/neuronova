@@ -3,14 +3,11 @@ import '../../../core/theme/app_theme.dart';
 import 'admin_dashboard_screen.dart';
 import 'admin_progress_screen.dart';
 import 'care_config_screen.dart';
+import 'patient_management_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
 
-/// Admin (caregiver) shell — 3-tab bottom nav:
-/// Dashboard | Care Plan | Profile
-///
-/// Per specs/screens/screens.md:
-///   - Care Plan is now a primary tab (not buried as a chip inside Dashboard)
-///   - This gives caregivers fast, direct access to manage patient's care routine
+/// Admin (caregiver & ASHA worker) shell — 5-tab bottom nav:
+/// Dashboard | Care Plan | Patients & Sync | Progress | Profile
 class AdminShell extends StatefulWidget {
   const AdminShell({super.key});
 
@@ -24,6 +21,7 @@ class _AdminShellState extends State<AdminShell> {
   final _pages = const [
     AdminDashboardScreen(),
     CareConfigScreen(),
+    PatientManagementScreen(),
     AdminProgressScreen(),
     ProfileScreen(isAdmin: true),
   ];
@@ -47,6 +45,7 @@ class _AdminShellState extends State<AdminShell> {
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
+          type: BottomNavigationBarType.fixed,
           onTap: (i) => setState(() => _currentIndex = i),
           items: const [
             BottomNavigationBarItem(
@@ -58,6 +57,11 @@ class _AdminShellState extends State<AdminShell> {
               icon: Icon(Icons.favorite_outline_rounded),
               activeIcon: Icon(Icons.favorite_rounded),
               label: 'Care Plan',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people_outline_rounded),
+              activeIcon: Icon(Icons.people_rounded),
+              label: 'Patients',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.bar_chart_outlined),
