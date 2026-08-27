@@ -48,10 +48,8 @@ app.*.map.json
 # AI planning notes — internal only, not relevant to developers
 specs/
 
-# No markdown files on GitHub
-*.md
-
-# PRD and personal planning docs
+# Internal planning / AI session docs — not for developers
+walkthrough.md
 docs.md
 
 # Flutter plugins list (auto-generated)
