@@ -1,0 +1,182 @@
+[
+  {
+    "id": "conv_en_short_1",
+    "category": "daily_conversation",
+    "language": "en",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "Morning Greeting",
+    "text": "Good morning! How are you feeling today? I hope you had a good night's sleep."
+  },
+  {
+    "id": "conv_en_short_2",
+    "category": "daily_conversation",
+    "language": "en",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "At the Doctor",
+    "text": "The doctor will see you now. Please sit down and tell me where it hurts."
+  },
+  {
+    "id": "conv_en_short_3",
+    "category": "daily_conversation",
+    "language": "en",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "Having Tea",
+    "text": "Would you like some tea? I just made a fresh pot. It is nice and warm."
+  },
+  {
+    "id": "conv_en_medium_1",
+    "category": "daily_conversation",
+    "language": "en",
+    "length": "medium",
+    "difficulty_tier": 1,
+    "title": "A Walk in the Park",
+    "text": "Let us go for a walk in the park today. The weather is beautiful and the flowers are blooming. Walking is very good for our health. We can sit by the pond and enjoy the fresh air."
+  },
+  {
+    "id": "conv_en_medium_2",
+    "category": "daily_conversation",
+    "language": "en",
+    "length": "medium",
+    "difficulty_tier": 2,
+    "title": "Calling Family",
+    "text": "Your daughter called this morning while you were resting. She said she will visit on Sunday and bring the grandchildren. She asked if you need anything from the market. She sends her love."
+  },
+  {
+    "id": "conv_en_long_1",
+    "category": "daily_conversation",
+    "language": "en",
+    "length": "long",
+    "difficulty_tier": 2,
+    "title": "Planning the Day",
+    "text": "Today we have a few things to do. First, you will take your morning medicine with breakfast. Then we can sit in the garden for some fresh air. In the afternoon, your friend Ramesh is coming to visit. After he leaves, we will have an early dinner and rest. Tomorrow is a new day with new possibilities."
+  },
+  {
+    "id": "story_en_short_1",
+    "category": "stories",
+    "language": "en",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "The Thirsty Crow",
+    "text": "A thirsty crow found a pot with a little water at the bottom. He dropped small stones into the pot until the water rose to the top."
+  },
+  {
+    "id": "story_en_short_2",
+    "category": "stories",
+    "language": "en",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "The Honest Woodcutter",
+    "text": "A woodcutter dropped his axe in the river. He sat down and cried. A kind spirit rose from the water and offered to help him."
+  },
+  {
+    "id": "story_en_medium_1",
+    "category": "stories",
+    "language": "en",
+    "length": "medium",
+    "difficulty_tier": 2,
+    "title": "The Ant and the Grasshopper",
+    "text": "All summer, the ant worked hard and stored food for winter. The grasshopper sang and played all day. When winter came, the grasshopper had nothing to eat. The ant shared some food and said — next summer, please prepare ahead. The grasshopper learned a valuable lesson about hard work."
+  },
+  {
+    "id": "story_en_long_1",
+    "category": "stories",
+    "language": "en",
+    "length": "long",
+    "difficulty_tier": 3,
+    "title": "The Golden Goose",
+    "text": "Once upon a time, a farmer had a goose that laid a golden egg every morning. He became rich selling the eggs. But one day, he became greedy and thought — if I cut the goose open, I can get all the eggs at once. He did so, but found no eggs inside. The goose was dead and the golden eggs were gone forever. He wept for his foolishness for the rest of his life."
+  },
+  {
+    "id": "gita_en_short_1",
+    "category": "wisdom",
+    "language": "en",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "On Doing Your Duty",
+    "text": "You have the right to perform your actions, but never to the fruits of your actions. Do not let the fruits of action be your motive."
+  },
+  {
+    "id": "gita_en_short_2",
+    "category": "wisdom",
+    "language": "en",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "On the Ego",
+    "text": "All actions are performed by the forces of nature. One who is deluded by ego thinks he is the doer."
+  },
+  {
+    "id": "gita_en_medium_1",
+    "category": "wisdom",
+    "language": "en",
+    "length": "medium",
+    "difficulty_tier": 2,
+    "title": "On the Power of the Mind",
+    "text": "Elevate yourself through the power of your mind, and not degrade yourself. For the mind can be the friend or the enemy of the self. The mind acts as a friend when it has been conquered. When unconquered, it acts as an enemy."
+  },
+  {
+    "id": "gita_en_long_1",
+    "category": "wisdom",
+    "language": "en",
+    "length": "long",
+    "difficulty_tier": 3,
+    "title": "On the Eternal Self",
+    "text": "The soul is never born, nor does it ever die at any time. It has not come into being, does not come into being, and will not come into being. It is unborn, eternal, ever-existing, and primeval. It is not slain when the body is slain. Just as a person puts on new garments, giving up old ones, similarly the soul accepts new material bodies, giving up the old and useless ones."
+  },
+  {
+    "id": "conv_hi_short_1",
+    "category": "daily_conversation",
+    "language": "hi",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "सुबह की शुभकामनाएं",
+    "text": "सुप्रभात! आज आप कैसा महसूस कर रहे हैं? मुझे उम्मीद है आपकी रात अच्छी गुज़री।"
+  },
+  {
+    "id": "conv_hi_short_2",
+    "category": "daily_conversation",
+    "language": "hi",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "चाय पीना",
+    "text": "क्या आप चाय लेंगे? मैंने अभी ताज़ी चाय बनाई है। यह गरम और अच्छी है।"
+  },
+  {
+    "id": "conv_hi_medium_1",
+    "category": "daily_conversation",
+    "language": "hi",
+    "length": "medium",
+    "difficulty_tier": 1,
+    "title": "परिवार का फ़ोन",
+    "text": "आज सुबह आपकी बेटी का फ़ोन आया था जब आप आराम कर रहे थे। उसने कहा वह रविवार को मिलने आएगी। वह आपके लिए बाज़ार से कुछ लाएगी। उसने आपको प्यार भेजा है।"
+  },
+  {
+    "id": "story_hi_short_1",
+    "category": "stories",
+    "language": "hi",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "प्यासा कौआ",
+    "text": "एक प्यासे कौए को एक घड़ा मिला जिसमें थोड़ा पानी था। उसने पत्थर डाले जब तक पानी ऊपर नहीं आ गया।"
+  },
+  {
+    "id": "gita_hi_short_1",
+    "category": "wisdom",
+    "language": "hi",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "कर्तव्य पर",
+    "text": "कर्म करना तुम्हारा अधिकार है, लेकिन फल की चाहत मत रखो। कर्म के फल को अपना उद्देश्य मत बनाओ।"
+  },
+  {
+    "id": "gita_hi_medium_1",
+    "category": "wisdom",
+    "language": "hi",
+    "length": "medium",
+    "difficulty_tier": 2,
+    "title": "मन की शक्ति पर",
+    "text": "अपने मन की शक्ति से खुद को ऊपर उठाओ, नीचे मत गिरो। मन तुम्हारा मित्र भी हो सकता है और शत्रु भी। जब मन को जीत लिया जाता है, तो वह मित्र बन जाता है। जब नहीं जीता जाता, तो वह शत्रु की तरह काम करता है।"
+  }
+]

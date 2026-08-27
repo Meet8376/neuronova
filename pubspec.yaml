@@ -1,0 +1,63 @@
+name: cognicare_prototype
+description: >
+  Prototype for the AI-based Cognitive Gaming and Memory Assistance Platform
+  (SIH 2026, PS 26003). Covers local (offline) tasks/reminders, medicines,
+  hydration, and the Read & Memorize & Speak activity.
+  App name TBD — change "cognicare_prototype" here and in android/app/build.gradle
+  to rename.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # ── Local database ──────────────────────────────────────────────────────────
+  sqflite: ^2.3.3             # SQLite on-device database
+  path: ^1.9.0                # File path joins
+  path_provider: ^2.1.4       # Device documents directory
+
+  # ── Secure storage ──────────────────────────────────────────────────────────
+  flutter_secure_storage: ^9.2.2   # Encrypted key-value (role, session)
+
+  # ── Crypto ──────────────────────────────────────────────────────────────────
+  crypto: ^3.0.5              # SHA-256 hashing (for future login)
+
+  # ── Notifications / Alarms ──────────────────────────────────────────────────
+  flutter_local_notifications: ^17.2.4  # Full-screen alarm-like notifications
+  timezone: ^0.9.4            # Required for zonedSchedule
+
+  # ── TTS ─────────────────────────────────────────────────────────────────────
+  flutter_tts: ^4.2.0         # Text-to-speech with word progress callback
+
+  # ── STT ─────────────────────────────────────────────────────────────────────
+  speech_to_text: ^7.0.0      # On-device speech recognition
+
+  # ── State management ────────────────────────────────────────────────────────
+  flutter_bloc: ^8.1.6        # BLoC pattern (on<Event> API)
+  equatable: ^2.0.7           # Immutable state comparison
+
+  # ── Dependency injection ─────────────────────────────────────────────────────
+  get_it: ^8.0.3              # Service locator
+
+  # ── Utilities ────────────────────────────────────────────────────────────────
+  uuid: ^4.5.1                # UUID generation for IDs
+  intl: ^0.19.0               # Date formatting & localisation
+
+  # ── UI ──────────────────────────────────────────────────────────────────────
+  google_fonts: ^6.2.1        # Nunito font (warm, readable for elderly)
+  cupertino_icons: ^1.0.8
+  url_launcher: ^6.3.1        # tel: URI for emergency call button
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/content/         # Bundled JSON content for game texts
