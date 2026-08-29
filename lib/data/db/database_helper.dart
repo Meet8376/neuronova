@@ -21,10 +21,10 @@ class DatabaseHelper {
 
   Future<Database> _initDb() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'cognicare.db');
+    final path = join(dbPath, 'neuronova.db');
     return openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -294,6 +294,25 @@ class DatabaseHelper {
           synced INTEGER NOT NULL DEFAULT 0
         )
       ''');
+    }
+    if (oldVersion < 4) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS content_translations (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          content_id TEXT NOT NULL,
+          language_code TEXT NOT NULL,
+          translated_text TEXT NOT NULL,
+          translated_title TEXT NOT NULL,
+          created_at INTEGER NOT NULL,
+          UNIQUE(content_id, language_code)
+        )
+      ''');
+      // Seed game_languages setting (primary language only by default)
+      await db.insert(
+        'app_settings',
+        {'key': 'game_languages', 'value': 'en'},
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
     }
   }
 

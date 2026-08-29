@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/extensions/l10n_ext.dart';
 import '../../services/secure_settings_service.dart';
 import '../patient/presentation/patient_shell.dart';
 import '../admin/presentation/admin_shell.dart';
@@ -56,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = false);
 
     if (role == null) {
-      setState(() => _errorMessage = 'Wrong username or password.');
+      setState(() => _errorMessage = context.l.wrongCredentials);
       return;
     }
 
@@ -96,9 +97,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('CogniCare',
+                        Text(context.l.appName,
                             style: AppTextStyles.appTitle(context)),
-                        Text('Your memory companion',
+                        Text(context.l.appTagline,
                             style: AppTextStyles.appTagline(context)),
                       ],
                     ),
@@ -107,10 +108,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 52),
 
                 // ── Headline ─────────────────────────────────────────────────
-                Text('Welcome back',
+                Text(context.l.welcomeBack,
                     style: AppTextStyles.loginHeadline(context)),
                 const SizedBox(height: 6),
-                Text('Sign in to continue',
+                Text(context.l.signInToContinue,
                     style: AppTextStyles.loginSubtitle(context)),
                 const SizedBox(height: 36),
 
@@ -122,29 +123,29 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Username
                       _LargeTextField(
                         controller: _userCtrl,
-                        label: 'Username',
-                        hint: 'Enter your username',
+                        label: context.l.username,
+                        hint: context.l.enterUsername,
                         icon: Icons.person_outline_rounded,
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
                         autofillHints: const [AutofillHints.username],
                         validator: (v) =>
-                            (v == null || v.trim().isEmpty) ? 'Enter username' : null,
+                            (v == null || v.trim().isEmpty) ? context.l.enterUsername : null,
                       ),
                       const SizedBox(height: 16),
 
                       // Password
                       _LargeTextField(
                         controller: _passCtrl,
-                        label: 'Password',
-                        hint: 'Enter your password',
+                        label: context.l.password,
+                        hint: context.l.enterPassword,
                         icon: Icons.lock_outline_rounded,
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.done,
                         autofillHints: const [AutofillHints.password],
                         onFieldSubmitted: (_) => _login(),
                         validator: (v) =>
-                            (v == null || v.trim().isEmpty) ? 'Enter password' : null,
+                            (v == null || v.trim().isEmpty) ? context.l.enterPassword : null,
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
@@ -206,9 +207,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: CircularProgressIndicator(
                                 strokeWidth: 2.5, color: Colors.white),
                           )
-                        : const Text(
-                            'Sign In',
-                            style: TextStyle(
+                        : Text(
+                            context.l.signInButton,
+                            style: const TextStyle(
                               fontFamily: 'Nunito',
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
@@ -222,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // ── Footer ───────────────────────────────────────────────────
                 Center(
                   child: Text(
-                    'CogniCare • Prototype v0.1',
+                    'NeuroNova • Prototype v0.1',
                     style: AppTextStyles.label(context),
                   ),
                 ),

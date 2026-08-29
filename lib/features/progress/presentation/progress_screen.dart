@@ -4,6 +4,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../data/models/game_session.dart';
 import '../../../data/models/content_item.dart';
 import '../../../data/repositories/game_repository.dart';
+import '../../../core/extensions/l10n_ext.dart';
 import '../../game/presentation/read_memorize_hub_screen.dart';
 
 /// Practice tab (Patient view) — formerly called "Progress"
@@ -55,13 +56,8 @@ class _ProgressScreenState extends State<ProgressScreen>
     }).toList();
   }
 
-  String get _encouragementMessage {
-    final count = _todaysSessions.length;
-    if (count == 0) return 'Ready for a brain workout today? 🌟';
-    if (count == 1) return 'Great start today! Keep it up! 💪';
-    if (count == 2) return 'You\'re doing wonderful today! 🌸';
-    if (count >= 3) return 'Amazing effort today! You\'re a star! ⭐';
-    return 'Keep going! Every practice counts! 🎯';
+  String _encouragementMessage(BuildContext context) {
+    return context.l.practiseMemoryHint; // Using the localized hint for encouragement
   }
 
   @override
@@ -76,8 +72,8 @@ class _ProgressScreenState extends State<ProgressScreen>
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
               child: Text(
-                'Practice ✨',
-                style: TextStyle(
+                context.l.practiceTitle,
+                style: const TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
@@ -113,9 +109,9 @@ class _ProgressScreenState extends State<ProgressScreen>
                       child: Column(
                         children: [
                           Text(
-                            _encouragementMessage,
+                            _encouragementMessage(context),
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontFamily: 'Nunito',
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
@@ -129,7 +125,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                               children: [
                                 _CountBadge(
                                   icon: Icons.today_rounded,
-                                  label: 'Today',
+                                  label: context.l.todayLabel,
                                   count: _todaysSessions.length,
                                 ),
                                 Container(
@@ -138,7 +134,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                                 ),
                                 _CountBadge(
                                   icon: Icons.history_rounded,
-                                  label: 'Total',
+                                  label: context.l.totalLabel,
                                   count: _sessions.length,
                                 ),
                               ],
@@ -151,8 +147,8 @@ class _ProgressScreenState extends State<ProgressScreen>
 
                     // Past sessions — warm cards, no scores, no mistakes
                     Text(
-                      'What you practised',
-                      style: TextStyle(
+                      context.l.whatYouPractised,
+                      style: const TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -171,7 +167,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                           MaterialPageRoute(builder: (_) => const ReadMemorizeHubScreen()),
                         ).then((_) => _load()),
                         icon: const Icon(Icons.menu_book_rounded, size: 24),
-                        label: const Text('Practice Again'),
+                        label: Text(context.l.practiceAgain),
                       ),
                     ),
                   ],
@@ -193,8 +189,8 @@ class _ProgressScreenState extends State<ProgressScreen>
             Icon(Icons.psychology_rounded, size: 80, color: AppColors.primary.withOpacity(0.4)),
             const SizedBox(height: 20),
             Text(
-              'Ready to begin?',
-              style: TextStyle(
+              context.l.readyToBegin,
+              style: const TextStyle(
                 fontFamily: 'Nunito',
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
@@ -203,9 +199,9 @@ class _ProgressScreenState extends State<ProgressScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Practise your memory — every session helps your brain stay sharp!',
+              context.l.practiseMemoryHint,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Nunito',
                 fontSize: 17,
                 color: AppColors.textHint,
@@ -219,7 +215,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                 MaterialPageRoute(builder: (_) => const ReadMemorizeHubScreen()),
               ).then((_) => _load()),
               icon: const Icon(Icons.menu_book_rounded, size: 24),
-              label: const Text('Start Practising'),
+              label: Text(context.l.startPractising),
             ),
           ],
         ),
@@ -281,10 +277,10 @@ class _SessionCard extends StatelessWidget {
     return 1;
   }
 
-  String get _warmMessage {
-    if (session.scorePercent >= 70) return 'Wonderful practice!';
-    if (session.scorePercent >= 40) return 'Great effort today!';
-    return 'Every practice helps! ❤️';
+  String _warmMessage(BuildContext context) {
+    if (session.scorePercent >= 70) return context.l.warmMessage3Stars;
+    if (session.scorePercent >= 40) return context.l.warmMessage2Stars;
+    return context.l.warmMessage1Star;
   }
 
   @override
@@ -366,7 +362,7 @@ class _SessionCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    _warmMessage,
+                    _warmMessage(context),
                     style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 15,

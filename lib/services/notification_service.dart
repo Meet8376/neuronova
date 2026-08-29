@@ -36,8 +36,8 @@ class NotificationService {
 
     // Create the high-priority alarm channel
     const channel = AndroidNotificationChannel(
-      'cognicare_alarms',
-      'CogniCare Alarms',
+      'neuronova_alarms',
+      'NeuroNova Alarms',
       description: 'Full-screen reminders for tasks and medicines',
       importance: Importance.max,
       playSound: true,
@@ -130,8 +130,8 @@ class NotificationService {
 
   AndroidNotificationDetails _buildAndroidDetails(String body) {
     return AndroidNotificationDetails(
-      'cognicare_alarms',
-      'CogniCare Alarms',
+      'neuronova_alarms',
+      'NeuroNova Alarms',
       channelDescription: 'Full-screen reminders for tasks and medicines',
       importance: Importance.max,
       priority: Priority.high,

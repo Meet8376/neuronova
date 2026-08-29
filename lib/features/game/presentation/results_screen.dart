@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/game_session.dart';
 import '../../../services/scoring_service.dart';
+import '../../../core/extensions/l10n_ext.dart';
 import 'read_memorize_hub_screen.dart';
 
 /// Results screen — shown immediately after a game session.
@@ -31,24 +32,24 @@ class ResultsScreen extends StatelessWidget {
     return 1;
   }
 
-  String get _warmMessage {
+  String _warmMessage(BuildContext context) {
     if (scoringResult.percent >= 70) {
-      return 'Wonderful! You remembered so well! 🌟';
+      return context.l.warmResultGreat;
     }
     if (scoringResult.percent >= 40) {
-      return 'Great effort! Keep going, you\'re doing great! 💪';
+      return context.l.warmResultGood;
     }
-    return 'That\'s okay! Every practice helps your memory! ❤️';
+    return context.l.warmResultOkay;
   }
 
-  String get _subMessage {
+  String _subMessage(BuildContext context) {
     if (scoringResult.percent >= 70) {
-      return 'Your memory is doing amazing work today.';
+      return context.l.subResultGreat;
     }
     if (scoringResult.percent >= 40) {
-      return 'You\'re improving with every try — keep it up!';
+      return context.l.subResultGood;
     }
-    return 'Want to try again? The text will come back for you.';
+    return context.l.subResultOkay;
   }
 
   @override
@@ -66,7 +67,7 @@ class ResultsScreen extends StatelessWidget {
 
             // ── Warm message ─────────────────────────────────────────────────
             Text(
-              _warmMessage,
+              _warmMessage(context),
               textAlign: TextAlign.center,
               style: AppTextStyles.sectionHeader(context).copyWith(
                 fontSize: 24,
@@ -75,7 +76,7 @@ class ResultsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              _subMessage,
+              _subMessage(context),
               textAlign: TextAlign.center,
               style: AppTextStyles.cardSubtitle(context).copyWith(
                 fontSize: 18,
@@ -101,7 +102,7 @@ class ResultsScreen extends StatelessWidget {
                       color: AppColors.success, size: 22),
                   const SizedBox(width: 8),
                   Text(
-                    '${scoringResult.matched} of ${scoringResult.total} words recalled',
+                    context.l.wordsRecalled(scoringResult.matched, scoringResult.total),
                     style: AppTextStyles.cardTitle(context).copyWith(
                       color: AppColors.textPrimary,
                       fontSize: 18,
@@ -113,7 +114,7 @@ class ResultsScreen extends StatelessWidget {
             const SizedBox(height: 28),
 
             // ── Word comparison — helpful for "do I try again?" ───────────────
-            _SectionLabel(text: 'The original passage:'),
+            _SectionLabel(text: context.l.originalPassageLabel),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(16),
@@ -129,7 +130,7 @@ class ResultsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            _SectionLabel(text: 'What you said:'),
+            _SectionLabel(text: context.l.whatYouSaidLabel),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(16),
@@ -140,7 +141,7 @@ class ResultsScreen extends StatelessWidget {
               ),
               child: Text(
                 session.spokenText.isEmpty
-                    ? '(Nothing was recorded)'
+                    ? context.l.nothingRecorded
                     : session.spokenText,
                 style: AppTextStyles.body(context).copyWith(height: 1.6),
               ),
@@ -161,8 +162,8 @@ class ResultsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16)),
               ),
               icon: const Icon(Icons.refresh_rounded, size: 26),
-              label: const Text('Try Again 💪',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+              label: Text(context.l.tryAgainGame,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
             ),
             const SizedBox(height: 14),
             OutlinedButton(
@@ -173,8 +174,8 @@ class ResultsScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
               ),
-              child: const Text('Save & Finish 🏁',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              child: Text(context.l.saveAndFinish,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             ),
           ],
         ),

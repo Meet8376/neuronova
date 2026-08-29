@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/connectivity.dart';
+import '../../../services/language_service.dart';
 import '../../../services/secure_settings_service.dart';
 import '../../role_select/presentation/role_select_screen.dart';
 import '../../auth/login_screen.dart';
+import '../../language/presentation/language_change_sheet.dart';
 
 /// Profile tab — shows name, role, switch role button, settings.
 /// Shared by patient and admin (just different current-role display).
@@ -20,6 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   String _patientName = '';
   String _adminName = '';
   String _caregiverPhone = '';
+  String _currentLangCode = LanguageService.instance.currentLanguage;
 
   @override
   bool get wantKeepAlive => true;
@@ -39,6 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       _patientName = p ?? '';
       _adminName = a ?? '';
       _caregiverPhone = ph;
+      _currentLangCode = LanguageService.instance.currentLanguage;
     });
   }
 
@@ -51,6 +56,34 @@ class _ProfileScreenState extends State<ProfileScreen>
       MaterialPageRoute(builder: (_) => const LoginScreen()),
       (_) => false,
     );
+  }
+
+  Future<void> _changeLanguage() async {
+    // Language ARBs are compiled into the app — no internet needed
+    final newLang = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => LanguageChangeSheet(currentCode: _currentLangCode),
+    );
+
+    if (newLang != null && newLang != _currentLangCode) {
+      await LanguageService.instance.setCurrentLanguage(newLang);
+      if (!mounted) return;
+      setState(() => _currentLangCode = newLang);
+      // No need to restart — ListenableBuilder in main.dart already rebuilds MaterialApp
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Language changed to ${LanguageService.supportedLanguages[newLang]?.name ?? newLang}',
+            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600),
+          ),
+          backgroundColor: AppColors.primary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    }
   }
 
   Future<void> _resetSetup() async {
@@ -227,6 +260,44 @@ class _ProfileScreenState extends State<ProfileScreen>
                 onTap: _editPhone,
               ),
             ],
+            const SizedBox(height: 20),
+
+            // Language
+            _Section(label: 'Language'),
+            Builder(builder: (context) {
+              final info = LanguageService.supportedLanguages[_currentLangCode];
+              return Card(
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  leading: const Icon(Icons.translate_rounded,
+                      color: AppColors.primary, size: 26),
+                  title: Text(
+                    info?.nativeName ?? _currentLangCode,
+                    style: const TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: Text(
+                    info?.name ?? '',
+                    style: TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 13,
+                        color: AppColors.textHint),
+                  ),
+                  trailing: TextButton.icon(
+                    onPressed: _changeLanguage,
+                    icon: const Icon(Icons.wifi_rounded, size: 16),
+                    label: const Text('Change'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      textStyle: const TextStyle(
+                          fontFamily: 'Nunito', fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              );
+            }),
             const SizedBox(height: 20),
 
             // Logout

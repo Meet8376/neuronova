@@ -3,19 +3,15 @@ import '../../../core/theme/app_theme.dart';
 import '../../tasks/presentation/patient_dashboard_screen.dart';
 import '../../health/presentation/health_screen.dart';
 import '../../game/presentation/game_hub_screen.dart';
-import '../../progress/presentation/progress_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
 
-/// Patient shell — 5-tab bottom nav:
-/// Home | Health | Games | Practice | Profile
+/// Patient shell — 4-tab bottom nav:
+/// Home | Health | Games | Profile
 ///
-/// Per specs/screens/screens.md:
-///   - "Home" replaces "Dashboard" — warmer word
-///   - "Practice" replaces "Progress" — forward-looking, not backward
-///   - Health is now a primary tab, not buried as a sub-tab under Home
-///   - FAB (+ Add Task) lives ONLY in PatientDashboardScreen (Home tab)
-///
-/// Uses IndexedStack to preserve scroll + state when switching tabs.
+/// "Practice" tab removed — session history is accessible from inside the
+/// Games tab (ReadMemorizeHubScreen shows history, and the game hub gives
+/// a "See past sessions" shortcut). Removing it reduces cognitive load
+/// for elderly users and avoids over-promoting one specific game.
 class PatientShell extends StatefulWidget {
   const PatientShell({super.key});
 
@@ -26,13 +22,11 @@ class PatientShell extends StatefulWidget {
 class _PatientShellState extends State<PatientShell> {
   int _currentIndex = 0;
 
-  // Keep all pages alive when switching tabs
   final _pages = const [
-    PatientDashboardScreen(),   // Home
-    HealthScreen(standalone: true),  // Health — now standalone (has own Scaffold)
-    GameHubScreen(),            // Games
-    ProgressScreen(),           // Practice
-    ProfileScreen(isAdmin: false), // Profile
+    PatientDashboardScreen(),           // Home
+    HealthScreen(standalone: true),     // Health
+    GameHubScreen(),                    // Games (session history accessible from here)
+    ProfileScreen(isAdmin: false),      // Profile
   ];
 
   @override
@@ -55,7 +49,7 @@ class _PatientShellState extends State<PatientShell> {
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (i) => setState(() => _currentIndex = i),
-          type: BottomNavigationBarType.fixed, // needed for 5+ items to show labels
+          type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
@@ -71,11 +65,6 @@ class _PatientShellState extends State<PatientShell> {
               icon: Icon(Icons.extension_outlined),
               activeIcon: Icon(Icons.extension_rounded),
               label: 'Games',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.menu_book_outlined),
-              activeIcon: Icon(Icons.menu_book_rounded),
-              label: 'Practice',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline_rounded),

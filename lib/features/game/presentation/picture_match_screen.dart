@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/db/database_helper.dart';
 import '../../../services/adaptive_difficulty_service.dart';
+import '../../../core/extensions/l10n_ext.dart';
 
 class NERCardItem {
   final String id;
@@ -189,7 +191,7 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
           children: [
             const Icon(Icons.stars_rounded, color: Colors.amber, size: 36),
             const SizedBox(width: 12),
-            const Text('Wonderful Job!', style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
+            Text(context.l.wonderfulJob, style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
           ],
         ),
         content: Column(
@@ -197,7 +199,7 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'You matched all $_totalPairs pairs in $_moves moves and $_elapsedSeconds seconds!',
+              context.l.youMatchedAll(_totalPairs, _moves, _elapsedSeconds),
               style: const TextStyle(fontFamily: 'Nunito', fontSize: 16),
             ),
             const SizedBox(height: 16),
@@ -236,7 +238,7 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
               Navigator.pop(ctx);
               Navigator.pop(context);
             },
-            child: const Text('Back to Games', style: TextStyle(color: Colors.white, fontFamily: 'Nunito')),
+            child: Text(context.l.backToGames, style: const TextStyle(color: Colors.white, fontFamily: 'Nunito')),
           ),
         ],
       ),
@@ -250,7 +252,7 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
       appBar: AppBar(
-        title: const Text('Picture Match (NER)', style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
+        title: Text(context.l.pictureMatchTitle, style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -263,9 +265,9 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _statChip(Icons.touch_app_rounded, 'Moves: $_moves', Colors.blue),
-                  _statChip(Icons.timer_rounded, 'Time: ${_elapsedSeconds}s', Colors.orange),
-                  _statChip(Icons.check_circle_rounded, 'Pairs: $_matchesFound/$_totalPairs', Colors.green),
+                  _statChip(Icons.touch_app_rounded, context.l.movesLabel(_moves), Colors.blue),
+                  _statChip(Icons.timer_rounded, context.l.timeLabel(_elapsedSeconds), Colors.orange),
+                  _statChip(Icons.check_circle_rounded, context.l.pairsLabel(_matchesFound, _totalPairs), Colors.green),
                 ],
               ),
               const SizedBox(height: 20),
@@ -283,42 +285,63 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
 
                     return GestureDetector(
                       onTap: () => _onCardTap(index),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        decoration: BoxDecoration(
-                          color: showFace ? Colors.white : AppColors.primary,
-                          borderRadius: BorderRadius.circular(18),
-                          border: showFace
-                              ? Border.all(color: card.item.color, width: 3)
-                              : null,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: showFace
-                              ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(card.item.icon, size: 40, color: card.item.color),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      card.item.title,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: 'Nunito',
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: card.item.color,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 400),
+                        transitionBuilder: (Widget child, Animation<double> animation) {
+                          final rotateAnim = Tween(begin: math.pi, end: 0.0).animate(animation);
+                          return AnimatedBuilder(
+                            animation: rotateAnim,
+                            child: child,
+                            builder: (context, widget) {
+                              final isUnder = (ValueKey(showFace) != widget!.key);
+                              var tilt = ((animation.value - 0.5).abs() - 0.5) * 0.003;
+                              tilt *= isUnder ? -1.0 : 1.0;
+                              final value = isUnder ? math.min(rotateAnim.value, math.pi / 2) : rotateAnim.value;
+                              return Transform(
+                                transform: Matrix4.rotationY(value)..setEntry(3, 0, tilt),
+                                alignment: Alignment.center,
+                                child: widget,
+                              );
+                            },
+                          );
+                        },
+                        child: Container(
+                          key: ValueKey(showFace),
+                          decoration: BoxDecoration(
+                            color: showFace ? Colors.white : AppColors.primary,
+                            borderRadius: BorderRadius.circular(18),
+                            border: showFace
+                                ? Border.all(color: card.item.color, width: 3)
+                                : null,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 6,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: showFace
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(card.item.icon, size: 40, color: card.item.color),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        card.item.title,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontFamily: 'Nunito',
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                          color: card.item.color,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                )
-                              : const Icon(Icons.help_outline_rounded, size: 44, color: Colors.white),
+                                    ],
+                                  )
+                                : const Icon(Icons.help_outline_rounded, size: 44, color: Colors.white),
+                          ),
                         ),
                       ),
                     );

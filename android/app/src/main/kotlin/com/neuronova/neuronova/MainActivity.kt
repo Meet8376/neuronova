@@ -1,4 +1,4 @@
-package com.neuronova.cognicare_prototype
+package com.neuronova.neuronova
 
 import io.flutter.embedding.android.FlutterActivity
 

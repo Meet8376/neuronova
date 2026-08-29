@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/extensions/l10n_ext.dart';
 import '../../../data/models/task.dart';
 import '../../../data/repositories/task_repository.dart';
 import '../../../services/secure_settings_service.dart';
@@ -50,9 +51,15 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   void initState() {
     super.initState();
     _load();
-    // Tick the clock every minute
-    _clockTimer = Timer.periodic(const Duration(minutes: 1), (_) {
-      if (mounted) setState(() => _now = DateTime.now());
+    // Tick every 30s: updates clock display every minute, refreshes tasks on every tick.
+    // This ensures admin-added tasks appear within 30s without requiring logout.
+    _clockTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) {
+        final now = DateTime.now();
+        setState(() => _now = now);
+        // Refresh task list on every tick so admin-added tasks show up promptly
+        _load();
+      }
     });
   }
 
@@ -77,26 +84,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
     });
   }
 
-  // ── Greeting helpers ───────────────────────────────────────────────────────
-
-  String get _greeting {
-    final h = _now.hour;
-    if (h < 12) return 'Good Morning';
-    if (h < 17) return 'Good Afternoon';
-    return 'Good Evening';
-  }
-
-  String get _greetingEmoji {
-    final h = _now.hour;
-    if (h < 12) return '🌅';
-    if (h < 17) return '🌞';
-    return '🌙';
-  }
-
-  /// Full date + time line for reality orientation.
-  /// Format: "Tuesday, 26 August 2025 · 3:45 PM"
-  String get _dateTimeLine =>
-      '${DateFormat('EEEE, d MMMM yyyy').format(_now)} · ${DateFormat('h:mm a').format(_now)}';
+  // ── Greeting helpers — now computed inside build() with context ────────────────
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
@@ -140,8 +128,8 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
     return showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete task?'),
-        content: Text('Remove "$taskName"?'),
+        title: Text(ctx.l.deleteTaskTitle),
+        content: Text('Remove "$taskName"? This cannot be undone.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
@@ -149,7 +137,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
           TextButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: TextButton.styleFrom(foregroundColor: AppColors.error),
-              child: const Text('Yes, Delete')),
+              child: Text(ctx.l.yesDelete)),
         ],
       ),
     );
@@ -158,12 +146,19 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    // Greeting computed here so it uses AppLocalizations
+    final t = context.l;
+    final h = _now.hour;
+    final greeting = h < 12 ? t.goodMorning : (h < 17 ? t.goodAfternoon : t.goodEvening);
+    final greetingEmoji = h < 12 ? '🌅' : (h < 17 ? '🌞' : '🌙');
+    final dateTimeLine = '${DateFormat('EEEE, d MMMM yyyy').format(_now)} · ${DateFormat('h:mm a').format(_now)}';
+
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
-            // ── Greeting + Reality Orientation ─────────────────────────────
+            // ── Greeting + Reality Orientation ─────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
               child: Column(
@@ -171,14 +166,13 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                 children: [
                   // Greeting line — large and warm
                   Text(
-                    '$_greeting, $_patientName $_greetingEmoji',
+                    '$greeting, $_patientName $greetingEmoji',
                     style: AppTextStyles.greeting(context),
                   ),
                   const SizedBox(height: 4),
                   // Date + time line — reality orientation
-                  // (per elderly_ux_spec.md Part 6.1 — not huge, just clear)
                   Text(
-                    _dateTimeLine,
+                    dateTimeLine,
                     style: AppTextStyles.dateText(context),
                   ),
                 ],
@@ -195,7 +189,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                       size: 22, color: AppColors.primary),
                   const SizedBox(width: 8),
                   Text(
-                    "Today's Tasks",
+                    t.todaysTasks,
                     style: AppTextStyles.sectionHeader(context),
                   ),
                 ],
@@ -223,16 +217,16 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                 ))),
                             const SizedBox(height: 8),
                             TextButton.icon(
-                              onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const AllTasksScreen()),
-                              ).then((_) => _load()),
-                              icon: const Icon(
-                                  Icons.calendar_today_outlined,
-                                  size: 20),
-                              label: const Text('See all tasks'),
-                            ),
+                               onPressed: () => Navigator.push(
+                                 context,
+                                 MaterialPageRoute(
+                                     builder: (_) => const AllTasksScreen()),
+                               ).then((_) => _load()),
+                               icon: const Icon(
+                                   Icons.calendar_today_outlined,
+                                   size: 20),
+                               label: Text(t.seeAllTasks),
+                             ),
                           ],
                         ),
             ),
@@ -258,9 +252,9 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             icon: const Icon(Icons.add_rounded, size: 28),
-            label: const Text(
-              'Add Task',
-              style: TextStyle(
+            label: Text(
+              t.addTask,
+              style: const TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 18,
                   fontWeight: FontWeight.w700),
@@ -272,6 +266,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   }
 
   Widget _buildEmptyTasks() {
+    final t = context.l;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -280,13 +275,13 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
               size: 72, color: AppColors.textHint),
           const SizedBox(height: 16),
           Text(
-            'No tasks for today!',
+            t.noTasksToday,
             style: AppTextStyles.sectionHeader(context)
                 .copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
           Text(
-            'Tap "Add Task" to get started',
+            t.noTasksHint,
             style: AppTextStyles.cardSubtitle(context),
           ),
         ],

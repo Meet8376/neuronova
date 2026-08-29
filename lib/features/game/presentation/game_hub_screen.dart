@@ -4,6 +4,7 @@ import 'read_memorize_hub_screen.dart';
 import 'picture_match_screen.dart';
 import 'routine_recall_screen.dart';
 import 'pattern_recognition_screen.dart';
+import '../../progress/presentation/progress_screen.dart';
 
 /// Game hub — entry point for all 4 cognitive games (PRD Section 6.1).
 class GameHubScreen extends StatelessWidget {
@@ -102,6 +103,28 @@ class GameHubScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const PatternRecognitionScreen()),
                     ),
                   ),
+                  const SizedBox(height: 24),
+
+                  // Subtle access to practice history — not promoted as main feature
+                  Center(
+                    child: TextButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ProgressScreen()),
+                      ),
+                      icon: Icon(Icons.history_rounded,
+                          size: 18, color: AppColors.textSecondary),
+                      label: Text(
+                        'View practice history',
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 15,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),

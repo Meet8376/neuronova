@@ -8,6 +8,7 @@ enum CareReminderType {
   sleep,
   eyeCare,
   social,
+  other,
 }
 
 extension CareReminderTypeX on CareReminderType {
@@ -20,6 +21,7 @@ extension CareReminderTypeX on CareReminderType {
       case CareReminderType.sleep: return 'sleep';
       case CareReminderType.eyeCare: return 'eye_care';
       case CareReminderType.social: return 'social';
+      case CareReminderType.other: return 'other';
     }
   }
 
@@ -32,6 +34,7 @@ extension CareReminderTypeX on CareReminderType {
       case CareReminderType.sleep: return 'Sleep';
       case CareReminderType.eyeCare: return 'Eye Care';
       case CareReminderType.social: return 'Stay Connected';
+      case CareReminderType.other: return 'Other';
     }
   }
 
@@ -44,6 +47,7 @@ extension CareReminderTypeX on CareReminderType {
       case CareReminderType.sleep: return '😴';
       case CareReminderType.eyeCare: return '👁️';
       case CareReminderType.social: return '📞';
+      case CareReminderType.other: return '📋';
     }
   }
 

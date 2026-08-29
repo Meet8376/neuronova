@@ -15,7 +15,7 @@
     <!-- Keep CPU awake when alarm fires -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <application
-        android:label="cognicare_prototype"
+        android:label="NeuroNova"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

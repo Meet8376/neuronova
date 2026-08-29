@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/db/database_helper.dart';
 import '../../../services/adaptive_difficulty_service.dart';
+import '../../../core/extensions/l10n_ext.dart';
 
 class RoutineItem {
   final int correctOrder;
@@ -121,7 +122,7 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
             ),
             const SizedBox(width: 12),
             Text(
-              scorePercent >= 80 ? 'Great Sequence!' : 'Good Effort!',
+              scorePercent >= 80 ? context.l.greatSequence : context.l.goodEffortLabel,
               style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold),
             ),
           ],
@@ -131,7 +132,7 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'You placed $correctCount out of ${_currentList.length} activities in the correct order in ${_elapsedSeconds}s.',
+              context.l.youPlaced(correctCount, _currentList.length, _elapsedSeconds),
               style: const TextStyle(fontFamily: 'Nunito', fontSize: 16),
             ),
             const SizedBox(height: 16),
@@ -162,7 +163,7 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
               Navigator.pop(ctx);
               Navigator.pop(context);
             },
-            child: const Text('Back to Games', style: TextStyle(color: Colors.white, fontFamily: 'Nunito')),
+            child: Text(context.l.backToGames, style: const TextStyle(color: Colors.white, fontFamily: 'Nunito')),
           ),
         ],
       ),
@@ -174,7 +175,7 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
       appBar: AppBar(
-        title: const Text('Daily Routine Recall', style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
+        title: Text(context.l.routineRecallTitle, style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -185,8 +186,8 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Order Your Daily Routine',
-                style: TextStyle(
+                context.l.orderYourRoutine,
+                style: const TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -195,8 +196,8 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                'Drag and reorder the cards from earliest in the morning to latest in the day.',
-                style: TextStyle(
+                context.l.dragReorderHint,
+                style: const TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 16,
                   color: AppColors.textSecondary,
@@ -250,9 +251,9 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
                   ),
                   onPressed: _checkAnswers,
                   icon: const Icon(Icons.check_circle_rounded, color: Colors.white, size: 24),
-                  label: const Text(
-                    'Check Routine Sequence',
-                    style: TextStyle(fontFamily: 'Nunito', fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  label: Text(
+                    context.l.checkRoutineSequence,
+                    style: const TextStyle(fontFamily: 'Nunito', fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ),
               ),

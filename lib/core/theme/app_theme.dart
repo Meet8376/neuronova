@@ -109,7 +109,7 @@ class AppTextStyles {
 
   // ── Login-specific tokens ────────────────────────────────────────────────
 
-  // App name in the logo row ("CogniCare")
+  // App name in the logo row ("NeuroNova")
   static TextStyle appTitle(BuildContext ctx) =>
       _nunito(26 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w800, AppColors.textPrimary);
 

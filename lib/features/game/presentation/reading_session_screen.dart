@@ -14,12 +14,18 @@ import 'results_screen.dart';
 ///   Phase 3: RESULT — score shown (handled by ResultsScreen)
 class ReadingSessionScreen extends StatefulWidget {
   final ContentItem content;
-  final String language; // 'en' or 'hi'
+  final String language;
+  /// If provided, this is the translated version of [content.text] in [language].
+  /// Falls back to [content.text] (English) if null.
+  final String? translatedText;
+  final String? translatedTitle;
 
   const ReadingSessionScreen({
     super.key,
     required this.content,
     required this.language,
+    this.translatedText,
+    this.translatedTitle,
   });
 
   @override
@@ -33,6 +39,10 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   final _stt = SttService.instance;
   final _scoring = ScoringService.instance;
   final _repo = GameRepository();
+
+  /// The text the patient actually reads (translated or English fallback).
+  String get _passageText => widget.translatedText ?? widget.content.text;
+  String get _passageTitle => widget.translatedTitle ?? widget.content.title;
 
   _Phase _phase = _Phase.read;
 
@@ -96,7 +106,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
       await _tts.pause();
       setState(() => _ttsPlaying = false);
     } else {
-      await _tts.speak(widget.content.text);
+      await _tts.speak(_passageText);  // speak translated text
       setState(() => _ttsPlaying = true);
     }
   }
@@ -221,7 +231,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
 
     setState(() => _submitting = true);
 
-    final result = _scoring.score(widget.content.text, spoken);
+    final result = _scoring.score(_passageText, spoken); // score vs translated text
     final session = await _repo.saveSession(GameSession(
       id: '', // assigned by repo
       gameType: 'read_memorize_speak',
@@ -231,8 +241,8 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
       length: widget.content.length,
       difficultyTier: widget.content.difficultyTier,
       contentId: widget.content.id,
-      textTitle: widget.content.title,
-      sourceText: widget.content.text,
+      textTitle: _passageTitle,       // translated title for display
+      sourceText: _passageText,       // translated text (what patient saw)
       spokenText: spoken,
       scorePercent: result.percent,
       wordMatchCount: result.matched,
@@ -266,7 +276,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.content.title, overflow: TextOverflow.ellipsis),
+        title: Text(_passageTitle, overflow: TextOverflow.ellipsis),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
           onPressed: () async {
@@ -283,7 +293,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   // ── Phase 1: Read ─────────────────────────────────────────────────────────
 
   Widget _buildReadPhase() {
-    final text = widget.content.text;
+    final text = _passageText;  // translated or English fallback
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [

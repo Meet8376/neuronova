@@ -1,0 +1,304 @@
+﻿{
+  "@@locale": "en",
+
+  "appName": "NeuroNova",
+  "@appName": { "description": "Application name" },
+
+  "appTagline": "Your memory companion",
+  "@appTagline": { "description": "Shown on splash screen" },
+
+  "selectYourRole": "Select Your Role",
+  "patientLabel": "Patient",
+  "caregiverLabel": "Caregiver",
+  "enterPin": "Enter PIN",
+  "loginButton": "Login",
+  "wrongPin": "Wrong PIN. Please try again.",
+  "selectRole": "Please select your role first.",
+
+  "startButton": "Start",
+  "nextButton": "Next",
+  "finishButton": "Finish",
+  "tryAgainButton": "Try Again",
+  "backButton": "Back",
+  "saveButton": "Save",
+  "cancelButton": "Cancel",
+  "doneButton": "Done",
+  "okButton": "OK",
+  "retryButton": "Retry",
+
+  "goodMorning": "Good morning",
+  "@goodMorning": { "description": "Greeting for morning" },
+  "goodAfternoon": "Good afternoon",
+  "goodEvening": "Good evening",
+
+  "todaysTasks": "Today's Tasks",
+  "noTasksToday": "No tasks for today. Enjoy your day!",
+  "allTasksDone": "You finished all tasks today!",
+  "taskStatusDone": "Done",
+  "taskStatusMissed": "Missed",
+  "taskStatusUpcoming": "Upcoming",
+
+  "gamesTitle": "Memory Games",
+  "gamesSubtitle": "Exercise your mind every day",
+  "readMemorizeTitle": "Read, Memorize & Speak",
+  "readMemorizeSubtitle": "Read a passage, remember it, and speak aloud",
+  "pictureMatchTitle": "Picture Match",
+  "pictureMatchSubtitle": "Match pairs of North Eastern cultural symbols",
+  "routineRecallTitle": "Daily Routine Recall",
+  "routineRecallSubtitle": "Arrange everyday activities in the correct time sequence",
+  "patternRecognitionTitle": "Pattern Recognition",
+  "patternRecognitionSubtitle": "Identify and complete traditional weaving patterns",
+
+  "selectCategory": "Select Category",
+  "selectLanguage": "Select Language",
+  "selectLength": "Select Length",
+  "categoryConversation": "Daily Conversation",
+  "categoryStories": "Stories",
+  "categoryWisdom": "Wisdom",
+  "lengthShort": "Short",
+  "lengthMedium": "Medium",
+  "lengthLong": "Long",
+
+  "readPhaseTitle": "Read & Memorize",
+  "readPhaseHint": "Read the passage carefully. Take as long as you need.",
+  "listenButton": "Listen",
+  "readyToSpeak": "I'm Ready to Speak! 🎙️",
+
+  "speakPhaseTitle": "Speak from Memory",
+  "speakPhaseHint": "The text is hidden now. Say what you remember!",
+  "tapToRecord": "Tap the mic to start recording",
+  "tapToStop": "Tap to stop recording",
+  "listeningLabel": "Listening...",
+
+  "resultsTitle": "Well Done!",
+  "wordsRecalled": "{count} of {total} words recalled",
+  "@wordsRecalled": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "star1Message": "That's okay! Every attempt helps your memory!",
+  "star2Message": "Good effort! Keep practicing!",
+  "star3Message": "Wonderful! You remembered so well!",
+  "ttsNotSupported": "Audio not available for this language",
+
+  "careplanTitle": "Care Plan",
+  "addTaskButton": "+ Add Task",
+  "addReminderButton": "+ Add Reminder",
+  "taskNameHint": "Enter task name...",
+  "setTimeLabel": "Set Time",
+  "medicineTab": "Medicine",
+  "hydrationTab": "Hydration",
+  "remindersTab": "Reminders",
+  "noRemindersYet": "No reminders set yet.",
+  "noMedicinesYet": "No medicines scheduled yet.",
+
+  "progressTitle": "Progress",
+  "sessionsThisWeek": "Sessions This Week",
+  "noSessionsYet": "No sessions played yet. Start a game!",
+
+  "profileTitle": "Profile",
+  "patientNameLabel": "Patient Name",
+  "caregiverNameLabel": "Caregiver Name",
+  "emergencyContactLabel": "Emergency Contact",
+  "languageSettingsTitle": "Language Settings",
+  "primaryLanguageLabel": "Primary Language",
+  "additionalLanguagesLabel": "Play games in:",
+  "textSizeLabel": "Text Size",
+  "ttsSpeedLabel": "Speaking Speed",
+  "logoutButton": "Log Out",
+  "logoutConfirm": "Are you sure you want to log out?",
+
+  "langEnglish": "English",
+  "langHindi": "हिंदी (Hindi)",
+  "langBengali": "বাংলা (Bengali)",
+  "langAssamese": "অসমীয়া (Assamese)",
+  "langNepali": "नेपाली (Nepali)",
+
+  "adminDashTitle": "Dashboard",
+  "patientsTabLabel": "Patients",
+  "overviewLabel": "Overview",
+  "cognitiveIndexLabel": "Cognitive Index",
+  "lastActiveLabel": "Last Active",
+  "syncButton": "Sync Now",
+  "syncComplete": "Sync complete!",
+  "attentionNeeded": "Needs Attention",
+  "stableStatus": "Stable",
+
+  "emergencyCallButton": "Emergency Call",
+  "emergencyConfirmTitle": "Emergency Call",
+  "emergencyConfirmBody": "Call your caregiver now?",
+  "yes": "Yes",
+  "no": "No",
+
+  "medicineAlarmTitle": "Medicine Reminder",
+  "hydrationAlarmTitle": "Hydration Reminder",
+  "taskAlarmTitle": "Task Reminder",
+
+  "loadingLabel": "Loading...",
+  "translatingContent": "Setting up {language} content...",
+  "@translatingContent": {
+    "placeholders": {
+      "language": { "type": "String" }
+    }
+  },
+  "needsInternetForSetup": "Internet needed to set up {language} for the first time. Will complete when connected.",
+  "@needsInternetForSetup": {
+    "placeholders": {
+      "language": { "type": "String" }
+    }
+  },
+  "translationComplete": "{language} content is ready!",
+  "@translationComplete": {
+    "placeholders": {
+      "language": { "type": "String" }
+    }
+  },
+  "somethingWentWrong": "Something went wrong. Please try again.",
+
+  "downloadingModel": "Downloading {language} language model (one-time, needs Wi-Fi)...",
+  "@downloadingModel": {
+    "placeholders": {
+      "language": { "type": "String" }
+    }
+  },
+  "modelReady": "{language} model ready — works offline from now on!",
+  "@modelReady": {
+    "placeholders": {
+      "language": { "type": "String" }
+    }
+  },
+
+  "welcomeBack": "Welcome back",
+  "signInToContinue": "Sign in to continue",
+  "username": "Username",
+  "enterUsername": "Enter your username",
+  "password": "Password",
+  "enterPassword": "Enter your password",
+  "signInButton": "Sign In",
+  "wrongCredentials": "Wrong username or password.",
+  "navHome": "Home",
+  "navHealth": "Health",
+  "navGames": "Games",
+  "navProfile": "Profile",
+  "addTask": "Add Task",
+  "seeAllTasks": "See all tasks",
+  "deleteTaskTitle": "Delete task?",
+  "yesDelete": "Yes, Delete",
+  "brainGames": "Brain Games",
+  "brainGamesSubtitle": "Exercise your mind every day",
+  "viewPracticeHistory": "View practice history",
+  "newTask": "New Task",
+  "quickPick": "Quick pick",
+  "choosePracticeLanguage": "Choose practice language",
+  "gameLanguageHint": "Your app language is pre-selected. Change just for this game.",
+  "healthTitle": "Health",
+  "noTasksHint": "Tap \"Add Task\" to get started",
+
+  "medicines": "Medicines",
+  "hydration": "Hydration",
+  "noMedicinesScheduled": "No medicines scheduled for today",
+  "askCaregiverMedicine": "Ask your caregiver to set up your medicine schedule",
+  "takenButton": "Taken",
+  "doneMark": "Done ✓",
+  "hydrationGreat": "Great job! 🎉",
+  "hydrationKeepGoing": "Keep drinking water!",
+  "glassesOfDay": "{count} of {total} glasses today",
+  "@glassesOfDay": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "drankGlass": "I drank a glass of water",
+  "dailyGoalReached": "Daily water goal reached!",
+  "byCaregiver": "By caregiver",
+  "byYou": "By you",
+  "markAsDone": "Mark as Done",
+  "imStartingNow": "I'm Starting Now",
+  "remindMeLater": "Remind Me Later",
+  "editTask": "Edit task",
+  "practiceTitle": "Practice ✨",
+  "whatYouPractised": "What you practised",
+  "todayLabel": "Today",
+  "totalLabel": "Total",
+  "readyToBegin": "Ready to begin?",
+  "practiseMemoryHint": "Practise your memory — every session helps your brain stay sharp!",
+  "practiceAgain": "Practice Again",
+  "startPractising": "Start Practising",
+  "warmMessage3Stars": "Wonderful practice!",
+  "warmMessage2Stars": "Great effort today!",
+  "warmMessage1Star": "Every practice helps! ❤️",
+  "originalPassageLabel": "The original passage:",
+  "whatYouSaidLabel": "What you said:",
+  "nothingRecorded": "(Nothing was recorded)",
+  "tryAgainGame": "Try Again 💪",
+  "saveAndFinish": "Save & Finish 🏁",
+  "wonderfulJob": "Wonderful Job!",
+  "backToGames": "Back to Games",
+  "greatSequence": "Great Sequence!",
+  "goodEffortLabel": "Good Effort!",
+  "patternCompleted": "Pattern Completed!",
+  "orderYourRoutine": "Order Your Daily Routine",
+  "dragReorderHint": "Drag and reorder the cards from earliest to latest in the day.",
+  "checkRoutineSequence": "Check Routine Sequence",
+  "lookAtPattern": "Look at the pattern below. Which motif comes next?",
+  "selectCorrectMotif": "Select the correct motif:",
+  "movesLabel": "Moves: {count}",
+  "@movesLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeLabel": "Time: {seconds}s",
+  "@timeLabel": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "pairsLabel": "Pairs: {found}/{total}",
+  "@pairsLabel": {
+    "placeholders": {
+      "found": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "questionLabel": "Question {current}/{total}",
+  "@questionLabel": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "youMatchedAll": "You matched all {pairs} pairs in {moves} moves and {seconds} seconds!",
+  "@youMatchedAll": {
+    "placeholders": {
+      "pairs": { "type": "int" },
+      "moves": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
+  "youPlaced": "You placed {correct} out of {total} activities in the correct order in {seconds}s.",
+  "@youPlaced": {
+    "placeholders": {
+      "correct": { "type": "int" },
+      "total": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
+  "youSolved": "You solved {correct} out of {total} pattern sequences correctly in {seconds}s!",
+  "@youSolved": {
+    "placeholders": {
+      "correct": { "type": "int" },
+      "total": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
+  "warmResultGreat": "Wonderful! You remembered so well! 🌟",
+  "warmResultGood": "Great effort! Keep going, you're doing great! 💪",
+  "warmResultOkay": "That's okay! Every practice helps your memory! ❤️",
+  "subResultGreat": "Your memory is doing amazing work today.",
+  "subResultGood": "You're improving with every try — keep it up!",
+  "subResultOkay": "Want to try again? The text will come back for you."
+}
