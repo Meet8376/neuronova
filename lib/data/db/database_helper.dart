@@ -28,7 +28,7 @@ class DatabaseHelper {
   Future<Database> initInMemoryDatabase() async {
     _db = await openDatabase(
       inMemoryDatabasePath,
-      version: 6,
+      version: 7,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -40,7 +40,7 @@ class DatabaseHelper {
     final path = join(dbPath, 'neuronova.db');
     return openDatabase(
       path,
-      version: 6,
+      version: 7,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -240,6 +240,18 @@ class DatabaseHelper {
       await txn.insert('app_settings', {'key': 'difficulty_rms', 'value': '1'});
       await txn.insert('app_settings', {'key': 'game_languages', 'value': 'en'});
 
+      // ── Memories (Memory Album) ──────────────────────────────────────────
+      await txn.execute('''
+        CREATE TABLE memories (
+          id TEXT PRIMARY KEY,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          image_path TEXT NOT NULL,
+          date_label TEXT NOT NULL,
+          created_at INTEGER NOT NULL
+        )
+      ''');
+
       // Seed initial patient records for ASHA Worker Demo
       final now = DateTime.now().millisecondsSinceEpoch;
       await txn.insert('patients', {
@@ -271,6 +283,32 @@ class DatabaseHelper {
         'cognitive_index': 84,
         'last_active': now - 3600000,
         'missed_meds': 0,
+      });
+
+      // Seed initial memories
+      await txn.insert('memories', {
+        'id': 'mem_1',
+        'title': 'Family Garden Reunion',
+        'description': 'You and your loving family sitting together in the sunny garden at Barabanki.',
+        'image_path': 'assets/images/memory_family.png',
+        'date_label': 'Family Moment',
+        'created_at': now,
+      });
+      await txn.insert('memories', {
+        'id': 'mem_2',
+        'title': 'Teatime with Meena',
+        'description': 'A cozy morning cup of hot tea and fresh cookies by the window.',
+        'image_path': 'assets/images/memory_tea.png',
+        'date_label': 'Comfort Moment',
+        'created_at': now,
+      });
+      await txn.insert('memories', {
+        'id': 'mem_3',
+        'title': 'Bruno the Dog',
+        'description': 'Your gentle Golden Retriever resting lovingly on your lap at home.',
+        'image_path': 'assets/images/memory_pet.png',
+        'date_label': 'Pet Memory',
+        'created_at': now,
       });
     });
   }
@@ -376,6 +414,46 @@ class DatabaseHelper {
         await db.execute('ALTER TABLE tasks ADD COLUMN reminder_id TEXT');
       } catch (_) {
         // Column might already exist in fresh or custom installs
+      }
+    }
+    if (oldVersion < 7) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS memories (
+          id TEXT PRIMARY KEY,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          image_path TEXT NOT NULL,
+          date_label TEXT NOT NULL,
+          created_at INTEGER NOT NULL
+        )
+      ''');
+      final existing = await db.query('memories', limit: 1);
+      if (existing.isEmpty) {
+        final now = DateTime.now().millisecondsSinceEpoch;
+        await db.insert('memories', {
+          'id': 'mem_1',
+          'title': 'Family Garden Reunion',
+          'description': 'You and your loving family sitting together in the sunny garden at Barabanki.',
+          'image_path': 'assets/images/memory_family.png',
+          'date_label': 'Family Moment',
+          'created_at': now,
+        });
+        await db.insert('memories', {
+          'id': 'mem_2',
+          'title': 'Teatime with Meena',
+          'description': 'A cozy morning cup of hot tea and fresh cookies by the window.',
+          'image_path': 'assets/images/memory_tea.png',
+          'date_label': 'Comfort Moment',
+          'created_at': now,
+        });
+        await db.insert('memories', {
+          'id': 'mem_3',
+          'title': 'Bruno the Dog',
+          'description': 'Your gentle Golden Retriever resting lovingly on your lap at home.',
+          'image_path': 'assets/images/memory_pet.png',
+          'date_label': 'Pet Memory',
+          'created_at': now,
+        });
       }
     }
   }

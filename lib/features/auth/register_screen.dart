@@ -120,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('CogniCare', style: AppTextStyles.appTitle(context)),
+                      Text('NeuroNova', style: AppTextStyles.appTitle(context)),
                       Text('Your memory companion',
                           style: AppTextStyles.appTagline(context)),
                     ],
@@ -132,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Text('Create Account',
                   style: AppTextStyles.loginHeadline(context)),
               const SizedBox(height: 4),
-              Text('Join CogniCare to get started',
+              Text('Join NeuroNova to get started',
                   style: AppTextStyles.loginSubtitle(context)),
               const SizedBox(height: 28),
 

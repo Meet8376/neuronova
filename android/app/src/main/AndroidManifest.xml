@@ -14,8 +14,12 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <!-- Keep CPU awake when alarm fires -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!-- Camera & Storage for Memory photos and avatar upload -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
     <application
-        android:label="cognicare_prototype"
+        android:label="NeuroNova"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

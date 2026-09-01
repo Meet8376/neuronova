@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_image_view.dart';
+import '../../../data/db/database_helper.dart';
 import '../../../services/secure_settings_service.dart';
 import '../../../services/tts_service.dart';
 
@@ -24,6 +26,7 @@ class _IdentityCardSheetState extends State<IdentityCardSheet> {
   String _caregiverPhone = '';
   String _village = 'Barabanki';
   String _familyNotes = 'Son: Rajesh · Daughter: Meena';
+  String? _avatarPath;
   bool _loading = true;
   bool _speaking = false;
 
@@ -47,6 +50,7 @@ class _IdentityCardSheetState extends State<IdentityCardSheet> {
     final cPhone = await _secure.getCaregiverPhone();
     final vil = await _secure.getPatientVillage();
     final fam = await _secure.getFamilyNotes();
+    final av = await DatabaseHelper.instance.getSetting('patient_avatar_path');
 
     if (!mounted) return;
     setState(() {
@@ -55,6 +59,7 @@ class _IdentityCardSheetState extends State<IdentityCardSheet> {
       _caregiverPhone = cPhone;
       _village = vil;
       _familyNotes = fam;
+      _avatarPath = av;
       _loading = false;
     });
   }
@@ -152,17 +157,26 @@ class _IdentityCardSheetState extends State<IdentityCardSheet> {
                     gradient: AppGradients.hero,
                     shape: BoxShape.circle,
                   ),
-                  child: Center(
-                    child: Text(
-                      _patientName.isNotEmpty ? _patientName[0].toUpperCase() : 'P',
-                      style: const TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 40,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  child: _avatarPath != null && _avatarPath!.isNotEmpty
+                      ? ClipOval(
+                          child: AppImageView(
+                            imagePath: _avatarPath!,
+                            width: 84,
+                            height: 84,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Center(
+                          child: Text(
+                            _patientName.isNotEmpty ? _patientName[0].toUpperCase() : 'P',
+                            style: const TextStyle(
+                              fontFamily: 'Nunito',
+                              fontSize: 40,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                 ),
                 const SizedBox(height: 12),
                 Text(

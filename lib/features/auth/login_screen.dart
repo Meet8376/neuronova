@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('CogniCare',
+                        Text('NeuroNova',
                             style: AppTextStyles.appTitle(context)),
                         Text('Your memory companion',
                             style: AppTextStyles.appTagline(context)),
@@ -272,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 Center(
                   child: Text(
-                    'CogniCare • Prototype v0.1',
+                    'NeuroNova • Prototype v0.1',
                     style: AppTextStyles.label(context),
                   ),
                 ),

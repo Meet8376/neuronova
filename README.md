@@ -1,17 +1,6 @@
-# CogniCare prototype — auth + Read & Memorize & Speak
+# NeuroNova — AI-based Cognitive Gaming & Memory Assistance Platform
 
-This is source code only (the `lib/` files + `pubspec.yaml`). It wasn't built or
-run here — this sandbox doesn't have the Flutter SDK or access to pub.dev — so
-treat it as a strong starting point to drop into a real project, not a
-pre-tested binary.
-
-## Setup (do this locally)
-
-1. Create a fresh Flutter project:
-   ```
-   flutter create cognicare_prototype
-   cd cognicare_prototype
-   ```
+This repository contains the complete implementation for **NeuroNova**, a localized, offline-first assistive cognitive care and gaming platform designed for elderly and neuro-divergent individuals.
 2. Replace the generated `lib/` folder and `pubspec.yaml` with the ones from
    this zip.
 3. Add the dependencies (this fetches current versions automatically, so you

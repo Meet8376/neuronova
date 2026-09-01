@@ -1,10 +1,10 @@
 # Walkthrough — Prototype Deployment
 
-I have successfully resolved the compilation issues and deployed the prototype of **CogniCare** onto your wirelessly connected Android device.
+I have successfully resolved the compilation issues and deployed the prototype of **NeuroNova** onto your wirelessly connected Android device.
 
 ## What Was Fixed
-* Added the missing `content_item.dart` import in [progress_screen.dart](file:///C:/Users/prana/Downloads/cognicare_prototype/lib/features/progress/presentation/progress_screen.dart) to expose the `displayName` extension getter for categories.
-* Configured **Core Library Desugaring** in [build.gradle.kts](file:///C:/Users/prana/Downloads/cognicare_prototype/android/app/build.gradle.kts) to support modern Java APIs utilized by the notification engine.
+* Added the missing `content_item.dart` import in `progress_screen.dart` to expose the `displayName` extension getter for categories.
+* Configured **Core Library Desugaring** in `build.gradle.kts` to support modern Java APIs utilized by the notification engine.
 
 ## Deployment Status
 * **Target Device:** `A015` (`192.168.29.64:35451`) — Android 16 (API 36).
