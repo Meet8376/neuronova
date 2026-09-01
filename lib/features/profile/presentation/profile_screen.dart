@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/extensions/l10n_ext.dart';
+import '../../../services/language_service.dart';
 import '../../../services/secure_settings_service.dart';
 import '../../role_select/presentation/role_select_screen.dart';
 import '../../auth/login_screen.dart';
+import '../../language/presentation/language_change_sheet.dart';
 
 /// Profile tab — shows name, role, switch role button, settings.
 /// Shared by patient and admin (just different current-role display).
@@ -20,8 +23,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   String _patientName = '';
   String _adminName = '';
   String _caregiverPhone = '';
-  String _village = '';
-  String _familyNotes = '';
 
   @override
   bool get wantKeepAlive => true;
@@ -36,19 +37,66 @@ class _ProfileScreenState extends State<ProfileScreen>
     final p = await _secure.getPatientName();
     final a = await _secure.getAdminName();
     final ph = await _secure.getCaregiverPhone();
-    final vil = await _secure.getPatientVillage();
-    final fam = await _secure.getFamilyNotes();
     if (!mounted) return;
     setState(() {
       _patientName = p ?? '';
       _adminName = a ?? '';
       _caregiverPhone = ph;
-      _village = vil;
-      _familyNotes = fam;
     });
   }
 
+  /// Clears UUID session token → returns to LoginScreen.
+  /// Names and task/game history are preserved.
   Future<void> _logout() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: AppColors.cardBgWarm,
+        title: Text(
+          context.l.logoutButton,
+          style: const TextStyle(
+            fontFamily: 'Nunito',
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        content: Text(
+          context.l.logoutConfirm,
+          style: const TextStyle(fontFamily: 'Nunito', fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              context.l.cancelButton,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              context.l.logoutButton,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+
     await _secure.logout();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
@@ -57,21 +105,101 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
+  Future<void> _changeLanguage() async {
+    final currentLang = LanguageService.instance.currentLanguage;
+    final newLang = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => LanguageChangeSheet(currentCode: currentLang),
+    );
+
+    if (newLang != null && newLang != currentLang) {
+      await LanguageService.instance.setCurrentLanguage(newLang);
+      if (!mounted) return;
+
+      // Fire-and-forget: pre-translate all game content for the new language.
+      LanguageService.instance.preTranslateIfOnline(newLang);
+
+      final langName =
+          LanguageService.supportedLanguages[newLang]?.nativeName ?? newLang;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Language changed to $langName',
+                  style: const TextStyle(
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.primary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   Future<void> _resetSetup() async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Reset App?'),
-        content: const Text(
-            'This will erase all names and setup. Task and game history will be kept.'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: AppColors.cardBgWarm,
+        title: Text(
+          context.l.resetTitle,
+          style: const TextStyle(
+            fontFamily: 'Nunito',
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        content: Text(
+          context.l.resetAppConfirm,
+          style: const TextStyle(fontFamily: 'Nunito', fontSize: 16),
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              style: TextButton.styleFrom(foregroundColor: AppColors.error),
-              child: const Text('Reset')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              context.l.cancelButton,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              context.l.resetAppSetup,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -89,27 +217,53 @@ class _ProfileScreenState extends State<ProfileScreen>
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Emergency Contact Number',
-            style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: AppColors.cardBgWarm,
+        title: Text(
+          context.l.emergencyContactLabel,
+          style: const TextStyle(
+            fontFamily: 'Nunito',
+            fontWeight: FontWeight.w800,
+          ),
+        ),
         content: TextField(
           controller: ctrl,
           keyboardType: TextInputType.phone,
           autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Phone number',
-            helperText: 'Patients use this for the "Call for Help" button',
-            prefixIcon: Icon(Icons.phone_rounded),
+          decoration: InputDecoration(
+            labelText: context.l.phoneNumberLabel,
+            helperText: context.l.phoneHelper,
+            prefixIcon: const Icon(Icons.phone_rounded),
           ),
           style: const TextStyle(fontFamily: 'Nunito', fontSize: 18),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(
+              context.l.cancelButton,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
-            child: const Text('Save'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              context.l.saveButton,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
@@ -121,84 +275,12 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
   }
 
-  Future<void> _editVillage() async {
-    final ctrl = TextEditingController(text: _village);
-    final result = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Patient Home Village/Location',
-            style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Village / Town name',
-            helperText: 'Used for Dementia Reality Orientation',
-            prefixIcon: Icon(Icons.location_on_rounded),
-          ),
-          style: const TextStyle(fontFamily: 'Nunito', fontSize: 18),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-    if (result != null && result.isNotEmpty) {
-      await _secure.setPatientVillage(result);
-      if (!mounted) return;
-      setState(() => _village = result);
-    }
-  }
-
-  Future<void> _editFamilyNotes() async {
-    final ctrl = TextEditingController(text: _familyNotes);
-    final result = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Family Members & Notes',
-            style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)),
-        content: TextField(
-          controller: ctrl,
-          maxLines: 2,
-          autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Family details',
-            helperText: 'e.g. Son: Rajesh (lives nearby) · Daughter: Meena',
-            prefixIcon: Icon(Icons.family_restroom_rounded),
-          ),
-          style: const TextStyle(fontFamily: 'Nunito', fontSize: 16),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-    if (result != null && result.isNotEmpty) {
-      await _secure.setFamilyNotes(result);
-      if (!mounted) return;
-      setState(() => _familyNotes = result);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final displayName = widget.isAdmin ? _adminName : _patientName;
-    final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U';
+    final initial =
+        displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U';
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
@@ -214,10 +296,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                 children: [
                   // Avatar
                   Container(
-                    width: 100,
-                    height: 100,
+                    width: 96,
+                    height: 96,
                     decoration: const BoxDecoration(
-                      gradient: AppGradients.hero,
+                      gradient: LinearGradient(
+                        colors: [AppColors.primary, AppColors.primaryLight],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -225,7 +311,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         initial,
                         style: const TextStyle(
                           fontFamily: 'Nunito',
-                          fontSize: 44,
+                          fontSize: 42,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
                         ),
@@ -234,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    displayName.isEmpty ? 'Profile' : displayName,
+                    displayName.isEmpty ? context.l.profileTitle : displayName,
                     style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 26,
@@ -244,7 +330,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                     decoration: BoxDecoration(
                       color: widget.isAdmin
                           ? AppColors.accent.withValues(alpha: 0.15)
@@ -255,18 +342,26 @@ class _ProfileScreenState extends State<ProfileScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          widget.isAdmin ? Icons.shield_outlined : Icons.elderly,
+                          widget.isAdmin
+                              ? Icons.shield_outlined
+                              : Icons.elderly,
                           size: 16,
-                          color: widget.isAdmin ? AppColors.accent : AppColors.primary,
+                          color: widget.isAdmin
+                              ? AppColors.accent
+                              : AppColors.primary,
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          widget.isAdmin ? 'Caregiver View' : 'Patient View',
+                          widget.isAdmin
+                              ? context.l.caregiverViewBadge
+                              : context.l.patientViewBadge,
                           style: TextStyle(
                             fontFamily: 'Nunito',
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: widget.isAdmin ? AppColors.accent : AppColors.primary,
+                            color: widget.isAdmin
+                              ? AppColors.accent
+                              : AppColors.primary,
                           ),
                         ),
                       ],
@@ -275,68 +370,189 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 28),
 
-            // People & Reminiscence Details
-            _Section(label: widget.isAdmin ? 'Patient Reminiscence Details' : 'Identity Details'),
+            // People section
+            _Section(label: context.l.profileTitle),
             _InfoRow(
               icon: Icons.elderly,
-              label: 'Patient Name',
-              value: _patientName.isEmpty ? 'Not set' : _patientName,
-            ),
-            const SizedBox(height: 4),
-            _InfoRow(
-              icon: Icons.location_on_rounded,
-              label: 'Home Village',
-              value: _village.isEmpty ? 'Not set' : _village,
-              onTap: widget.isAdmin ? _editVillage : null,
-            ),
-            const SizedBox(height: 4),
-            _InfoRow(
-              icon: Icons.family_restroom_rounded,
-              label: 'Family Members',
-              value: _familyNotes.isEmpty ? 'Not set' : _familyNotes,
-              onTap: widget.isAdmin ? _editFamilyNotes : null,
+              label: context.l.patientNameLabel,
+              value: _patientName.isEmpty ? context.l.notSet : _patientName,
             ),
             const SizedBox(height: 4),
             _InfoRow(
               icon: Icons.shield_outlined,
-              label: 'Caregiver',
-              value: _adminName.isEmpty ? 'Not set' : _adminName,
+              label: context.l.caregiverNameLabel,
+              value: _adminName.isEmpty ? context.l.notSet : _adminName,
             ),
+            // Admin-only: editable emergency contact number
             if (widget.isAdmin) ...[
               const SizedBox(height: 4),
               _InfoRow(
                 icon: Icons.phone_rounded,
-                label: 'Emergency number',
-                value: _caregiverPhone.isEmpty ? 'Not set' : _caregiverPhone,
+                label: context.l.emergencyContactLabel,
+                value:
+                    _caregiverPhone.isEmpty ? context.l.notSet : _caregiverPhone,
                 onTap: _editPhone,
               ),
             ],
             const SizedBox(height: 20),
 
-            // Logout
-            const _Section(label: 'Account'),
+            // Language Settings
+            _Section(label: context.l.languageSettingsTitle),
+            ListenableBuilder(
+              listenable: LanguageService.instance,
+              builder: (context, _) {
+                final currentCode = LanguageService.instance.currentLanguage;
+                final info = LanguageService.supportedLanguages[currentCode];
+                return Card(
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(
+                      color: AppColors.primary.withValues(alpha: 0.15),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: InkWell(
+                    onTap: _changeLanguage,
+                    borderRadius: BorderRadius.circular(16),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 12),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.translate_rounded,
+                              color: AppColors.primary,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: 6,
+                                  runSpacing: 4,
+                                  children: [
+                                    Text(
+                                      info?.nativeName ?? currentCode,
+                                      style: const TextStyle(
+                                        fontFamily: 'Nunito',
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary
+                                            .withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Text(
+                                        context.l.primaryLanguageLabel,
+                                        style: const TextStyle(
+                                          fontFamily: 'Nunito',
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  '${info?.name ?? ''} (${info?.script ?? ''})',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontFamily: 'Nunito',
+                                    fontSize: 13,
+                                    color: AppColors.textSecondary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 13,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // Account / Logout
+            _Section(label: context.l.accountSection),
             Card(
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               child: ListTile(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                leading: const Icon(Icons.logout_rounded,
-                    color: AppColors.primary, size: 28),
-                title: const Text('Log Out',
-                    style: TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600)),
-                subtitle: const Text(
-                  'Return to the login screen',
-                  style: TextStyle(
-                      fontFamily: 'Nunito',
-                      fontSize: 13,
-                      color: AppColors.textHint),
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.logout_rounded,
+                      color: AppColors.primary, size: 22),
                 ),
-                trailing: const Icon(Icons.arrow_forward_ios_rounded,
-                    size: 18, color: AppColors.textHint),
+                title: Text(
+                  context.l.logoutButton,
+                  style: const TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                subtitle: Text(
+                  context.l.returnToLogin,
+                  style: const TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 13,
+                    color: AppColors.textHint,
+                  ),
+                ),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: AppColors.textHint,
+                ),
                 onTap: _logout,
               ),
             ),
@@ -344,23 +560,41 @@ class _ProfileScreenState extends State<ProfileScreen>
 
             // Danger Zone — caregiver only
             if (widget.isAdmin) ...[
-              const _Section(label: 'Danger Zone'),
+              _Section(label: context.l.dangerZone),
               Card(
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
                 child: ListTile(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  leading: const Icon(Icons.refresh_rounded,
-                      color: AppColors.error, size: 28),
-                  title: const Text('Reset App Setup',
-                      style: TextStyle(
-                          fontFamily: 'Nunito',
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.error)),
-                  subtitle: const Text(
-                      'Clear names and setup — keeps game history',
-                      style: TextStyle(
-                          fontFamily: 'Nunito', fontSize: 13)),
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.refresh_rounded,
+                        color: AppColors.error, size: 22),
+                  ),
+                  title: Text(
+                    context.l.resetAppSetup,
+                    style: const TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.error,
+                    ),
+                  ),
+                  subtitle: Text(
+                    context.l.clearNamesSetupHint,
+                    style: const TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 13,
+                    ),
+                  ),
                   onTap: _resetSetup,
                 ),
               ),
@@ -383,7 +617,7 @@ class _Section extends StatelessWidget {
           style: const TextStyle(
             fontFamily: 'Nunito',
             fontSize: 13,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
             color: AppColors.textHint,
             letterSpacing: 0.8,
           )),
@@ -405,6 +639,8 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
         onTap: onTap,
@@ -415,19 +651,34 @@ class _InfoRow extends StatelessWidget {
             children: [
               Icon(icon, color: AppColors.primary, size: 22),
               const SizedBox(width: 12),
-              Text(label,
-                  style: const TextStyle(fontFamily: 'Nunito', fontSize: 16, color: AppColors.textSecondary)),
-              const Spacer(),
-              Flexible(
+              Text(
+                label,
+                style: const TextStyle(
+                  fontFamily: 'Nunito',
+                  fontSize: 16,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
                 child: Text(
                   value,
-                  style: const TextStyle(fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                  textAlign: TextAlign.end,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
               if (onTap != null) ...[
                 const SizedBox(width: 8),
-                const Icon(Icons.edit_rounded, size: 16, color: AppColors.textHint),
+                const Icon(Icons.edit_rounded,
+                    size: 16, color: AppColors.textHint),
               ],
             ],
           ),

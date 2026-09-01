@@ -85,19 +85,22 @@ class NotificationService {
     // If the scheduled time is already in the past, skip silently
     if (scheduledAt.isBefore(DateTime.now())) return;
 
-    final tzScheduled = tz.TZDateTime.from(scheduledAt, tz.local);
-
-    await _plugin.zonedSchedule(
-      notifId,
-      '⏰ Reminder', // notification title
-      taskName,      // notification body (shown on lock screen)
-      tzScheduled,
-      _buildNotificationDetails(taskName),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      payload: 'task:$notifId:$taskName',
-    );
+    try {
+      final tzScheduled = tz.TZDateTime.from(scheduledAt, tz.local);
+      await _plugin.zonedSchedule(
+        notifId,
+        '⏰ Reminder', // notification title
+        taskName,      // notification body (shown on lock screen)
+        tzScheduled,
+        _buildNotificationDetails(taskName),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: 'task:$notifId:$taskName',
+      );
+    } catch (e) {
+      // Platform may not support zonedSchedule (e.g. Linux desktop)
+    }
   }
 
   /// Schedule a snooze — fires [snoozeMinutes] from now for the same task.
@@ -119,14 +122,18 @@ class NotificationService {
 
   /// Cancel a single scheduled alarm by its notif ID.
   Future<void> cancel(int notifId) async {
-    await _ensureInit();
-    await _plugin.cancel(notifId);
+    try {
+      await _ensureInit();
+      await _plugin.cancel(notifId);
+    } catch (_) {}
   }
 
   /// Cancel all pending alarms (e.g. on logout).
   Future<void> cancelAll() async {
-    await _ensureInit();
-    await _plugin.cancelAll();
+    try {
+      await _ensureInit();
+      await _plugin.cancelAll();
+    } catch (_) {}
   }
 
   // ── ID generation ─────────────────────────────────────────────────────────

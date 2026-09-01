@@ -3,9 +3,9 @@ import 'package:neuronova/main.dart';
 
 void main() {
   testWidgets('App smoke test', (WidgetTester tester) async {
-    await tester.pumpWidget(const CogniCareApp());
+    await tester.pumpWidget(const NeuroNovaApp());
     // Verify the initial splash screen renders
-    expect(find.text('CogniCare'), findsOneWidget);
+    expect(find.text('NeuroNova'), findsOneWidget);
     expect(find.text('Your memory companion'), findsOneWidget);
 
     // Pump past the navigation delay

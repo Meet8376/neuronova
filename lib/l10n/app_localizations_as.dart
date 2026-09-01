@@ -93,6 +93,67 @@ class AppLocalizationsAs extends AppLocalizations {
   String get taskStatusUpcoming => 'আহিব';
 
   @override
+  String get taskStatusInProgress => 'চলি আছে';
+
+  @override
+  String get passageHiddenTitle => 'অনুচ্ছেদটো এতিয়া লুকুৱাই ৰখা হৈছে।';
+
+  @override
+  String get passageHiddenHint => 'আপুনি যি মনত ৰাখিছে তা ক\'ব!';
+
+  @override
+  String get listeningLabel2 => 'শুনিছো…';
+
+  @override
+  String get whatIHeard => 'মই যি শুনিছো:';
+
+  @override
+  String get tapMicToStart => 'কথা ক\'বলৈ মাইক স্পৰ্শ কৰক';
+
+  @override
+  String get tapMicToAdd => 'আৰু যোগ কৰিবলৈ মাইক স্পৰ্শ কৰক';
+
+  @override
+  String get listeningTapStop => 'শুনিছো… ৰাবলৈ ■ টিপক';
+
+  @override
+  String get finishEditingFirst => 'পুনৰ কথা কোৱাৰ আগতে সম্পাদনা শেষ কৰক';
+
+  @override
+  String get speakNow => 'এতিয়া ক\'ব…';
+
+  @override
+  String get tapMicAndSpeak => 'তলৰ মাইক স্পৰ্শ কৰি কথা আৰম্ভ কৰক';
+
+  @override
+  String get saveChanges => 'পৰিৱৰ্তন সংৰক্ষণ কৰক';
+
+  @override
+  String get typeInstead => 'টাইপ কৰক';
+
+  @override
+  String get useMicInstead => 'মাইক ব্যৱহাৰ কৰক';
+
+  @override
+  String get checkMyAnswer => 'মোৰ উত্তৰ পৰীক্ষা কৰক';
+
+  @override
+  String get typeWhatYouRemember => 'আপুনি যি মনত ৰাখিছে তা টাইপ কৰক…';
+
+  @override
+  String get noContentFound =>
+      'এই নিৰ্বাচনৰ বাবে কোনো বিষয়বস্তু পোৱা নগ\'ল। অন্য সমন্বয় চেষ্টা কৰক।';
+
+  @override
+  String get readyToSpeakButton => 'মই ক\'বলৈ সাজু!';
+
+  @override
+  String get textWillDisappear => 'লেখাটো অদৃশ্য হৈ যাব। স্মৃতিৰ পৰা ক\'ব।';
+
+  @override
+  String get sayWhatYouRemember => 'আপুনি যি মনত ৰাখিছে তা ক\'ব';
+
+  @override
   String get gamesTitle => 'মেমৰি গেমছ';
 
   @override
@@ -616,13 +677,6 @@ class AppLocalizationsAs extends AppLocalizations {
   String get warmResultGreat => 'অসাধাৰণ! আপুনি ইমান ভালকৈ মনত ৰাখিলে! 🌟';
 
   @override
-  String get warmResultGood => 'চমৎকাৰ প্ৰচেষ্টা! চলি থাকক! 💪';
-
-  @override
-  String get warmResultOkay =>
-      'কোনো সমস্যা নাই! প্ৰতিটো অভ্যাসে স্মৃতিত সহায় কৰে! ❤️';
-
-  @override
   String get subResultGreat => 'আপোনাৰ স্মৃতি আজি অসাধাৰণ কাম কৰিছে।';
 
   @override
@@ -630,4 +684,153 @@ class AppLocalizationsAs extends AppLocalizations {
 
   @override
   String get subResultOkay => 'পুনৰায় চেষ্টা কৰিব বিচাৰেনে? পাঠটো উভতি আহিব।';
+
+  @override
+  String get whoAmIBanner => '👤 মই কোন? · আপোনাৰ পৰিচয় শুনক';
+
+  @override
+  String get whoAmIQuick => 'মই কোন?';
+
+  @override
+  String get safeZoneQuick => 'সুৰক্ষিত অঞ্চল';
+
+  @override
+  String get memoriesQuick => 'স্মৃতি';
+
+  @override
+  String get readTasksQuick => 'কাম শুনক';
+
+  @override
+  String get stopQuick => 'ৰখা';
+
+  @override
+  String get hydrationQuick => 'পানী খাওক';
+
+  @override
+  String get calmBreatheQuick => 'শান্ত উশাহ';
+
+  @override
+  String get allClear => 'সকলো ঠিক আছে!';
+
+  @override
+  String get noTasksForTodayTapPlus =>
+      'আজিৰ বাবে কোনো কাম নাই — যোগ কৰিবলৈ + টিপক';
+
+  @override
+  String get sos => 'জৰুৰী SOS';
+
+  @override
+  String get returnToLogin => 'লগইন স্ক্ৰীণলৈ উভতি যাওক';
+
+  @override
+  String get dangerZone => 'বিপদ অঞ্চল';
+
+  @override
+  String get resetAppSetup => 'এপ ছেটআপ ৰিছেট কৰক';
+
+  @override
+  String get clearNamesSetupHint =>
+      'নাম আৰু ছেটআপ মচক — খেলৰ ইতিহাস সুৰক্ষিত থাকিব';
+
+  @override
+  String get caregiverViewBadge => 'শুশ্ৰূষাকাৰী দৃশ্য';
+
+  @override
+  String get patientViewBadge => 'ৰোগী দৃশ্য';
+
+  @override
+  String get accountSection => 'একাউণ্ট';
+
+  @override
+  String get notSet => 'ছেট কৰা নাই';
+
+  @override
+  String get phoneHelper =>
+      'ৰোগীয়ে ইয়াক \"সহায়ৰ বাবে কল\" বুটামৰ বাবে ব্যৱহাৰ কৰে';
+
+  @override
+  String get phoneNumberLabel => 'ফোন নম্বৰ';
+
+  @override
+  String get resetAppConfirm =>
+      'ই সকলো নাম আৰু ছেটআপ মচি পেলাব। কাম আৰু খেলৰ ইতিহাস সুৰক্ষিত থাকিব।';
+
+  @override
+  String get resetTitle => 'এপ ৰিছেট কৰিবনে?';
+
+  @override
+  String addReminderTitle(String type) {
+    return '$type ৰিমাইণ্ডাৰ যোগ কৰক';
+  }
+
+  @override
+  String get reminderName => 'ৰিমাইণ্ডাৰৰ নাম';
+
+  @override
+  String get reminderNameHelper => 'এলাৰ্মত কি লিখা থাকিব?';
+
+  @override
+  String get scheduleType => 'সময়সূচীৰ প্ৰকাৰ';
+
+  @override
+  String get atSpecificTimes => 'নিৰ্দিষ্ট সময়ত';
+
+  @override
+  String get everyFewHours => 'প্ৰতি কেইবা ঘণ্টাত';
+
+  @override
+  String get dailyGoalMode => 'দৈনিক লক্ষ্য';
+
+  @override
+  String get timesSection => 'সময়';
+
+  @override
+  String get addTime => 'সময় যোগ কৰক';
+
+  @override
+  String get saveReminder => 'ৰিমাইণ্ডাৰ সংৰক্ষণ কৰক';
+
+  @override
+  String remindEveryHours(String hours) {
+    return 'প্ৰতি $hours ঘণ্টাত মনত পেলাই দিয়ক';
+  }
+
+  @override
+  String get fromLabel => 'আৰম্ভ';
+
+  @override
+  String get untilLabel => 'লৈকে';
+
+  @override
+  String get unitLabel => 'একক';
+
+  @override
+  String get breakfastLabel => 'ৰাতিপুৱাৰ জলপান';
+
+  @override
+  String get lunchLabel => 'দুপৰীয়াৰ সাজ';
+
+  @override
+  String get dinnerLabel => 'ৰাতিৰ সাজ';
+
+  @override
+  String get morningWalkLabel => 'ৰাতিপুৱাৰ খোজকাঢ়া';
+
+  @override
+  String get bedtimeLabel => 'শোৱাৰ সময়';
+
+  @override
+  String get eveningCallLabel => 'গধূলিৰ কল';
+
+  @override
+  String get morningRoutineLabel => 'ৰাতিপুৱাৰ কাম';
+
+  @override
+  String get goodMorningGreeting => 'সুপ্ৰভাত';
+
+  @override
+  String get goodAfternoonGreeting => 'শুভ দুপৰীয়া';
+
+  @override
+  String get goodEveningGreeting => 'শুভ সন্ধিয়া';
 }

@@ -6,7 +6,7 @@
     "length": "short",
     "difficulty_tier": 1,
     "title": "Morning Greeting",
-    "text": "Good morning! How are you feeling today? I hope you had a good night's sleep."
+    "text": "Good morning! How are you feeling today? I hope you had a good night sleep."
   },
   {
     "id": "conv_en_short_2",
@@ -27,6 +27,15 @@
     "text": "Would you like some tea? I just made a fresh pot. It is nice and warm."
   },
   {
+    "id": "conv_en_short_4",
+    "category": "daily_conversation",
+    "language": "en",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "Drinking Water",
+    "text": "Please drink a full glass of water. Staying hydrated keeps you healthy and strong."
+  },
+  {
     "id": "conv_en_medium_1",
     "category": "daily_conversation",
     "language": "en",
@@ -43,6 +52,15 @@
     "difficulty_tier": 2,
     "title": "Calling Family",
     "text": "Your daughter called this morning while you were resting. She said she will visit on Sunday and bring the grandchildren. She asked if you need anything from the market. She sends her love."
+  },
+  {
+    "id": "conv_en_medium_3",
+    "category": "daily_conversation",
+    "language": "en",
+    "length": "medium",
+    "difficulty_tier": 2,
+    "title": "Taking Medicine",
+    "text": "It is time to take your afternoon medicine. Please take the white tablet with a full glass of water. The doctor said this medicine will help your joints feel better. Always take it after eating."
   },
   {
     "id": "conv_en_long_1",
@@ -72,13 +90,22 @@
     "text": "A woodcutter dropped his axe in the river. He sat down and cried. A kind spirit rose from the water and offered to help him."
   },
   {
+    "id": "story_en_short_3",
+    "category": "stories",
+    "language": "en",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "The Sun and the Wind",
+    "text": "The sun and the wind argued about who was stronger. They saw a traveller with a coat. Whoever could remove his coat would win."
+  },
+  {
     "id": "story_en_medium_1",
     "category": "stories",
     "language": "en",
     "length": "medium",
     "difficulty_tier": 2,
     "title": "The Ant and the Grasshopper",
-    "text": "All summer, the ant worked hard and stored food for winter. The grasshopper sang and played all day. When winter came, the grasshopper had nothing to eat. The ant shared some food and said — next summer, please prepare ahead. The grasshopper learned a valuable lesson about hard work."
+    "text": "All summer, the ant worked hard and stored food for winter. The grasshopper sang and played all day. When winter came, the grasshopper had nothing to eat. The ant shared some food and said next summer, please prepare ahead. The grasshopper learned a valuable lesson about hard work."
   },
   {
     "id": "story_en_long_1",
@@ -87,7 +114,7 @@
     "length": "long",
     "difficulty_tier": 3,
     "title": "The Golden Goose",
-    "text": "Once upon a time, a farmer had a goose that laid a golden egg every morning. He became rich selling the eggs. But one day, he became greedy and thought — if I cut the goose open, I can get all the eggs at once. He did so, but found no eggs inside. The goose was dead and the golden eggs were gone forever. He wept for his foolishness for the rest of his life."
+    "text": "Once upon a time, a farmer had a goose that laid a golden egg every morning. He became rich selling the eggs. But one day, he became greedy and thought if I cut the goose open I can get all the eggs at once. He did so, but found no eggs inside. The goose was dead and the golden eggs were gone forever. He wept for his foolishness for the rest of his life."
   },
   {
     "id": "gita_en_short_1",
@@ -108,6 +135,15 @@
     "text": "All actions are performed by the forces of nature. One who is deluded by ego thinks he is the doer."
   },
   {
+    "id": "gita_en_short_3",
+    "category": "wisdom",
+    "language": "en",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "On Equanimity",
+    "text": "Be steadfast in yoga, O Arjuna. Perform your duty and abandon all attachment to success or failure. Such equanimity is called yoga."
+  },
+  {
     "id": "gita_en_medium_1",
     "category": "wisdom",
     "language": "en",
@@ -123,7 +159,7 @@
     "length": "long",
     "difficulty_tier": 3,
     "title": "On the Eternal Self",
-    "text": "The soul is never born, nor does it ever die at any time. It has not come into being, does not come into being, and will not come into being. It is unborn, eternal, ever-existing, and primeval. It is not slain when the body is slain. Just as a person puts on new garments, giving up old ones, similarly the soul accepts new material bodies, giving up the old and useless ones."
+    "text": "The soul is never born, nor does it ever die at any time. It is unborn, eternal, ever-existing, and primeval. It is not slain when the body is slain. Just as a person puts on new garments giving up old ones, similarly the soul accepts new material bodies giving up the old and useless ones."
   },
   {
     "id": "conv_hi_short_1",
@@ -144,6 +180,15 @@
     "text": "क्या आप चाय लेंगे? मैंने अभी ताज़ी चाय बनाई है। यह गरम और अच्छी है।"
   },
   {
+    "id": "conv_hi_short_3",
+    "category": "daily_conversation",
+    "language": "hi",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "पानी पीना",
+    "text": "कृपया एक पूरा गिलास पानी पिएं। पानी पीने से आप स्वस्थ और मज़बूत रहते हैं।"
+  },
+  {
     "id": "conv_hi_medium_1",
     "category": "daily_conversation",
     "language": "hi",
@@ -151,6 +196,24 @@
     "difficulty_tier": 1,
     "title": "परिवार का फ़ोन",
     "text": "आज सुबह आपकी बेटी का फ़ोन आया था जब आप आराम कर रहे थे। उसने कहा वह रविवार को मिलने आएगी। वह आपके लिए बाज़ार से कुछ लाएगी। उसने आपको प्यार भेजा है।"
+  },
+  {
+    "id": "conv_hi_medium_2",
+    "category": "daily_conversation",
+    "language": "hi",
+    "length": "medium",
+    "difficulty_tier": 2,
+    "title": "दवाई लेना",
+    "text": "दोपहर की दवाई लेने का समय हो गया है। कृपया सफ़ेद गोली एक पूरे गिलास पानी के साथ लें। डॉक्टर ने कहा यह दवाई आपके जोड़ों के दर्द में आराम देगी। हमेशा खाने के बाद लें।"
+  },
+  {
+    "id": "conv_hi_long_1",
+    "category": "daily_conversation",
+    "language": "hi",
+    "length": "long",
+    "difficulty_tier": 2,
+    "title": "दिन की योजना",
+    "text": "आज हमारे पास कुछ काम हैं। पहले आप नाश्ते के साथ सुबह की दवाई लें। फिर हम बगीचे में थोड़ी देर बैठेंगे और ताज़ी हवा लेंगे। दोपहर में आपके मित्र रमेश मिलने आएंगे। उनके जाने के बाद हम जल्दी खाना खाएंगे और आराम करेंगे। कल एक नया दिन होगा, नई संभावनाओं के साथ।"
   },
   {
     "id": "story_hi_short_1",
@@ -162,6 +225,24 @@
     "text": "एक प्यासे कौए को एक घड़ा मिला जिसमें थोड़ा पानी था। उसने पत्थर डाले जब तक पानी ऊपर नहीं आ गया।"
   },
   {
+    "id": "story_hi_short_2",
+    "category": "stories",
+    "language": "hi",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "सूर्य और हवा",
+    "text": "सूर्य और हवा में बहस हुई कि कौन ज़्यादा शक्तिशाली है। उन्होंने एक यात्री को कोट पहने देखा। जो उसका कोट उतरवा सके वह जीतेगा।"
+  },
+  {
+    "id": "story_hi_medium_1",
+    "category": "stories",
+    "language": "hi",
+    "length": "medium",
+    "difficulty_tier": 2,
+    "title": "चींटी और टिड्डा",
+    "text": "पूरी गर्मी चींटी ने मेहनत की और सर्दियों के लिए खाना जमा किया। टिड्डा पूरे दिन गाता और खेलता रहा। जब सर्दी आई तो टिड्डे के पास कुछ नहीं था। चींटी ने उसे खाना दिया और कहा अगली गर्मी में पहले से तैयारी करना।"
+  },
+  {
     "id": "gita_hi_short_1",
     "category": "wisdom",
     "language": "hi",
@@ -171,6 +252,15 @@
     "text": "कर्म करना तुम्हारा अधिकार है, लेकिन फल की चाहत मत रखो। कर्म के फल को अपना उद्देश्य मत बनाओ।"
   },
   {
+    "id": "gita_hi_short_2",
+    "category": "wisdom",
+    "language": "hi",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "समभाव पर",
+    "text": "योग में स्थिर रहो, अर्जुन। अपना कर्तव्य करो और सफलता या विफलता की चिंता छोड़ दो।"
+  },
+  {
     "id": "gita_hi_medium_1",
     "category": "wisdom",
     "language": "hi",
@@ -178,5 +268,248 @@
     "difficulty_tier": 2,
     "title": "मन की शक्ति पर",
     "text": "अपने मन की शक्ति से खुद को ऊपर उठाओ, नीचे मत गिरो। मन तुम्हारा मित्र भी हो सकता है और शत्रु भी। जब मन को जीत लिया जाता है, तो वह मित्र बन जाता है। जब नहीं जीता जाता, तो वह शत्रु की तरह काम करता है।"
+  },
+  {
+    "id": "conv_bn_short_1",
+    "category": "daily_conversation",
+    "language": "bn",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "সকালের শুভেচ্ছা",
+    "text": "শুভ সকাল! আজ আপনি কেমন অনুভব করছেন? আশা করি আপনার রাতটা ভালো কেটেছে।"
+  },
+  {
+    "id": "conv_bn_short_2",
+    "category": "daily_conversation",
+    "language": "bn",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "চা পান",
+    "text": "আপনি কি একটু চা খাবেন? আমি এইমাত্র তাজা চা বানিয়েছি। এটি গরম এবং সুস্বাদু।"
+  },
+  {
+    "id": "conv_bn_short_3",
+    "category": "daily_conversation",
+    "language": "bn",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "জল পান",
+    "text": "অনুগ্রহ করে এক গ্লাস জল পান করুন। জল পান করলে আপনি সুস্থ ও সবল থাকবেন।"
+  },
+  {
+    "id": "conv_bn_medium_1",
+    "category": "daily_conversation",
+    "language": "bn",
+    "length": "medium",
+    "difficulty_tier": 1,
+    "title": "পরিবারের ফোন",
+    "text": "আজ সকালে আপনার মেয়ে ফোন করেছিল যখন আপনি বিশ্রাম নিচ্ছিলেন। সে বলল রবিবার দেখা করতে আসবে এবং নাতি-নাতনিদের নিয়ে আসবে। সে ভালোবাসা পাঠিয়েছে।"
+  },
+  {
+    "id": "conv_bn_long_1",
+    "category": "daily_conversation",
+    "language": "bn",
+    "length": "long",
+    "difficulty_tier": 2,
+    "title": "দিনের পরিকল্পনা",
+    "text": "আজ আমাদের কিছু কাজ আছে। প্রথমে আপনি সকালের নাস্তার সাথে ওষুধ খাবেন। তারপর আমরা বাগানে বসে তাজা বাতাস নেব। বিকেলে আপনার বন্ধু রমেশ দেখা করতে আসবেন। তিনি চলে যাওয়ার পর আমরা তাড়াতাড়ি রাতের খাবার খাব এবং বিশ্রাম নেব। আগামীকাল নতুন দিন, নতুন সম্ভাবনা নিয়ে আসবে।"
+  },
+  {
+    "id": "story_bn_short_1",
+    "category": "stories",
+    "language": "bn",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "তৃষ্ণার্ত কাক",
+    "text": "একটি তৃষ্ণার্ত কাক একটি কলসি খুঁজে পেল যার তলায় একটু জল ছিল। সে ছোট ছোট পাথর ফেলল যতক্ষণ না জল উপরে উঠে এল।"
+  },
+  {
+    "id": "story_bn_short_2",
+    "category": "stories",
+    "language": "bn",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "পিঁপড়া এবং ঘাসফড়িং",
+    "text": "গ্রীষ্মে পিঁপড়া কঠোর পরিশ্রম করে শীতের জন্য খাবার সংগ্রহ করল। ঘাসফড়িং সারাদিন গান গেয়ে খেলল। শীত এলে ঘাসফড়িং না খেয়ে রইল।"
+  },
+  {
+    "id": "gita_bn_short_1",
+    "category": "wisdom",
+    "language": "bn",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "কর্তব্যের উপর",
+    "text": "তোমার কর্ম করার অধিকার আছে, কিন্তু ফলের উপর নয়। কর্মের ফলকে তোমার উদ্দেশ্য করো না।"
+  },
+  {
+    "id": "gita_bn_medium_1",
+    "category": "wisdom",
+    "language": "bn",
+    "length": "medium",
+    "difficulty_tier": 2,
+    "title": "মনের শক্তির উপর",
+    "text": "তোমার মনের শক্তি দিয়ে নিজেকে উন্নত করো, অবনত নয়। কারণ মন আত্মার বন্ধু বা শত্রু হতে পারে। মন জয় করলে সে বন্ধু হয়। না জিতলে সে শত্রুর মতো কাজ করে।"
+  },
+  {
+    "id": "conv_as_short_1",
+    "category": "daily_conversation",
+    "language": "as",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "পুৱাৰ অভিনন্দন",
+    "text": "শুভ পুৱা! আজি আপুনি কেনে অনুভৱ কৰিছে? আশা কৰো আপোনাৰ ৰাতি ভালে কাটিল।"
+  },
+  {
+    "id": "conv_as_short_2",
+    "category": "daily_conversation",
+    "language": "as",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "চাহ খোৱা",
+    "text": "আপুনি চাহ খাব নেকি? মই এইমাত্ৰ তাজা চাহ বনালোঁ। ই গৰম আৰু ভাল।"
+  },
+  {
+    "id": "conv_as_short_3",
+    "category": "daily_conversation",
+    "language": "as",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "পানী খোৱা",
+    "text": "অনুগ্ৰহ কৰি এগিলাচ পানী খাওক। পানী খালে আপুনি সুস্থ আৰু শক্তিশালী থাকিব।"
+  },
+  {
+    "id": "conv_as_medium_1",
+    "category": "daily_conversation",
+    "language": "as",
+    "length": "medium",
+    "difficulty_tier": 1,
+    "title": "পৰিয়ালৰ ফোন",
+    "text": "আজি পুৱা আপোনাৰ জীয়েক ফোন কৰিছিল যেতিয়া আপুনি জিৰনি লৈছিল। সি ক'লে দেওবাৰে দেখা কৰিবলৈ আহিব আৰু নাতি-নাতিনীক লৈ আহিব। সি আপোনাক ভালপাওঁ বুলি জনাইছে।"
+  },
+  {
+    "id": "conv_as_long_1",
+    "category": "daily_conversation",
+    "language": "as",
+    "length": "long",
+    "difficulty_tier": 2,
+    "title": "দিনটোৰ পৰিকল্পনা",
+    "text": "আজি আমাৰ কেইটামান কাম আছে। প্ৰথমে আপুনি পুৱাৰ জলপান খোৱাৰ লগতে দৰব খাব। তাৰ পিছত আমি বাগিচাত বহি তাজা বতাহ লম। বিয়লি আপোনাৰ বন্ধু ৰমেশ দেখা কৰিবলৈ আহিব। তেওঁ যোৱাৰ পিছত আমি সোনকালে ৰাতিৰ আহাৰ খাম আৰু জিৰণি লম। কাইলৈ এটা নতুন দিন, নতুন সম্ভাৱনাৰে আহিব।"
+  },
+  {
+    "id": "story_as_short_1",
+    "category": "stories",
+    "language": "as",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "তৃষ্ণাৰ্ত কাউৰী",
+    "text": "এটা তৃষ্ণাৰ্ত কাউৰীয়ে এটা পাত্ৰ বিচাৰি পালে যাৰ তলত অলপ পানী আছিল। সি সৰু সৰু শিল পেলালে যেতি পানী ওপৰলৈ উঠিল।"
+  },
+  {
+    "id": "story_as_short_2",
+    "category": "stories",
+    "language": "as",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "পিঁপৰা আৰু ঘাঁহফৰিং",
+    "text": "গ্ৰীষ্মকালত পিঁপৰাই কঠোৰ পৰিশ্ৰম কৰি শীতৰ বাবে খাদ্য সংগ্ৰহ কৰিলে। ঘাঁহফৰিংয়ে সমগ্ৰ দিন গান গাই খেলিলে। শীত আহিলে ঘাঁহফৰিঙৰ খাবলৈ একো নাছিল।"
+  },
+  {
+    "id": "gita_as_short_1",
+    "category": "wisdom",
+    "language": "as",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "কৰ্তব্যৰ বিষয়ে",
+    "text": "কৰ্ম কৰাৰ অধিকাৰ তোমাৰ আছে, কিন্তু ফলৰ অধিকাৰ নাই। কৰ্মৰ ফলক তোমাৰ উদ্দেশ্য কৰি নল'বা।"
+  },
+  {
+    "id": "gita_as_medium_1",
+    "category": "wisdom",
+    "language": "as",
+    "length": "medium",
+    "difficulty_tier": 2,
+    "title": "মনৰ শক্তিৰ বিষয়ে",
+    "text": "তোমাৰ মনৰ শক্তিৰে নিজকে ওপৰলৈ তোলা, তললৈ নামাব নোৱাৰিবা। কাৰণ মন আত্মাৰ বন্ধু বা শত্ৰু হব পাৰে। মন জয় কৰিলে সি বন্ধু হয়। নজিকিলে সি শত্ৰুৰ দৰে কাম কৰে।"
+  },
+  {
+    "id": "conv_ne_short_1",
+    "category": "daily_conversation",
+    "language": "ne",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "बिहानीको शुभकामना",
+    "text": "शुभ बिहानी! आज तपाईं कस्तो महसुस गर्दै हुनुहुन्छ? आशा छ तपाईंको रात राम्रो बित्यो।"
+  },
+  {
+    "id": "conv_ne_short_2",
+    "category": "daily_conversation",
+    "language": "ne",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "चिया पिउने",
+    "text": "के तपाईं चिया पिउनुहुन्छ? मैले भर्खरै ताजा चिया बनाएको छु। यो न्यानो र राम्रो छ।"
+  },
+  {
+    "id": "conv_ne_short_3",
+    "category": "daily_conversation",
+    "language": "ne",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "पानी पिउने",
+    "text": "कृपया एक गिलास पानी पिउनुहोस्। पानी पिउनाले तपाईं स्वस्थ र बलियो रहनुहुन्छ।"
+  },
+  {
+    "id": "conv_ne_medium_1",
+    "category": "daily_conversation",
+    "language": "ne",
+    "length": "medium",
+    "difficulty_tier": 1,
+    "title": "परिवारको फोन",
+    "text": "आज बिहान तपाईं आराम गर्दा तपाईंकी छोरीले फोन गर्नुभयो। उनले भनिन् आइतबार भेट्न आउँछु र नातिनातिना ल्याउँछु। उनले माया पठाउनुभएको छ।"
+  },
+  {
+    "id": "conv_ne_long_1",
+    "category": "daily_conversation",
+    "language": "ne",
+    "length": "long",
+    "difficulty_tier": 2,
+    "title": "दिनको योजना",
+    "text": "आज हामीसँग केही काम छन्। पहिले तपाईं बिहानको खाजासँगै औषधि खानुहोस्। त्यसपछि हामी बगैँचामा बसेर ताजा हावा लिनेछौं। दिउँसो तपाईंका साथी रमेश भेट्न आउनेछन्। उनी गइसकेपछि हामी चाँडै बेलुकाको खाना खाएर आराम गर्नेछौं। भोलि नयाँ दिन, नयाँ सम्भावनाहरू लिएर आउनेछ।"
+  },
+  {
+    "id": "story_ne_short_1",
+    "category": "stories",
+    "language": "ne",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "तिर्खाएको काग",
+    "text": "एक तिर्खाएको कागले तलमा थोरै पानी भएको गाग्री फेला पार्यो। उसले साना ढुंगाहरू हाल्यो जबसम्म पानी माथि आएन।"
+  },
+  {
+    "id": "story_ne_short_2",
+    "category": "stories",
+    "language": "ne",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "कमिला र फट्याङ्ग्रा",
+    "text": "गर्मीमा कमिलाले मेहनत गरेर जाडोका लागि खाना जम्मा गर्यो। फट्याङ्ग्राले सारा दिन गाना गाएर खेल्यो। जाडो आउँदा फट्याङ्ग्रासँग खान केही थिएन।"
+  },
+  {
+    "id": "gita_ne_short_1",
+    "category": "wisdom",
+    "language": "ne",
+    "length": "short",
+    "difficulty_tier": 1,
+    "title": "कर्तव्यमाथि",
+    "text": "तपाईंलाई कर्म गर्ने अधिकार छ, तर फलमाथि कहिल्यै होइन। कर्मको फललाई आफ्नो उद्देश्य नबनाउनुहोस्।"
+  },
+  {
+    "id": "gita_ne_medium_1",
+    "category": "wisdom",
+    "language": "ne",
+    "length": "medium",
+    "difficulty_tier": 2,
+    "title": "मनको शक्तिमाथि",
+    "text": "आफ्नो मनको शक्तिले आफूलाई उठाउनुहोस्, झार्नु होइन। किनकि मन आत्माको साथी वा शत्रु हुन सक्छ। मन जितेपछि यो साथी बन्छ। नजितेपछि यो शत्रुझैँ काम गर्छ।"
   }
 ]

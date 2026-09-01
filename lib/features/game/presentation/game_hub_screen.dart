@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/extensions/l10n_ext.dart';
 import 'read_memorize_hub_screen.dart';
 import 'picture_match_screen.dart';
 import 'routine_recall_screen.dart';
@@ -17,24 +18,24 @@ class GameHubScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Brain Games',
-                    style: TextStyle(
+                    context.l.gamesTitle,
+                    style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
-                    'Exercise your mind every day with localized activities',
-                    style: TextStyle(
+                    context.l.gamesSubtitle,
+                    style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 16,
                       color: AppColors.textSecondary,
@@ -51,8 +52,8 @@ class GameHubScreen extends StatelessWidget {
                   // Game 1: Read, Memorize & Speak
                   _GameCard(
                     icon: Icons.menu_book_rounded,
-                    title: 'Read, Memorize & Speak',
-                    subtitle: 'Read a passage, remember it, and speak aloud',
+                    title: context.l.readMemorizeTitle,
+                    subtitle: context.l.readMemorizeSubtitle,
                     color: AppColors.primary,
                     available: true,
                     onTap: () => Navigator.push(
@@ -65,8 +66,8 @@ class GameHubScreen extends StatelessWidget {
                   // Game 2: Picture Match (NER Memory Game)
                   _GameCard(
                     icon: Icons.grid_view_rounded,
-                    title: 'Picture Match (NER)',
-                    subtitle: 'Match pairs of North Eastern cultural symbols',
+                    title: context.l.pictureMatchTitle,
+                    subtitle: context.l.pictureMatchSubtitle,
                     color: const Color(0xFF9C27B0),
                     available: true,
                     onTap: () => Navigator.push(
@@ -79,8 +80,8 @@ class GameHubScreen extends StatelessWidget {
                   // Game 3: Daily Routine Recall
                   _GameCard(
                     icon: Icons.schedule_rounded,
-                    title: 'Daily Routine Recall',
-                    subtitle: 'Arrange everyday activities in the correct time sequence',
+                    title: context.l.routineRecallTitle,
+                    subtitle: context.l.routineRecallSubtitle,
                     color: const Color(0xFFE91E63),
                     available: true,
                     onTap: () => Navigator.push(
@@ -93,8 +94,8 @@ class GameHubScreen extends StatelessWidget {
                   // Game 4: Pattern & Motif Recognition
                   _GameCard(
                     icon: Icons.category_rounded,
-                    title: 'Pattern Recognition',
-                    subtitle: 'Identify and complete traditional weaving patterns',
+                    title: context.l.patternRecognitionTitle,
+                    subtitle: context.l.patternRecognitionSubtitle,
                     color: const Color(0xFF4CAF50),
                     available: true,
                     onTap: () => Navigator.push(
@@ -102,6 +103,7 @@ class GameHubScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const PatternRecognitionScreen()),
                     ),
                   ),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),

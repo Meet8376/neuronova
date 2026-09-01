@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/extensions/l10n_ext.dart';
 import '../../../data/models/content_item.dart';
 import '../../../data/repositories/game_repository.dart';
+import '../../../services/language_service.dart';
+import '../../../services/translation_service.dart';
 import 'reading_session_screen.dart';
 
 /// Step 1 of the game: Choose category, language, and length.
@@ -16,14 +19,21 @@ class ReadMemorizeHubScreen extends StatefulWidget {
 class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
   final _repo = GameRepository();
 
-  String _language = 'en';
+  // Game-level language — defaults to the user's global app language,
+  // but can be changed just for this session without affecting settings.
+  late String _gameLanguage;
   ContentCategory? _category;
   ContentLength? _length;
   bool _loading = false;
+  String _loadingStatus = '';
 
-  final _languageOptions = [
-    {'code': 'en', 'label': '🇬🇧  English'},
-    {'code': 'hi', 'label': '🇮🇳  Hindi'},
+  // All supported game languages with display info
+  static const _langOptions = [
+    {'code': 'en', 'label': 'English',   'flag': '🇬🇧'},
+    {'code': 'hi', 'label': 'Hindi',     'flag': '🇮🇳'},
+    {'code': 'bn', 'label': 'Bengali',   'flag': '🇧🇩'},
+    {'code': 'as', 'label': 'Assamese',  'flag': '🇮🇳'},
+    {'code': 'ne', 'label': 'Nepali',    'flag': '🇳🇵'},
   ];
 
   final _categoryOptions = [
@@ -31,6 +41,13 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
     {'value': ContentCategory.stories, 'label': 'Stories', 'icon': Icons.auto_stories_rounded},
     {'value': ContentCategory.wisdom, 'label': 'Wisdom', 'icon': Icons.self_improvement_rounded},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Default to the user's current global language
+    _gameLanguage = LanguageService.instance.currentLanguage;
+  }
 
   final _lengthOptions = [
     {'value': ContentLength.short, 'label': 'Short', 'desc': '1–2 sentences'},
@@ -42,35 +59,74 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
 
   Future<void> _startSession() async {
     if (!_canStart) return;
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _loadingStatus = 'Loading content...';
+    });
 
+    final langCode = _gameLanguage;
     final difficulty = await _repo.getCurrentDifficulty();
-    final content = await _repo.getRandomContent(
+
+    // Step 1: Try to find native content in the target language.
+    // Step 2: If not found, fall back to a bridge language:
+    //   NE → Hindi (Devanagari script, better ML Kit quality)
+    //   Others (AS, or missing categories) → English
+    ContentItem? content = await _repo.getRandomContent(
       category: _category!,
-      language: _language,
+      language: langCode,
       length: _length!,
       difficultyTier: difficulty,
     );
 
-    setState(() => _loading = false);
+    if (content == null) {
+      // Fallback: choose bridge language and fetch from there
+      final fallbackLang = langCode == 'ne' ? 'hi' : 'en';
+      content = await _repo.getRandomContent(
+        category: _category!,
+        language: fallbackLang,
+        length: _length!,
+        difficultyTier: difficulty,
+      );
+    }
 
     if (!mounted) return;
 
     if (content == null) {
+      setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No content found for this selection. Try a different combination.'),
-        ),
+        SnackBar(content: Text(context.l.noContentFound)),
       );
       return;
     }
+
+    // Step 3: Only translate if the fetched content is NOT already in the target language.
+    // This means native Bengali daily conversations load instantly (no translation).
+    // Bengali stories/wisdom fall back to English → get translated.
+    String translatedText = content.text;
+    String translatedTitle = content.title;
+    if (content.language != langCode) {
+      setState(() => _loadingStatus = 'Translating to ${LanguageService.supportedLanguages[langCode]?.name ?? langCode}...');
+      final result = await TranslationService.instance.getTranslation(
+        contentId: content.id,
+        sourceText: content.text,
+        sourceTitle: content.title,
+        targetLang: langCode,
+      );
+      translatedText = result.text;
+      translatedTitle = result.title;
+    }
+
+    setState(() => _loading = false);
+    if (!mounted) return;
 
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ReadingSessionScreen(
-          content: content,
-          language: _language,
+          content: content!,
+          language: langCode,
+          translatedText: translatedText,
+          translatedTitle: translatedTitle,
         ),
       ),
     );
@@ -78,9 +134,28 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Build localized lists here so context is available
+    final categoryOptions = [
+      {'value': ContentCategory.dailyConversation, 'label': context.l.categoryConversation, 'icon': Icons.chat_bubble_outline_rounded},
+      {'value': ContentCategory.stories,           'label': context.l.categoryStories,      'icon': Icons.auto_stories_rounded},
+      {'value': ContentCategory.wisdom,            'label': context.l.categoryWisdom,       'icon': Icons.self_improvement_rounded},
+    ];
+    final lengthOptions = [
+      {'value': ContentLength.short,  'label': context.l.lengthShort,  'desc': '1–2 sentences'},
+      {'value': ContentLength.medium, 'label': context.l.lengthMedium, 'desc': '3–4 sentences'},
+      {'value': ContentLength.long,   'label': context.l.lengthLong,   'desc': '5–6 sentences'},
+    ];
+    final langOptions = [
+      {'code': 'en', 'label': context.l.langEnglish,  'flag': '🇬🇧'},
+      {'code': 'hi', 'label': context.l.langHindi,    'flag': '🇮🇳'},
+      {'code': 'bn', 'label': context.l.langBengali,  'flag': '🇧🇩'},
+      {'code': 'as', 'label': context.l.langAssamese, 'flag': '🇮🇳'},
+      {'code': 'ne', 'label': context.l.langNepali,   'flag': '🇳🇵'},
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Read, Memorize & Speak'),
+        title: Text(context.l.readMemorizeTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
@@ -95,21 +170,21 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary.withValues(alpha: 0.12),
-                  AppColors.primaryLight.withValues(alpha: 0.06),
+                  AppColors.primary.withOpacity(0.12),
+                  AppColors.primaryLight.withOpacity(0.06),
                 ],
               ),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.lightbulb_outline_rounded,
+                const Icon(Icons.lightbulb_outline_rounded,
                     color: AppColors.primary, size: 28),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'You will read a passage, then try to say it from memory. Take your time!',
-                    style: TextStyle(
+                    context.l.readMemorizeSubtitle,
+                    style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 16,
                       color: AppColors.primary,
@@ -120,33 +195,65 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 24),
 
-          // Language
-          const _SectionLabel(label: '1. Choose language'),
+          // ── Game language selector ────────────────────────────────────────────
+          _SectionLabel(label: '1. ${context.l.choosePracticeLanguage}'),
+          const SizedBox(height: 4),
+          Text(
+            context.l.gameLanguageHint,
+            style: const TextStyle(
+              fontFamily: 'Nunito',
+              fontSize: 13,
+              color: AppColors.textHint,
+            ),
+          ),
           const SizedBox(height: 10),
-          Row(
-            children: _languageOptions.map((l) {
-              final selected = _language == l['code'];
-              return Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      right: l == _languageOptions.last ? 0 : 12),
-                  child: _SelectCard(
-                    label: l['label'] as String,
-                    selected: selected,
-                    onTap: () => setState(() => _language = l['code'] as String),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: langOptions.map((l) {
+              final selected = _gameLanguage == l['code'];
+              return GestureDetector(
+                onTap: () => setState(() => _gameLanguage = l['code'] as String),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: selected ? AppColors.primary : AppColors.cardBg,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: selected ? AppColors.primary : AppColors.divider,
+                      width: 2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(l['flag'] as String,
+                          style: const TextStyle(fontSize: 18)),
+                      const SizedBox(width: 6),
+                      Text(
+                        l['label'] as String,
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: selected ? Colors.white : AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
             }).toList(),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
 
           // Category
-          const _SectionLabel(label: '2. Choose category'),
+          _SectionLabel(label: '2. ${context.l.selectCategory}'),
           const SizedBox(height: 10),
-          ..._categoryOptions.map((c) {
+          ...categoryOptions.map((c) {
             final selected = _category == c['value'];
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
@@ -161,16 +268,16 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
           const SizedBox(height: 24),
 
           // Length
-          const _SectionLabel(label: '3. Choose length'),
+          _SectionLabel(label: '3. ${context.l.selectLength}'),
           const SizedBox(height: 10),
           Row(
-            children: _lengthOptions.asMap().entries.map((entry) {
+            children: lengthOptions.asMap().entries.map((entry) {
               final l = entry.value;
               final selected = _length == l['value'];
               return Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(
-                      right: entry.key < _lengthOptions.length - 1 ? 10 : 0),
+                      right: entry.key < lengthOptions.length - 1 ? 10 : 0),
                   child: _LengthCard(
                     label: l['label'] as String,
                     desc: l['desc'] as String,
@@ -185,7 +292,24 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
 
           // Start button
           if (_loading)
-            const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            Center(
+              child: Column(
+                children: [
+                  const CircularProgressIndicator(color: AppColors.primary),
+                  if (_loadingStatus.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      _loadingStatus,
+                      style: const TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 14,
+                        color: AppColors.textHint,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            )
           else
             AnimatedOpacity(
               opacity: _canStart ? 1.0 : 0.4,
@@ -193,7 +317,7 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
               child: ElevatedButton.icon(
                 onPressed: _canStart ? _startSession : null,
                 icon: const Icon(Icons.play_arrow_rounded, size: 28),
-                label: const Text("Let's Begin!"),
+                label: Text(context.l.startButton),
               ),
             ),
         ],
@@ -210,7 +334,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(label,
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: 'Nunito',
           fontSize: 20,
           fontWeight: FontWeight.w700,
@@ -270,7 +394,7 @@ class _IconSelectCard extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary.withValues(alpha: 0.08) : AppColors.cardBg,
+          color: selected ? AppColors.primary.withOpacity(0.08) : AppColors.cardBg,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: selected ? AppColors.primary : AppColors.divider,

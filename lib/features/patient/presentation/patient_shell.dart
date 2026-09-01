@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/extensions/l10n_ext.dart';
 import '../../tasks/presentation/patient_dashboard_screen.dart';
 import '../../health/presentation/health_screen.dart';
 import '../../game/presentation/game_hub_screen.dart';
@@ -22,20 +23,36 @@ class _PatientShellState extends State<PatientShell> {
     ProfileScreen(isAdmin: false),
   ];
 
-  static const _navItems = [
-    _NavItem(icon: Icons.home_outlined,          activeIcon: Icons.home_rounded,         label: 'Home'),
-    _NavItem(icon: Icons.favorite_outline,       activeIcon: Icons.favorite_rounded,     label: 'Health'),
-    _NavItem(icon: Icons.extension_outlined,      activeIcon: Icons.extension_rounded,    label: 'Games'),
-    _NavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded,       label: 'Profile'),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final navItems = [
+      _NavItem(
+        icon: Icons.home_outlined,
+        activeIcon: Icons.home_rounded,
+        label: context.l.navHome,
+      ),
+      _NavItem(
+        icon: Icons.favorite_outline,
+        activeIcon: Icons.favorite_rounded,
+        label: context.l.navHealth,
+      ),
+      _NavItem(
+        icon: Icons.extension_outlined,
+        activeIcon: Icons.extension_rounded,
+        label: context.l.navGames,
+      ),
+      _NavItem(
+        icon: Icons.person_outline_rounded,
+        activeIcon: Icons.person_rounded,
+        label: context.l.navProfile,
+      ),
+    ];
+
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: _ModernNavBar(
         currentIndex: _currentIndex,
-        items: _navItems,
+        items: navItems,
         onTap: (i) => setState(() => _currentIndex = i),
       ),
     );

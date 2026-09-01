@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/extensions/l10n_ext.dart';
 import '../../../data/models/care_reminder.dart';
 import '../../../data/repositories/care_repository.dart';
 import 'add_reminder_sheet.dart';
@@ -55,10 +56,19 @@ class _CareConfigScreenState extends State<CareConfigScreen> {
         title: const Text('Remove reminder?'),
         content: Text('Remove "${r.name}" from the care plan?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(context.l.cancelButton),
+          ),
+          ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: const Text('Remove'),
           ),
         ],
@@ -74,11 +84,8 @@ class _CareConfigScreenState extends State<CareConfigScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Care Plan Setup'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => Navigator.pop(context),
-        ),
+        title: Text(context.l.careplanTitle),
+        automaticallyImplyLeading: Navigator.canPop(context),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: AppColors.primary))

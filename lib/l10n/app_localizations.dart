@@ -272,6 +272,126 @@ abstract class AppLocalizations {
   /// **'Upcoming'**
   String get taskStatusUpcoming;
 
+  /// No description provided for @taskStatusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get taskStatusInProgress;
+
+  /// No description provided for @passageHiddenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The passage is hidden now.'**
+  String get passageHiddenTitle;
+
+  /// No description provided for @passageHiddenHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak what you remember!'**
+  String get passageHiddenHint;
+
+  /// No description provided for @listeningLabel2.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening…'**
+  String get listeningLabel2;
+
+  /// No description provided for @whatIHeard.
+  ///
+  /// In en, this message translates to:
+  /// **'What I heard:'**
+  String get whatIHeard;
+
+  /// No description provided for @tapMicToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap mic to start speaking'**
+  String get tapMicToStart;
+
+  /// No description provided for @tapMicToAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap mic to add more'**
+  String get tapMicToAdd;
+
+  /// No description provided for @listeningTapStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening… tap ■ to stop'**
+  String get listeningTapStop;
+
+  /// No description provided for @finishEditingFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish editing before speaking again'**
+  String get finishEditingFirst;
+
+  /// No description provided for @speakNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak now…'**
+  String get speakNow;
+
+  /// No description provided for @tapMicAndSpeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the mic below and start speaking'**
+  String get tapMicAndSpeak;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @typeInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Type instead'**
+  String get typeInstead;
+
+  /// No description provided for @useMicInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Use microphone instead'**
+  String get useMicInstead;
+
+  /// No description provided for @checkMyAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Check My Answer'**
+  String get checkMyAnswer;
+
+  /// No description provided for @typeWhatYouRemember.
+  ///
+  /// In en, this message translates to:
+  /// **'Type what you remember…'**
+  String get typeWhatYouRemember;
+
+  /// No description provided for @noContentFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No content found for this selection. Try a different combination.'**
+  String get noContentFound;
+
+  /// No description provided for @readyToSpeakButton.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m Ready to Speak!'**
+  String get readyToSpeakButton;
+
+  /// No description provided for @textWillDisappear.
+  ///
+  /// In en, this message translates to:
+  /// **'The text will disappear. Speak from memory.'**
+  String get textWillDisappear;
+
+  /// No description provided for @sayWhatYouRemember.
+  ///
+  /// In en, this message translates to:
+  /// **'Say What You Remember'**
+  String get sayWhatYouRemember;
+
   /// No description provided for @gamesTitle.
   ///
   /// In en, this message translates to:
@@ -1250,18 +1370,6 @@ abstract class AppLocalizations {
   /// **'Wonderful! You remembered so well! 🌟'**
   String get warmResultGreat;
 
-  /// No description provided for @warmResultGood.
-  ///
-  /// In en, this message translates to:
-  /// **'Great effort! Keep going, you\'re doing great! 💪'**
-  String get warmResultGood;
-
-  /// No description provided for @warmResultOkay.
-  ///
-  /// In en, this message translates to:
-  /// **'That\'s okay! Every practice helps your memory! ❤️'**
-  String get warmResultOkay;
-
   /// No description provided for @subResultGreat.
   ///
   /// In en, this message translates to:
@@ -1279,6 +1387,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Want to try again? The text will come back for you.'**
   String get subResultOkay;
+
+  /// No description provided for @whoAmIBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'👤 Who Am I? · Tap for your story'**
+  String get whoAmIBanner;
+
+  /// No description provided for @whoAmIQuick.
+  ///
+  /// In en, this message translates to:
+  /// **'Who Am I?'**
+  String get whoAmIQuick;
+
+  /// No description provided for @safeZoneQuick.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe Zone'**
+  String get safeZoneQuick;
+
+  /// No description provided for @memoriesQuick.
+  ///
+  /// In en, this message translates to:
+  /// **'Memories'**
+  String get memoriesQuick;
+
+  /// No description provided for @readTasksQuick.
+  ///
+  /// In en, this message translates to:
+  /// **'Read tasks'**
+  String get readTasksQuick;
+
+  /// No description provided for @stopQuick.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stopQuick;
+
+  /// No description provided for @hydrationQuick.
+  ///
+  /// In en, this message translates to:
+  /// **'Hydration'**
+  String get hydrationQuick;
+
+  /// No description provided for @calmBreatheQuick.
+  ///
+  /// In en, this message translates to:
+  /// **'Calm Breathe'**
+  String get calmBreatheQuick;
+
+  /// No description provided for @allClear.
+  ///
+  /// In en, this message translates to:
+  /// **'All clear!'**
+  String get allClear;
+
+  /// No description provided for @noTasksForTodayTapPlus.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks for today — tap + to add one'**
+  String get noTasksForTodayTapPlus;
+
+  /// No description provided for @sos.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS'**
+  String get sos;
+
+  /// No description provided for @returnToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to the login screen'**
+  String get returnToLogin;
+
+  /// No description provided for @dangerZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger Zone'**
+  String get dangerZone;
+
+  /// No description provided for @resetAppSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset App Setup'**
+  String get resetAppSetup;
+
+  /// No description provided for @clearNamesSetupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear names and setup — keeps game history'**
+  String get clearNamesSetupHint;
+
+  /// No description provided for @caregiverViewBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Caregiver View'**
+  String get caregiverViewBadge;
+
+  /// No description provided for @patientViewBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient View'**
+  String get patientViewBadge;
+
+  /// No description provided for @accountSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountSection;
+
+  /// No description provided for @notSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get notSet;
+
+  /// No description provided for @phoneHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Patients use this for the \"Call for Help\" button'**
+  String get phoneHelper;
+
+  /// No description provided for @phoneNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get phoneNumberLabel;
+
+  /// No description provided for @resetAppConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'This will erase all names and setup. Task and game history will be kept.'**
+  String get resetAppConfirm;
+
+  /// No description provided for @resetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset App?'**
+  String get resetTitle;
+
+  /// No description provided for @addReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {type} Reminder'**
+  String addReminderTitle(String type);
+
+  /// No description provided for @reminderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder name'**
+  String get reminderName;
+
+  /// No description provided for @reminderNameHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'What should it say on the alarm?'**
+  String get reminderNameHelper;
+
+  /// No description provided for @scheduleType.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule type'**
+  String get scheduleType;
+
+  /// No description provided for @atSpecificTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'At specific times'**
+  String get atSpecificTimes;
+
+  /// No description provided for @everyFewHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Every few hours'**
+  String get everyFewHours;
+
+  /// No description provided for @dailyGoalMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily goal'**
+  String get dailyGoalMode;
+
+  /// No description provided for @timesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Times'**
+  String get timesSection;
+
+  /// No description provided for @addTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Add time'**
+  String get addTime;
+
+  /// No description provided for @saveReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Reminder'**
+  String get saveReminder;
+
+  /// No description provided for @remindEveryHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind every {hours} hours'**
+  String remindEveryHours(String hours);
+
+  /// No description provided for @fromLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get fromLabel;
+
+  /// No description provided for @untilLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Until'**
+  String get untilLabel;
+
+  /// No description provided for @unitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get unitLabel;
+
+  /// No description provided for @breakfastLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Breakfast'**
+  String get breakfastLabel;
+
+  /// No description provided for @lunchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunch'**
+  String get lunchLabel;
+
+  /// No description provided for @dinnerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Dinner'**
+  String get dinnerLabel;
+
+  /// No description provided for @morningWalkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning walk'**
+  String get morningWalkLabel;
+
+  /// No description provided for @bedtimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bedtime'**
+  String get bedtimeLabel;
+
+  /// No description provided for @eveningCallLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening call'**
+  String get eveningCallLabel;
+
+  /// No description provided for @morningRoutineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning routine'**
+  String get morningRoutineLabel;
+
+  /// No description provided for @goodMorningGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Morning'**
+  String get goodMorningGreeting;
+
+  /// No description provided for @goodAfternoonGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Afternoon'**
+  String get goodAfternoonGreeting;
+
+  /// No description provided for @goodEveningGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Evening'**
+  String get goodEveningGreeting;
 }
 
 class _AppLocalizationsDelegate

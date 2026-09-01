@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'dart:io' show Platform;
+import 'l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/login_screen.dart';
 import 'features/patient/presentation/patient_shell.dart';
 import 'features/admin/presentation/admin_shell.dart';
+import 'features/language/presentation/language_setup_screen.dart';
 import 'services/secure_settings_service.dart';
 import 'services/notification_service.dart';
 import 'services/offline_location_service.dart';
+import 'services/language_service.dart';
 import 'data/repositories/task_repository.dart';
 
 void main() async {
@@ -29,22 +32,50 @@ void main() async {
   // Initialize offline location & safe zone service
   await OfflineLocationService.instance.init();
 
+  // Load saved language preferences before the UI renders
+  await LanguageService.instance.init();
+
+  // Migration: fix old stored caregiver name 'Priya' → 'Rahul' for existing sessions.
+  // This runs once and is a no-op if name is already updated.
+  final storedAdminName = await SecureSettingsService.instance.getAdminName();
+  if (storedAdminName == 'Priya') {
+    await SecureSettingsService.instance.setAdminName('Rahul');
+  }
+
+  // Silently pre-translate game content for all previously chosen languages
+  // if internet is available. Fire-and-forget — does not block app startup.
+  LanguageService.instance.prefetchAllGameLanguages();
+
   // Run missed-task sweep on every app open
   await TaskRepository().sweepMissedTasks();
 
-  runApp(const CogniCareApp());
+  runApp(const NeuroNovaApp());
 }
 
-class CogniCareApp extends StatelessWidget {
-  const CogniCareApp({super.key});
+class NeuroNovaApp extends StatelessWidget {
+  const NeuroNovaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CogniCare',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.theme,
-      home: const _AppRoot(),
+    // ListenableBuilder rebuilds MaterialApp whenever LanguageService.notifyListeners()
+    // fires (i.e. when the user changes their language in Profile).
+    return ListenableBuilder(
+      listenable: LanguageService.instance,
+      builder: (_, __) {
+        final langCode = LanguageService.instance.currentLanguage;
+        return MaterialApp(
+          title: 'NeuroNova',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.theme,
+
+          // ── Localisation ───────────────────────────────────────────────────
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale(langCode),
+
+          home: const _AppRoot(),
+        );
+      },
     );
   }
 }
@@ -68,6 +99,15 @@ class _AppRootState extends State<_AppRoot> {
     await Future.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
 
+    // ── Step 1: First-time setup ───────────────────────────────────────────
+    if (!LanguageService.instance.isLanguageConfigured) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const LanguageSetupScreen()),
+      );
+      return;
+    }
+
+    // ── Step 2: Existing session ──────────────────────────────────────────
     final secure = SecureSettingsService.instance;
     final sessionRole = await secure.getSessionRole();
     if (!mounted) return;
@@ -107,7 +147,7 @@ class _AppRootState extends State<_AppRoot> {
             ),
             const SizedBox(height: 24),
             const Text(
-              'CogniCare',
+              'NeuroNova',
               style: TextStyle(
                 fontFamily: 'Nunito',
                 fontSize: 36,

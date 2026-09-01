@@ -14,12 +14,18 @@ import 'results_screen.dart';
 ///   Phase 3: RESULT — score shown (handled by ResultsScreen)
 class ReadingSessionScreen extends StatefulWidget {
   final ContentItem content;
-  final String language; // 'en' or 'hi'
+  final String language;
+  /// If provided, this is the translated version of [content.text] in [language].
+  /// Falls back to [content.text] (English) if null.
+  final String? translatedText;
+  final String? translatedTitle;
 
   const ReadingSessionScreen({
     super.key,
     required this.content,
     required this.language,
+    this.translatedText,
+    this.translatedTitle,
   });
 
   @override
@@ -33,6 +39,10 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   final _stt = SttService.instance;
   final _scoring = ScoringService.instance;
   final _repo = GameRepository();
+
+  /// The text the patient actually reads (translated or English fallback).
+  String get _passageText => widget.translatedText ?? widget.content.text;
+  String get _passageTitle => widget.translatedTitle ?? widget.content.title;
 
   _Phase _phase = _Phase.read;
 
@@ -96,7 +106,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
       await _tts.pause();
       setState(() => _ttsPlaying = false);
     } else {
-      await _tts.speak(widget.content.text);
+      await _tts.speak(_passageText);  // speak translated text
       setState(() => _ttsPlaying = true);
     }
   }
@@ -221,7 +231,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
 
     setState(() => _submitting = true);
 
-    final result = _scoring.score(widget.content.text, spoken);
+    final result = _scoring.score(_passageText, spoken); // score vs translated text
     final session = await _repo.saveSession(GameSession(
       id: '', // assigned by repo
       gameType: 'read_memorize_speak',
@@ -231,8 +241,8 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
       length: widget.content.length,
       difficultyTier: widget.content.difficultyTier,
       contentId: widget.content.id,
-      textTitle: widget.content.title,
-      sourceText: widget.content.text,
+      textTitle: _passageTitle,       // translated title for display
+      sourceText: _passageText,       // translated text (what patient saw)
       spokenText: spoken,
       scorePercent: result.percent,
       wordMatchCount: result.matched,
@@ -266,14 +276,13 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.content.title, overflow: TextOverflow.ellipsis),
+        title: Text(_passageTitle, overflow: TextOverflow.ellipsis),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
           onPressed: () async {
-            final nav = Navigator.of(context);
             await _tts.stop();
             if (!mounted) return;
-            nav.pop();
+            Navigator.pop(context);
           },
         ),
       ),
@@ -284,12 +293,12 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   // ── Phase 1: Read ─────────────────────────────────────────────────────────
 
   Widget _buildReadPhase() {
-    final text = widget.content.text;
+    final text = _passageText;  // translated or English fallback
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
         // Phase indicator
-        const _PhaseIndicator(phase: 1, total: 2, label: 'Read & Memorize'),
+        _PhaseIndicator(phase: 1, total: 2, label: 'Read & Memorize'),
         const SizedBox(height: 20),
 
         // The text passage with word highlighting
@@ -298,7 +307,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
           decoration: BoxDecoration(
             color: AppColors.cardBgWarm,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
+            border: Border.all(color: AppColors.primary.withOpacity(0.15)),
           ),
           child: _ttsPlaying
               ? _HighlightedText(
@@ -308,7 +317,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
                 )
               : Text(
                   text,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Nunito',
                     fontSize: 22,
                     height: 1.7,
@@ -319,7 +328,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
         const SizedBox(height: 28),
 
         // TTS controls
-        const Text(
+        Text(
           'Listen to the passage:',
           style: TextStyle(
             fontFamily: 'Nunito',
@@ -366,12 +375,12 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.08),
+              color: AppColors.primary.withOpacity(0.08),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               '${widget.content.category.displayName} • ${widget.content.length.displayName}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Nunito',
                 fontSize: 14,
                 color: AppColors.primary,
@@ -394,7 +403,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
           ),
         ),
         const SizedBox(height: 10),
-        const Text(
+        Text(
           'The text will disappear. Speak from memory.',
           textAlign: TextAlign.center,
           style: TextStyle(fontFamily: 'Nunito', fontSize: 15, color: AppColors.textHint),
@@ -409,7 +418,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        const _PhaseIndicator(phase: 2, total: 2, label: 'Say What You Remember'),
+        _PhaseIndicator(phase: 2, total: 2, label: 'Say What You Remember'),
         const SizedBox(height: 20),
 
         // "Text is hidden" placeholder
@@ -419,10 +428,10 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
             color: AppColors.surfaceVariant,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: const Column(
+          child: Column(
             children: [
-              Icon(Icons.psychology_rounded, size: 52, color: AppColors.primary),
-              SizedBox(height: 12),
+              const Icon(Icons.psychology_rounded, size: 52, color: AppColors.primary),
+              const SizedBox(height: 12),
               Text(
                 'The passage is hidden now.',
                 textAlign: TextAlign.center,
@@ -433,7 +442,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
                   color: AppColors.textPrimary,
                 ),
               ),
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               Text(
                 'Speak what you remember!',
                 textAlign: TextAlign.center,
@@ -455,8 +464,8 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: _listening
-                    ? AppColors.error.withValues(alpha: 0.4)
-                    : AppColors.primary.withValues(alpha: 0.2),
+                    ? AppColors.error.withOpacity(0.4)
+                    : AppColors.primary.withOpacity(0.2),
               ),
             ),
             child: _editingTranscript
@@ -464,11 +473,11 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
-                          Icon(Icons.edit_rounded,
+                          const Icon(Icons.edit_rounded,
                               size: 16, color: AppColors.primary),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                           Text('Correct what I heard:',
                               style: TextStyle(
                                   fontFamily: 'Nunito',
@@ -563,7 +572,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
                           _listening
                               ? 'Speak now…'
                               : 'Tap the mic below and start speaking',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Nunito',
                             fontSize: 18,
                             color: AppColors.textHint,
@@ -593,7 +602,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
                   boxShadow: [
                     BoxShadow(
                       color: (_listening ? AppColors.error : AppColors.primary)
-                          .withValues(alpha: _editingTranscript ? 0.0 : 0.3),
+                          .withOpacity(_editingTranscript ? 0.0 : 0.3),
                       blurRadius: _listening ? 24 : 8,
                       spreadRadius: _listening ? 6 : 1,
                     ),
@@ -724,7 +733,7 @@ class _PhaseIndicator extends StatelessWidget {
         }),
         const SizedBox(width: 12),
         Text('$phase/$total',
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Nunito',
               fontSize: 14,
               color: AppColors.textSecondary,
@@ -748,7 +757,7 @@ class _HighlightedText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (highlightStart >= text.length || highlightEnd > text.length) {
       return Text(text,
-          style: const TextStyle(
+          style: TextStyle(
               fontFamily: 'Nunito', fontSize: 22, height: 1.7, color: AppColors.textPrimary));
     }
 
@@ -760,7 +769,7 @@ class _HighlightedText extends StatelessWidget {
             TextSpan(text: text.substring(0, highlightStart)),
           TextSpan(
             text: text.substring(highlightStart, highlightEnd),
-            style: const TextStyle(
+            style: TextStyle(
               backgroundColor: AppColors.wordHighlight,
               color: AppColors.wordHighlightText,
               fontWeight: FontWeight.w700,

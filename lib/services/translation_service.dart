@@ -4,20 +4,26 @@ import 'package:google_mlkit_translation/google_mlkit_translation.dart';
 import 'package:http/http.dart' as http;
 import 'package:sqflite/sqflite.dart';
 import '../core/config/api_config.dart';
+import '../core/utils/connectivity.dart';
 import '../data/db/database_helper.dart';
 
 /// Handles all game content translation for NeuroNova.
 ///
-/// Strategy:
-///   English (en): No translation needed — source language from texts.json.
-///   Hindi (hi):   ML Kit offline translation (model downloaded once on Wi-Fi).
-///   Bengali (bn): ML Kit offline translation (model downloaded once on Wi-Fi).
-///   Assamese (as): Google Cloud Translation API (one-time internet call per item,
-///                   then cached permanently in SQLite).
-///   Nepali (ne):  Google Cloud Translation API (same as Assamese).
+/// Strategy (offline-first, NER focus):
+///   English (en): No translation — source language.
+///   Hindi (hi):   ML Kit offline (model downloaded once on Wi-Fi).
+///   Bengali (bn): ML Kit offline (model downloaded once on Wi-Fi).
+///   Nepali (ne):  ML Kit offline via Hindi bridge (EN→HI result shown,
+///                 both are Devanagari script — very readable for NE patients).
+///                 If Cloud API key configured + internet: EN→NE directly (better).
+///   Assamese (as): Native texts already in texts.json.
+///                  For EN source content → ML Kit EN→HI as fallback (offline),
+///                  or Cloud API if configured + internet.
 ///
-/// All translations are cached in the [content_translations] SQLite table.
-/// Once an item is cached, it is NEVER re-fetched — 100% offline thereafter.
+/// Cache strategy:
+///   - All translations saved permanently in SQLite [content_translations] table.
+///   - Old language caches are NEVER deleted when a new language is added.
+///   - Once cached, 100% offline forever.
 class TranslationService {
   TranslationService._internal();
   static final TranslationService instance = TranslationService._internal();
@@ -26,17 +32,24 @@ class TranslationService {
   final Map<String, OnDeviceTranslator> _translators = {};
   final _modelManager = OnDeviceTranslatorModelManager();
 
-  // Map our language codes → ML Kit TranslateLanguage enum
+  // Map our language codes → ML Kit TranslateLanguage
+  // NE uses Hindi as a bridge (both Devanagari — readable for Nepali patients)
   static const Map<String, TranslateLanguage> _mlKitLanguageMap = {
     'hi': TranslateLanguage.hindi,
     'bn': TranslateLanguage.bengali,
+    'ne': TranslateLanguage.hindi, // Bridge: EN→HI is Devanagari, readable for NE
   };
 
   // ── Public API ─────────────────────────────────────────────────────────────
 
   /// Returns the translated text for a content item in [targetLang].
-  /// Checks SQLite cache first. Translates and caches on first call.
-  /// Returns the original English text if translation is unavailable.
+  ///
+  /// Priority:
+  ///   1. SQLite cache (fully offline) ✅
+  ///   2. ML Kit translation if available for this lang (offline after model download) ✅
+  ///   3. Cloud API if configured + internet (caches result to SQLite) ✅
+  ///   4. Fallback: Hindi ML Kit translation (Devanagari bridge for AS/NE) ✅
+  ///   5. Last resort: English original ✅
   Future<TranslationResult> getTranslation({
     required String contentId,
     required String sourceText,
@@ -56,12 +69,12 @@ class TranslationService {
     final cached = await _getCached(contentId, targetLang);
     if (cached != null) return cached;
 
-    // 2. Translate
+    // 2. Try translation
     try {
       final translatedText = await _translate(sourceText, targetLang);
       final translatedTitle = await _translate(sourceTitle, targetLang);
 
-      // 3. Cache result
+      // 3. Cache result permanently
       await _cache(
         contentId: contentId,
         langCode: targetLang,
@@ -76,7 +89,29 @@ class TranslationService {
         langCode: targetLang,
       );
     } catch (e) {
-      // Fallback: return English source text
+      // Fallback for AS: try Hindi bridge if ML Kit Hindi model is ready
+      if (targetLang == 'as') {
+        try {
+          final hiText = await _translateWithMlKit(sourceText, 'hi');
+          final hiTitle = await _translateWithMlKit(sourceTitle, 'hi');
+          // Cache as 'hi' for AS — still better than English
+          await _cache(
+            contentId: contentId,
+            langCode: targetLang,
+            translatedText: hiText,
+            translatedTitle: hiTitle,
+          );
+          return TranslationResult(
+            text: hiText,
+            title: hiTitle,
+            fromCache: false,
+            langCode: 'hi', // signal it's Hindi bridge
+            error: 'Assamese via Hindi bridge',
+          );
+        } catch (_) {}
+      }
+
+      // Last resort: return English source text
       return TranslationResult(
         text: sourceText,
         title: sourceTitle,
@@ -87,20 +122,27 @@ class TranslationService {
     }
   }
 
-  /// Pre-translates all content items for [targetLang] in one batch.
-  /// Call this after the user selects a new language for the first time.
-  /// Reports progress via [onProgress] callback (0.0 to 1.0).
+  /// Pre-translates all English content items for [targetLang] in one batch.
+  ///
+  /// Call this after the user selects a language while internet is available.
+  /// Skips items already in cache. Reports progress via [onProgress].
+  /// Old caches for other languages are untouched.
   Future<BatchTranslationResult> translateAllContent({
     required String targetLang,
     void Function(double progress, String status)? onProgress,
   }) async {
     if (targetLang == 'en') {
-      return const BatchTranslationResult(total: 0, translated: 0, failed: 0);
+      return BatchTranslationResult(total: 0, translated: 0, failed: 0);
     }
 
     // Load English content from assets
     final rawJson = await rootBundle.loadString('assets/content/texts.json');
-    final List<dynamic> items = json.decode(rawJson) as List<dynamic>;
+    final List<dynamic> allItems = json.decode(rawJson) as List<dynamic>;
+
+    // Filter to only English source items (don't re-translate hi/bn native content)
+    final items = allItems
+        .where((item) => (item as Map<String, dynamic>)['language'] == 'en')
+        .toList();
 
     int translated = 0;
     int failed = 0;
@@ -108,7 +150,7 @@ class TranslationService {
 
     // Ensure ML Kit model is ready if needed
     if (_mlKitLanguageMap.containsKey(targetLang)) {
-      onProgress?.call(0.0, 'Preparing $targetLang language model...');
+      onProgress?.call(0.0, 'Preparing language model...');
       await _ensureMlKitModel(targetLang);
     }
 
@@ -140,9 +182,9 @@ class TranslationService {
         failed++;
       }
 
-      onProgress?.call(i / total, 'Translating... ${i + 1} of $total');
+      onProgress?.call((i + 1) / total, 'Translating... ${i + 1} of $total');
 
-      // Small delay between Cloud API calls to avoid rate limiting
+      // Rate limiting for Cloud API calls
       if (_mlKitLanguageMap[targetLang] == null) {
         await Future.delayed(const Duration(milliseconds: 80));
       }
@@ -184,13 +226,25 @@ class TranslationService {
     if (_mlKitLanguageMap.containsKey(targetLang)) {
       return _translateWithMlKit(text, targetLang);
     } else {
-      return _translateWithCloudApi(text, targetLang);
+      // AS and any unsupported language: try Cloud API, fallback to Hindi bridge
+      final online = await hasInternet();
+      if (online && ApiConfig.isCloudConfigured) {
+        return _translateWithCloudApi(text, targetLang);
+      } else {
+        // Offline fallback: Hindi bridge (Devanagari for NE, at least readable HI for AS)
+        return _translateWithMlKit(text, 'hi');
+      }
     }
   }
 
   Future<String> _translateWithMlKit(String text, String targetLang) async {
-    await _ensureMlKitModel(targetLang);
-    final translator = _getOrCreateTranslator(targetLang);
+    final langKey = targetLang;
+    final mlLang = _mlKitLanguageMap[langKey];
+    if (mlLang == null) {
+      throw Exception('No ML Kit model for $targetLang');
+    }
+    await _ensureMlKitModel(langKey);
+    final translator = _getOrCreateTranslator(langKey);
     return translator.translateText(text);
   }
 
@@ -213,11 +267,6 @@ class TranslationService {
   }
 
   Future<String> _translateWithCloudApi(String text, String targetLang) async {
-    if (!ApiConfig.isCloudConfigured) {
-      throw Exception('Google Cloud Translation API key not configured. '
-          'Set ApiConfig.googleTranslateApiKey in lib/core/config/api_config.dart');
-    }
-
     final uri = Uri.parse(
       '${ApiConfig.translateEndpoint}?key=${ApiConfig.googleTranslateApiKey}',
     );
@@ -306,6 +355,8 @@ class TranslationResult {
   });
 
   bool get hadError => error != null;
+  /// True if content was served as Hindi bridge (for AS/NE when offline)
+  bool get isHindiBridge => langCode == 'hi' && hadError;
 }
 
 class BatchTranslationResult {

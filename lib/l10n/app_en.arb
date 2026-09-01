@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "en",
 
   "appName": "NeuroNova",
@@ -37,6 +37,27 @@
   "taskStatusDone": "Done",
   "taskStatusMissed": "Missed",
   "taskStatusUpcoming": "Upcoming",
+  "taskStatusInProgress": "In Progress",
+
+  "passageHiddenTitle": "The passage is hidden now.",
+  "passageHiddenHint": "Speak what you remember!",
+  "listeningLabel2": "Listening…",
+  "whatIHeard": "What I heard:",
+  "tapMicToStart": "Tap mic to start speaking",
+  "tapMicToAdd": "Tap mic to add more",
+  "listeningTapStop": "Listening… tap ■ to stop",
+  "finishEditingFirst": "Finish editing before speaking again",
+  "speakNow": "Speak now…",
+  "tapMicAndSpeak": "Tap the mic below and start speaking",
+  "saveChanges": "Save Changes",
+  "typeInstead": "Type instead",
+  "useMicInstead": "Use microphone instead",
+  "checkMyAnswer": "Check My Answer",
+  "typeWhatYouRemember": "Type what you remember…",
+  "noContentFound": "No content found for this selection. Try a different combination.",
+  "readyToSpeakButton": "I'm Ready to Speak!",
+  "textWillDisappear": "The text will disappear. Speak from memory.",
+  "sayWhatYouRemember": "Say What You Remember",
 
   "gamesTitle": "Memory Games",
   "gamesSubtitle": "Exercise your mind every day",
@@ -296,9 +317,65 @@
     }
   },
   "warmResultGreat": "Wonderful! You remembered so well! 🌟",
-  "warmResultGood": "Great effort! Keep going, you're doing great! 💪",
-  "warmResultOkay": "That's okay! Every practice helps your memory! ❤️",
   "subResultGreat": "Your memory is doing amazing work today.",
   "subResultGood": "You're improving with every try — keep it up!",
-  "subResultOkay": "Want to try again? The text will come back for you."
+  "subResultOkay": "Want to try again? The text will come back for you.",
+
+  "whoAmIBanner": "👤 Who Am I? · Tap for your story",
+  "whoAmIQuick": "Who Am I?",
+  "safeZoneQuick": "Safe Zone",
+  "memoriesQuick": "Memories",
+  "readTasksQuick": "Read tasks",
+  "stopQuick": "Stop",
+  "hydrationQuick": "Hydration",
+  "calmBreatheQuick": "Calm Breathe",
+  "allClear": "All clear!",
+  "noTasksForTodayTapPlus": "No tasks for today — tap + to add one",
+  "sos": "SOS",
+  "returnToLogin": "Return to the login screen",
+  "dangerZone": "Danger Zone",
+  "resetAppSetup": "Reset App Setup",
+  "clearNamesSetupHint": "Clear names and setup — keeps game history",
+  "caregiverViewBadge": "Caregiver View",
+  "patientViewBadge": "Patient View",
+  "accountSection": "Account",
+  "notSet": "Not set",
+  "phoneHelper": "Patients use this for the \"Call for Help\" button",
+  "phoneNumberLabel": "Phone number",
+  "resetAppConfirm": "This will erase all names and setup. Task and game history will be kept.",
+  "resetTitle": "Reset App?",
+  "addReminderTitle": "Add {type} Reminder",
+  "@addReminderTitle": {
+    "placeholders": {
+      "type": { "type": "String" }
+    }
+  },
+  "reminderName": "Reminder name",
+  "reminderNameHelper": "What should it say on the alarm?",
+  "scheduleType": "Schedule type",
+  "atSpecificTimes": "At specific times",
+  "everyFewHours": "Every few hours",
+  "dailyGoalMode": "Daily goal",
+  "timesSection": "Times",
+  "addTime": "Add time",
+  "saveReminder": "Save Reminder",
+  "remindEveryHours": "Remind every {hours} hours",
+  "@remindEveryHours": {
+    "placeholders": {
+      "hours": { "type": "String" }
+    }
+  },
+  "fromLabel": "From",
+  "untilLabel": "Until",
+  "unitLabel": "Unit",
+  "breakfastLabel": "Breakfast",
+  "lunchLabel": "Lunch",
+  "dinnerLabel": "Dinner",
+  "morningWalkLabel": "Morning walk",
+  "bedtimeLabel": "Bedtime",
+  "eveningCallLabel": "Evening call",
+  "morningRoutineLabel": "Morning routine",
+  "goodMorningGreeting": "Good Morning",
+  "goodAfternoonGreeting": "Good Afternoon",
+  "goodEveningGreeting": "Good Evening"
 }

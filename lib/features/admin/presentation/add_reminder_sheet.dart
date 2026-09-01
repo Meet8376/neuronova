@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/extensions/l10n_ext.dart';
 import '../../../data/models/care_reminder.dart';
 import '../../../data/repositories/care_repository.dart';
 import '../../../services/notification_service.dart';
@@ -102,41 +103,52 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
   Future<void> _save() async {
-    if (_nameCtrl.text.trim().isEmpty) return;
+    final name = _nameCtrl.text.trim();
+    if (name.isEmpty) return;
+
     if (_mode == ReminderScheduleMode.specificTimes && _selectedTimes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please add at least one time.')));
+        const SnackBar(content: Text('Please add at least one time.')),
+      );
       return;
     }
+
     setState(() => _saving = true);
-    await _repo.createReminder(
-      type: widget.type,
-      name: _nameCtrl.text.trim(),
-      scheduleMode: _mode,
-      configData: _configData,
-    );
+    try {
+      await _repo.createReminder(
+        type: widget.type,
+        name: name,
+        scheduleMode: _mode,
+        configData: _configData,
+      );
 
-    // Schedule alarms for specificTimes reminders
-    if (_mode == ReminderScheduleMode.specificTimes) {
-      final now = DateTime.now();
-      for (final time in _selectedTimes) {
-        var scheduled = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-        // If today's time already passed, schedule for tomorrow
-        if (scheduled.isBefore(now)) {
-          scheduled = scheduled.add(const Duration(days: 1));
+      // Schedule alarms for specificTimes reminders (safely handled across all platforms)
+      if (_mode == ReminderScheduleMode.specificTimes) {
+        final now = DateTime.now();
+        for (final time in _selectedTimes) {
+          var scheduled = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+          // If today's time already passed, schedule for tomorrow
+          if (scheduled.isBefore(now)) {
+            scheduled = scheduled.add(const Duration(days: 1));
+          }
+          final notifId = NotificationService.generateNotifId();
+          try {
+            await NotificationService.instance.scheduleTaskAlarm(
+              notifId: notifId,
+              taskName: name,
+              scheduledAt: scheduled,
+            );
+          } catch (_) {}
         }
-        final notifId = NotificationService.generateNotifId();
-        await NotificationService.instance.scheduleTaskAlarm(
-          notifId: notifId,
-          taskName: _nameCtrl.text.trim(),
-          scheduledAt: scheduled,
-        );
       }
-      // Note: interval/dailyGoal modes need a background service (future work)
+    } catch (e) {
+      debugPrint('Error creating reminder: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _saving = false);
+        Navigator.pop(context, true);
+      }
     }
-
-    if (!mounted) return;
-    Navigator.pop(context, true);
   }
 
   Future<void> _pickTime({required int index, bool isNew = false}) async {
@@ -158,7 +170,7 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.85,
+      initialChildSize: 0.88,
       minChildSize: 0.5,
       maxChildSize: 0.95,
       builder: (_, ctrl) => Container(
@@ -183,16 +195,17 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
               child: Row(
                 children: [
-                  Text(widget.type.icon,
-                      style: const TextStyle(fontSize: 28)),
+                  Text(widget.type.icon, style: const TextStyle(fontSize: 28)),
                   const SizedBox(width: 10),
-                  Text(
-                    'Add ${widget.type.displayName} Reminder',
-                    style: const TextStyle(
-                      fontFamily: 'Nunito',
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                  Expanded(
+                    child: Text(
+                      context.l.addReminderTitle(widget.type.displayName),
+                      style: const TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
                 ],
@@ -203,26 +216,26 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
             Expanded(
               child: ListView(
                 controller: ctrl,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
                 children: [
                   // Name field
                   TextField(
                     controller: _nameCtrl,
                     style: const TextStyle(fontFamily: 'Nunito', fontSize: 18),
-                    decoration: const InputDecoration(
-                      labelText: 'Reminder name',
-                      helperText: 'What should it say on the alarm?',
+                    decoration: InputDecoration(
+                      labelText: context.l.reminderName,
+                      helperText: context.l.reminderNameHelper,
                     ),
                   ),
                   const SizedBox(height: 20),
 
                   // Schedule mode selector
-                  const Text(
-                    'Schedule type',
-                    style: TextStyle(
+                  Text(
+                    context.l.scheduleType,
+                    style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 17,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       color: AppColors.textPrimary,
                     ),
                   ),
@@ -235,12 +248,12 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
 
                   // Mode-specific config
                   if (_mode == ReminderScheduleMode.specificTimes) ...[
-                    const Text(
-                      'Times',
-                      style: TextStyle(
+                    Text(
+                      context.l.timesSection,
+                      style: const TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
                     ),
@@ -250,15 +263,21 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                       final t = e.value;
                       return Card(
                         margin: const EdgeInsets.only(bottom: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                         child: ListTile(
-                          leading: const Icon(Icons.access_time_rounded,
-                              color: AppColors.primary),
+                          leading: const Icon(
+                            Icons.access_time_rounded,
+                            color: AppColors.primary,
+                          ),
                           title: Text(
                             t.format(context),
                             style: const TextStyle(
-                                fontFamily: 'Nunito',
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600),
+                              fontFamily: 'Nunito',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                           subtitle: TextField(
                             decoration: const InputDecoration(
@@ -267,18 +286,21 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                               isDense: true,
                             ),
                             style: const TextStyle(
-                                fontFamily: 'Nunito', fontSize: 14),
+                              fontFamily: 'Nunito',
+                              fontSize: 14,
+                            ),
                             onChanged: (v) {
                               if (i < _timeNames.length) _timeNames[i] = v;
                             },
                             controller: TextEditingController(
-                                text: i < _timeNames.length
-                                    ? _timeNames[i]
-                                    : ''),
+                              text: i < _timeNames.length ? _timeNames[i] : '',
+                            ),
                           ),
                           trailing: IconButton(
-                            icon: const Icon(Icons.edit_rounded,
-                                color: AppColors.textHint),
+                            icon: const Icon(
+                              Icons.edit_rounded,
+                              color: AppColors.textHint,
+                            ),
                             onPressed: () => _pickTime(index: i),
                           ),
                           onLongPress: () => setState(() {
@@ -291,16 +313,26 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                     OutlinedButton.icon(
                       onPressed: () => _pickTime(index: 0, isNew: true),
                       icon: const Icon(Icons.add_rounded),
-                      label: const Text('Add time'),
+                      label: Text(context.l.addTime),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
                   ] else if (_mode == ReminderScheduleMode.interval) ...[
                     // Interval slider
                     Text(
-                      'Remind every  ${_intervalHours % 1 == 0 ? _intervalHours.toInt() : _intervalHours} hours',
+                      context.l.remindEveryHours(
+                        _intervalHours % 1 == 0
+                            ? _intervalHours.toInt().toString()
+                            : _intervalHours.toString(),
+                      ),
                       style: const TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 17,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
                     ),
@@ -318,12 +350,13 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                       children: [
                         Expanded(
                           child: _TimeTile(
-                            label: 'From',
+                            label: context.l.fromLabel,
                             time: _intervalStart,
                             onTap: () async {
                               final t = await showTimePicker(
-                                  context: context,
-                                  initialTime: _intervalStart);
+                                context: context,
+                                initialTime: _intervalStart,
+                              );
                               if (t != null) {
                                 setState(() => _intervalStart = t);
                               }
@@ -333,12 +366,13 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: _TimeTile(
-                            label: 'Until',
+                            label: context.l.untilLabel,
                             time: _intervalEnd,
                             onTap: () async {
                               final t = await showTimePicker(
-                                  context: context,
-                                  initialTime: _intervalEnd);
+                                context: context,
+                                initialTime: _intervalEnd,
+                              );
                               if (t != null) {
                                 setState(() => _intervalEnd = t);
                               }
@@ -349,12 +383,12 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                     ),
                   ] else ...[
                     // Daily goal
-                    const Text(
-                      'Daily goal',
-                      style: TextStyle(
+                    Text(
+                      context.l.dailyGoalMode,
+                      style: const TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 17,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
                     ),
@@ -362,8 +396,11 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                     Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.remove_circle_outline_rounded,
-                              size: 32, color: AppColors.primary),
+                          icon: const Icon(
+                            Icons.remove_circle_outline_rounded,
+                            size: 32,
+                            color: AppColors.primary,
+                          ),
                           onPressed: () {
                             if (_dailyGoal > 1) {
                               setState(() => _dailyGoal--);
@@ -382,16 +419,19 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                         ),
                         const SizedBox(width: 8),
                         IconButton(
-                          icon: const Icon(Icons.add_circle_outline_rounded,
-                              size: 32, color: AppColors.primary),
+                          icon: const Icon(
+                            Icons.add_circle_outline_rounded,
+                            size: 32,
+                            color: AppColors.primary,
+                          ),
                           onPressed: () => setState(() => _dailyGoal++),
                         ),
                         const SizedBox(width: 12),
                         TextField(
-                          decoration: const InputDecoration(
-                            labelText: 'Unit',
+                          decoration: InputDecoration(
+                            labelText: context.l.unitLabel,
                             isDense: true,
-                            constraints: BoxConstraints(maxWidth: 100),
+                            constraints: const BoxConstraints(maxWidth: 100),
                           ),
                           controller: TextEditingController(text: _goalUnit),
                           onChanged: (v) => _goalUnit = v,
@@ -406,11 +446,30 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                   ElevatedButton(
                     onPressed: _saving ? null : _save,
                     style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 60)),
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 56),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
                     child: _saving
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Save Reminder',
-                            style: TextStyle(fontSize: 18)),
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : Text(
+                            context.l.saveReminder,
+                            style: const TextStyle(
+                              fontFamily: 'Nunito',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
                   ),
                   const SizedBox(height: 20),
                 ],
@@ -435,27 +494,60 @@ class _ModeSelector extends StatelessWidget {
     return Wrap(
       spacing: 8,
       children: [
-        _chip(ReminderScheduleMode.specificTimes, 'At specific times', Icons.schedule_rounded),
-        _chip(ReminderScheduleMode.interval, 'Every few hours', Icons.loop_rounded),
-        _chip(ReminderScheduleMode.dailyGoal, 'Daily goal', Icons.flag_rounded),
+        _chip(
+          context,
+          ReminderScheduleMode.specificTimes,
+          context.l.atSpecificTimes,
+          Icons.schedule_rounded,
+        ),
+        _chip(
+          context,
+          ReminderScheduleMode.interval,
+          context.l.everyFewHours,
+          Icons.loop_rounded,
+        ),
+        _chip(
+          context,
+          ReminderScheduleMode.dailyGoal,
+          context.l.dailyGoalMode,
+          Icons.flag_rounded,
+        ),
       ],
     );
   }
 
-  Widget _chip(ReminderScheduleMode m, String label, IconData icon) {
+  Widget _chip(
+    BuildContext context,
+    ReminderScheduleMode m,
+    String label,
+    IconData icon,
+  ) {
     final selected = mode == m;
     return ChoiceChip(
-      avatar: Icon(icon, size: 18,
-          color: selected ? Colors.white : AppColors.textSecondary),
-      label: Text(label,
-          style: TextStyle(
-              fontFamily: 'Nunito',
-              fontSize: 14,
-              color: selected ? Colors.white : AppColors.textPrimary)),
+      avatar: Icon(
+        icon,
+        size: 18,
+        color: selected ? Colors.white : AppColors.textSecondary,
+      ),
+      label: Text(
+        label,
+        style: TextStyle(
+          fontFamily: 'Nunito',
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: selected ? Colors.white : AppColors.textPrimary,
+        ),
+      ),
       selected: selected,
       onSelected: (_) => onChanged(m),
       selectedColor: AppColors.primary,
       backgroundColor: AppColors.surfaceVariant,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: selected ? AppColors.primary : AppColors.divider,
+        ),
+      ),
     );
   }
 }
@@ -482,18 +574,23 @@ class _TimeTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label,
-                style: const TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 13,
-                    color: AppColors.textHint)),
+            Text(
+              label,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 13,
+                color: AppColors.textHint,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             Text(
               time.format(context),
               style: const TextStyle(
-                  fontFamily: 'Nunito',
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary),
+                fontFamily: 'Nunito',
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
             ),
           ],
         ),

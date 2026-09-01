@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/extensions/l10n_ext.dart';
 import '../../../data/models/task.dart';
 import '../../../data/repositories/task_repository.dart';
 import '../../../services/secure_settings_service.dart';
@@ -163,11 +164,11 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
 
   // ── Greeting ───────────────────────────────────────────────────────────────
 
-  String get _greeting {
+  String _greeting(BuildContext context) {
     final h = _now.hour;
-    if (h < 12) return 'Good Morning';
-    if (h < 17) return 'Good Afternoon';
-    return 'Good Evening';
+    if (h < 12) return context.l.goodMorningGreeting;
+    if (h < 17) return context.l.goodAfternoonGreeting;
+    return context.l.goodEveningGreeting;
   }
 
   String get _greetingEmoji {
@@ -177,8 +178,10 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
     return '🌙';
   }
 
-  String get _dateTimeLine =>
-      '${DateFormat('EEEE, d MMMM yyyy').format(_now)} · ${DateFormat('h:mm a').format(_now)}';
+  String _dateTimeLine(BuildContext context) {
+    final loc = Localizations.localeOf(context).toString();
+    return '${DateFormat('EEEE, d MMMM yyyy', loc).format(_now)} · ${DateFormat('h:mm a', loc).format(_now)}';
+  }
 
   // ── Task actions ───────────────────────────────────────────────────────────
 
@@ -216,14 +219,16 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   Future<bool?> _showDeleteConfirm(String name) => showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Delete task?'),
+          title: Text(context.l.deleteTaskTitle),
           content: Text('Remove "$name"?'),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(context.l.cancelButton)),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: TextButton.styleFrom(foregroundColor: AppColors.error),
-              child: const Text('Yes, Delete'),
+              child: Text(context.l.yesDelete),
             ),
           ],
         ),
@@ -348,8 +353,8 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
         children: [
           // ── Gradient hero header ──────────────────────────────────────────
           _HeroHeader(
-            greeting: '$_greeting, $_patientName $_greetingEmoji',
-            dateTimeLine: _dateTimeLine,
+            greeting: '${_greeting(context)}, $_patientName $_greetingEmoji',
+            dateTimeLine: _dateTimeLine(context),
             caregiverName: _caregiverName,
             onSosTap: _callCaregiver,
             onWhoAmITap: _showIdentitySheet,
@@ -380,7 +385,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                   ),
                 ),
                 const SizedBox(width: 10),
-                Text("Today's Tasks", style: AppTextStyles.sectionHeader(context)),
+                Text(context.l.todaysTasks, style: AppTextStyles.sectionHeader(context)),
                 const Spacer(),
                 if (!_loading)
                   Container(
@@ -427,7 +432,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                 MaterialPageRoute(builder: (_) => const AllTasksScreen()),
                               ).then((_) => _load()),
                               icon: const Icon(Icons.calendar_today_outlined, size: 18),
-                              label: const Text('See all tasks'),
+                              label: Text(context.l.seeAllTasks),
                             ),
                           ),
                         ],
@@ -464,11 +469,11 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                 size: 48, color: AppColors.primary.withValues(alpha: 0.5)),
           ),
           const SizedBox(height: 18),
-          Text('All clear!',
+          Text(context.l.allClear,
               style: AppTextStyles.sectionHeader(context)
                   .copyWith(color: AppColors.textSecondary)),
           const SizedBox(height: 6),
-          Text('No tasks for today — tap + to add one',
+          Text(context.l.noTasksForTodayTapPlus,
               style: AppTextStyles.label(context)),
         ],
       ),
@@ -528,7 +533,7 @@ class _HeroHeader extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'CogniCare',
+                        'NeuroNova',
                         style: TextStyle(
                           fontFamily: 'Nunito',
                           fontSize: 16,
@@ -581,22 +586,22 @@ class _HeroHeader extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.person_pin_rounded, color: Colors.white, size: 18),
-                      SizedBox(width: 8),
+                      const Icon(Icons.person_pin_rounded, color: Colors.white, size: 18),
+                      const SizedBox(width: 8),
                       Text(
-                        '👤 Who Am I? · Tap for your story',
-                        style: TextStyle(
+                        context.l.whoAmIBanner,
+                        style: const TextStyle(
                           fontFamily: 'Nunito',
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(width: 4),
-                      Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 12),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 12),
                     ],
                   ),
                 ),
@@ -714,42 +719,42 @@ class _QuickActions extends StatelessWidget {
         children: [
           _QuickChip(
             icon: Icons.person_pin_rounded,
-            label: 'Who Am I?',
+            label: context.l.whoAmIQuick,
             color: AppColors.primary,
             onTap: onWhoAmITap,
           ),
           const SizedBox(width: 8),
           _QuickChip(
             icon: Icons.share_location_rounded,
-            label: 'Safe Zone',
+            label: context.l.safeZoneQuick,
             color: const Color(0xFFE11D48),
             onTap: onSafeZoneTap,
           ),
           const SizedBox(width: 8),
           _QuickChip(
             icon: Icons.photo_library_rounded,
-            label: 'Memories',
+            label: context.l.memoriesQuick,
             color: AppColors.accent,
             onTap: onMemoriesTap,
           ),
           const SizedBox(width: 8),
           _QuickChip(
             icon: ttsSpeaking ? Icons.stop_rounded : Icons.volume_up_rounded,
-            label: ttsSpeaking ? 'Stop' : 'Read tasks',
+            label: ttsSpeaking ? context.l.stopQuick : context.l.readTasksQuick,
             color: AppColors.info,
             onTap: onTtsToggle,
           ),
           const SizedBox(width: 8),
           _QuickChip(
             icon: Icons.water_drop_outlined,
-            label: 'Hydration',
+            label: context.l.hydrationQuick,
             color: const Color(0xFF0288D1),
             onTap: onHydrationTap,
           ),
           const SizedBox(width: 8),
           _QuickChip(
             icon: Icons.self_improvement_rounded,
-            label: 'Breathe',
+            label: context.l.calmBreatheQuick,
             color: AppColors.success,
             onTap: onBreatheTap,
           ),

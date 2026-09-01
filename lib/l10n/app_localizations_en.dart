@@ -93,6 +93,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taskStatusUpcoming => 'Upcoming';
 
   @override
+  String get taskStatusInProgress => 'In Progress';
+
+  @override
+  String get passageHiddenTitle => 'The passage is hidden now.';
+
+  @override
+  String get passageHiddenHint => 'Speak what you remember!';
+
+  @override
+  String get listeningLabel2 => 'Listening…';
+
+  @override
+  String get whatIHeard => 'What I heard:';
+
+  @override
+  String get tapMicToStart => 'Tap mic to start speaking';
+
+  @override
+  String get tapMicToAdd => 'Tap mic to add more';
+
+  @override
+  String get listeningTapStop => 'Listening… tap ■ to stop';
+
+  @override
+  String get finishEditingFirst => 'Finish editing before speaking again';
+
+  @override
+  String get speakNow => 'Speak now…';
+
+  @override
+  String get tapMicAndSpeak => 'Tap the mic below and start speaking';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get typeInstead => 'Type instead';
+
+  @override
+  String get useMicInstead => 'Use microphone instead';
+
+  @override
+  String get checkMyAnswer => 'Check My Answer';
+
+  @override
+  String get typeWhatYouRemember => 'Type what you remember…';
+
+  @override
+  String get noContentFound =>
+      'No content found for this selection. Try a different combination.';
+
+  @override
+  String get readyToSpeakButton => 'I\'m Ready to Speak!';
+
+  @override
+  String get textWillDisappear => 'The text will disappear. Speak from memory.';
+
+  @override
+  String get sayWhatYouRemember => 'Say What You Remember';
+
+  @override
   String get gamesTitle => 'Memory Games';
 
   @override
@@ -620,14 +681,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get warmResultGreat => 'Wonderful! You remembered so well! 🌟';
 
   @override
-  String get warmResultGood =>
-      'Great effort! Keep going, you\'re doing great! 💪';
-
-  @override
-  String get warmResultOkay =>
-      'That\'s okay! Every practice helps your memory! ❤️';
-
-  @override
   String get subResultGreat => 'Your memory is doing amazing work today.';
 
   @override
@@ -636,4 +689,152 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get subResultOkay =>
       'Want to try again? The text will come back for you.';
+
+  @override
+  String get whoAmIBanner => '👤 Who Am I? · Tap for your story';
+
+  @override
+  String get whoAmIQuick => 'Who Am I?';
+
+  @override
+  String get safeZoneQuick => 'Safe Zone';
+
+  @override
+  String get memoriesQuick => 'Memories';
+
+  @override
+  String get readTasksQuick => 'Read tasks';
+
+  @override
+  String get stopQuick => 'Stop';
+
+  @override
+  String get hydrationQuick => 'Hydration';
+
+  @override
+  String get calmBreatheQuick => 'Calm Breathe';
+
+  @override
+  String get allClear => 'All clear!';
+
+  @override
+  String get noTasksForTodayTapPlus => 'No tasks for today — tap + to add one';
+
+  @override
+  String get sos => 'SOS';
+
+  @override
+  String get returnToLogin => 'Return to the login screen';
+
+  @override
+  String get dangerZone => 'Danger Zone';
+
+  @override
+  String get resetAppSetup => 'Reset App Setup';
+
+  @override
+  String get clearNamesSetupHint =>
+      'Clear names and setup — keeps game history';
+
+  @override
+  String get caregiverViewBadge => 'Caregiver View';
+
+  @override
+  String get patientViewBadge => 'Patient View';
+
+  @override
+  String get accountSection => 'Account';
+
+  @override
+  String get notSet => 'Not set';
+
+  @override
+  String get phoneHelper =>
+      'Patients use this for the \"Call for Help\" button';
+
+  @override
+  String get phoneNumberLabel => 'Phone number';
+
+  @override
+  String get resetAppConfirm =>
+      'This will erase all names and setup. Task and game history will be kept.';
+
+  @override
+  String get resetTitle => 'Reset App?';
+
+  @override
+  String addReminderTitle(String type) {
+    return 'Add $type Reminder';
+  }
+
+  @override
+  String get reminderName => 'Reminder name';
+
+  @override
+  String get reminderNameHelper => 'What should it say on the alarm?';
+
+  @override
+  String get scheduleType => 'Schedule type';
+
+  @override
+  String get atSpecificTimes => 'At specific times';
+
+  @override
+  String get everyFewHours => 'Every few hours';
+
+  @override
+  String get dailyGoalMode => 'Daily goal';
+
+  @override
+  String get timesSection => 'Times';
+
+  @override
+  String get addTime => 'Add time';
+
+  @override
+  String get saveReminder => 'Save Reminder';
+
+  @override
+  String remindEveryHours(String hours) {
+    return 'Remind every $hours hours';
+  }
+
+  @override
+  String get fromLabel => 'From';
+
+  @override
+  String get untilLabel => 'Until';
+
+  @override
+  String get unitLabel => 'Unit';
+
+  @override
+  String get breakfastLabel => 'Breakfast';
+
+  @override
+  String get lunchLabel => 'Lunch';
+
+  @override
+  String get dinnerLabel => 'Dinner';
+
+  @override
+  String get morningWalkLabel => 'Morning walk';
+
+  @override
+  String get bedtimeLabel => 'Bedtime';
+
+  @override
+  String get eveningCallLabel => 'Evening call';
+
+  @override
+  String get morningRoutineLabel => 'Morning routine';
+
+  @override
+  String get goodMorningGreeting => 'Good Morning';
+
+  @override
+  String get goodAfternoonGreeting => 'Good Afternoon';
+
+  @override
+  String get goodEveningGreeting => 'Good Evening';
 }

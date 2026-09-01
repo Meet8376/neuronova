@@ -28,7 +28,7 @@ class DatabaseHelper {
   Future<Database> initInMemoryDatabase() async {
     _db = await openDatabase(
       inMemoryDatabasePath,
-      version: 4,
+      version: 5,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -37,10 +37,10 @@ class DatabaseHelper {
 
   Future<Database> _initDb() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'cognicare.db');
+    final path = join(dbPath, 'neuronova.db');
     return openDatabase(
       path,
-      version: 4,
+      version: 5,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -219,11 +219,25 @@ class DatabaseHelper {
         )
       ''');
 
+      // ── Content translations cache (offline-first) ──────────────────────
+      await txn.execute('''
+        CREATE TABLE content_translations (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          content_id TEXT NOT NULL,
+          language_code TEXT NOT NULL,
+          translated_text TEXT NOT NULL,
+          translated_title TEXT NOT NULL,
+          created_at INTEGER NOT NULL,
+          UNIQUE(content_id, language_code)
+        )
+      ''');
+
       // Seed default settings
       await txn.insert('app_settings', {'key': 'text_size', 'value': 'medium'});
       await txn.insert('app_settings', {'key': 'tts_speed', 'value': 'normal'});
       await txn.insert('app_settings', {'key': 'language', 'value': 'en'});
       await txn.insert('app_settings', {'key': 'difficulty_rms', 'value': '1'});
+      await txn.insert('app_settings', {'key': 'game_languages', 'value': 'en'});
 
       // Seed initial patient records for ASHA Worker Demo
       final now = DateTime.now().millisecondsSinceEpoch;
@@ -336,6 +350,25 @@ class DatabaseHelper {
           created_at INTEGER NOT NULL
         )
       ''');
+    }
+    if (oldVersion < 5) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS content_translations (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          content_id TEXT NOT NULL,
+          language_code TEXT NOT NULL,
+          translated_text TEXT NOT NULL,
+          translated_title TEXT NOT NULL,
+          created_at INTEGER NOT NULL,
+          UNIQUE(content_id, language_code)
+        )
+      ''');
+      // Seed game_languages setting (primary language only by default)
+      await db.insert(
+        'app_settings',
+        {'key': 'game_languages', 'value': 'en'},
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
     }
   }
 

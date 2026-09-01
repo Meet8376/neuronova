@@ -2,59 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ─── Colour tokens ────────────────────────────────────────────────────────────
-// Warm, cozy, comforting home colors — removing cold hospital blues/whites
+// Original NeuroNova Palette: Warm Teal + Saffron + Soft Off-White
 
 class AppColors {
   AppColors._();
 
-  // Primary — Warm Terracotta / Earthy Amber
-  static const Color primary      = Color(0xFFC85A17); // Warm Terracotta
-  static const Color primaryLight = Color(0xFFE07A5F); // Warm Coral
-  static const Color primaryDark  = Color(0xFF9E3D06);
+  // Primary — a warm teal that feels calm and trustworthy, not cold/clinical
+  static const Color primary      = Color(0xFF2A7B6F);
+  static const Color primaryLight = Color(0xFF4CA99A);
+  static const Color primaryDark  = Color(0xFF1A5C53);
 
-  // Accent — Warm Golden Honey
-  static const Color accent       = Color(0xFFF4A261);
-  static const Color accentLight  = Color(0xFFFFD166);
+  // Accent — warm saffron, culturally familiar for Indian users
+  static const Color accent       = Color(0xFFE8A020);
+  static const Color accentLight  = Color(0xFFF5C45E);
 
   // Emergency / SOS
   static const Color emergency      = Color(0xFFD93025);
   static const Color emergencyLight = Color(0xFFFF6B6B);
 
-  // Backgrounds — Soft Cream & Warm Vanilla
-  static const Color scaffoldBg   = Color(0xFFFAF5EC); // Soft Warm Cream
+  // Backgrounds — warm off-white, soft on aging eyes
+  static const Color scaffoldBg   = Color(0xFFF5F2EE);
   static const Color cardBg       = Color(0xFFFFFFFF);
-  static const Color cardBgWarm   = Color(0xFFFFF9F0); // Warm Vanilla
+  static const Color cardBgWarm   = Color(0xFFFDF8F2);
 
-  // Text — Soft Charcoal & Warm Slate
-  static const Color textPrimary   = Color(0xFF2B2D42);
-  static const Color textSecondary = Color(0xFF5D607B);
+  // Text — near-black, never pure #000000
+  static const Color textPrimary   = Color(0xFF1C1C2E);
+  static const Color textSecondary = Color(0xFF5A5A72);
   static const Color textHint      = Color(0xFF9A9AB0);
 
-  // Status
-  static const Color success = Color(0xFF2A9D8F); // Soft Sage Green
-  static const Color warning = Color(0xFFE76F51);
-  static const Color error   = Color(0xFFC0392B);
-  static const Color info    = Color(0xFF3D5A80);
+  // Status colours — always paired with icon/text
+  static const Color success = Color(0xFF2E7D5A); // done
+  static const Color warning = Color(0xFFD4760A); // in-progress / snooze
+  static const Color error   = Color(0xFFC0392B); // missed / alert
+  static const Color info    = Color(0xFF2A5C8A); // upcoming
 
-  // Surface
-  static const Color divider        = Color(0xFFE8E1D5);
-  static const Color surfaceVariant = Color(0xFFF3EDDF);
+  // Surface shades
+  static const Color divider        = Color(0xFFE0DDD8);
+  static const Color surfaceVariant = Color(0xFFEFEBE6);
 
   // Nav
   static const Color navSelected   = primary;
-  static const Color navUnselected = Color(0xFF9E9EAF);
+  static const Color navUnselected = Color(0xFFA0A0B8);
 
   // TTS highlight
   static const Color wordHighlight     = Color(0xFFFFE082);
-  static const Color wordHighlightText = Color(0xFF2B2D42);
+  static const Color wordHighlightText = Color(0xFF1C1C2E);
 
-  static const Color cardBorder = Color(0xFFE8E1D5);
+  static const Color cardBorder = Color(0xFFE0DDD8);
 
-  // Gradient stops for the header hero — Sunset Warmth
+  // Gradient stops for the header hero
   static const List<Color> heroGradient = [
-    Color(0xFFC85A17),
-    Color(0xFFE07A5F),
-    Color(0xFFF4A261),
+    Color(0xFF2A7B6F),
+    Color(0xFF4CA99A),
+    Color(0xFFE8A020),
   ];
 }
 
@@ -66,14 +66,14 @@ class AppGradients {
   static const LinearGradient hero = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFFB84A07), Color(0xFFD96B27), Color(0xFFE88E48)],
+    colors: [Color(0xFF1A5C53), Color(0xFF2A7B6F), Color(0xFF3D9B8D)],
     stops: [0.0, 0.55, 1.0],
   );
 
   static const LinearGradient accentWarm = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFFF4A261), Color(0xFFFFD166)],
+    colors: [Color(0xFFE8A020), Color(0xFFF5C45E)],
   );
 
   static const LinearGradient emergencyGradient = LinearGradient(
@@ -96,7 +96,7 @@ class AppShadows {
 
   static List<BoxShadow> get card => [
     BoxShadow(
-      color: AppColors.primary.withValues(alpha: 0.06),
+      color: AppColors.primary.withValues(alpha: 0.08),
       blurRadius: 16,
       offset: const Offset(0, 4),
     ),

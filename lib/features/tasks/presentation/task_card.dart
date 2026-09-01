@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/task.dart';
+import '../../../core/extensions/l10n_ext.dart';
 import 'alarm_screen.dart';
 
 /// A single task card displayed in the dashboard.
@@ -43,7 +44,7 @@ class TaskCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isDone
-                        ? AppColors.success.withValues(alpha: 0.12)
+                        ? AppColors.success.withOpacity(0.12)
                         : AppColors.surfaceVariant,
                     border: Border.all(
                       color: isDone ? AppColors.success : AppColors.divider,
@@ -88,7 +89,7 @@ class TaskCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.access_time_rounded, size: 15, color: AppColors.textHint),
+                        Icon(Icons.access_time_rounded, size: 15, color: AppColors.textHint),
                         const SizedBox(width: 4),
                         Text(
                           DateFormat('h:mm a').format(task.scheduledAt),
@@ -101,18 +102,21 @@ class TaskCard extends StatelessWidget {
                         // "Added by admin" label
                         if (!isPatientView || task.createdBy == TaskCreator.admin) ...[
                           const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: AppColors.info.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              task.createdBy == TaskCreator.admin ? 'By caregiver' : 'By you',
-                              style: const TextStyle(
-                                fontFamily: 'Nunito',
-                                fontSize: 12,
-                                color: AppColors.info,
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppColors.info.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                task.createdBy == TaskCreator.admin ? context.l.byCaregiver : context.l.byYou,
+                                style: const TextStyle(
+                                  fontFamily: 'Nunito',
+                                  fontSize: 12,
+                                  color: AppColors.info,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ),
@@ -138,20 +142,20 @@ class TaskCard extends StatelessWidget {
                         onSelected: onAction,
                         icon: const Icon(Icons.more_vert, color: AppColors.textSecondary, size: 22),
                         itemBuilder: (_) => [
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'edit',
                             child: Row(children: [
-                              Icon(Icons.edit_outlined, size: 20),
-                              SizedBox(width: 8),
-                              Text('Edit task'),
+                              const Icon(Icons.edit_outlined, size: 20),
+                              const SizedBox(width: 8),
+                              Text(context.l.editTask),
                             ]),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'delete',
                             child: Row(children: [
-                              Icon(Icons.delete_outline, size: 20, color: AppColors.error),
-                              SizedBox(width: 8),
-                              Text('Delete', style: TextStyle(color: AppColors.error)),
+                              const Icon(Icons.delete_outline, size: 20, color: AppColors.error),
+                              const SizedBox(width: 8),
+                              Text(context.l.yesDelete, style: const TextStyle(color: AppColors.error)),
                             ]),
                           ),
                         ],
@@ -191,27 +195,27 @@ class _StatusBadge extends StatelessWidget {
 
     switch (status) {
       case TaskStatus.done:
-        bg = AppColors.success.withValues(alpha: 0.12);
+        bg = AppColors.success.withOpacity(0.12);
         text = AppColors.success;
-        label = 'Done';
+        label = context.l.taskStatusDone;
         icon = Icons.check_circle_rounded;
         break;
       case TaskStatus.inProgress:
-        bg = AppColors.warning.withValues(alpha: 0.12);
+        bg = AppColors.warning.withOpacity(0.12);
         text = AppColors.warning;
-        label = 'In Progress';
+        label = context.l.taskStatusInProgress;
         icon = Icons.timelapse_rounded;
         break;
       case TaskStatus.missed:
-        bg = AppColors.error.withValues(alpha: 0.12);
+        bg = AppColors.error.withOpacity(0.12);
         text = AppColors.error;
-        label = 'Missed';
+        label = context.l.taskStatusMissed;
         icon = Icons.warning_amber_rounded;
         break;
       case TaskStatus.upcoming:
-        bg = AppColors.info.withValues(alpha: 0.10);
+        bg = AppColors.info.withOpacity(0.10);
         text = AppColors.info;
-        label = 'Upcoming';
+        label = context.l.taskStatusUpcoming;
         icon = Icons.schedule_rounded;
         break;
     }
@@ -263,7 +267,7 @@ class _TaskActionsSheet extends StatelessWidget {
           const SizedBox(height: 24),
           _ActionButton(
             icon: Icons.task_alt_rounded,
-            label: 'Mark as Done',
+            label: context.l.markAsDone,
             color: AppColors.success,
             onTap: () {
               Navigator.pop(context);
@@ -273,7 +277,7 @@ class _TaskActionsSheet extends StatelessWidget {
           const SizedBox(height: 12),
           _ActionButton(
             icon: Icons.play_circle_outline_rounded,
-            label: "I'm Starting Now",
+            label: context.l.imStartingNow,
             color: AppColors.warning,
             onTap: () {
               Navigator.pop(context);
@@ -283,7 +287,7 @@ class _TaskActionsSheet extends StatelessWidget {
           const SizedBox(height: 12),
           _ActionButton(
             icon: Icons.alarm_rounded,
-            label: 'Remind Me Later',
+            label: context.l.remindMeLater,
             color: AppColors.info,
             onTap: () {
               Navigator.pop(context);

@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart'; // ChangeNotifier
+import '../core/utils/connectivity.dart';
 import '../data/db/database_helper.dart';
+import 'translation_service.dart';
 
 /// Manages the user's language preferences for NeuroNova.
 ///
@@ -139,6 +141,56 @@ class LanguageService extends ChangeNotifier {
 
   Future<void> _persistGameLanguages() async {
     await DatabaseHelper.instance.setSetting('game_languages', _gameLanguages.join(','));
+  }
+
+  // ── Translation pre-cache ─────────────────────────────────────────────
+
+  /// Call this after language selection (setup or change) while internet may
+  /// be available. Silently pre-translates all English game content into
+  /// [langCode] and caches it permanently in SQLite for offline use.
+  ///
+  /// Never deletes existing caches for other languages.
+  /// Safe to call multiple times — already-cached items are skipped.
+  Future<void> preTranslateIfOnline(
+    String langCode, {
+    void Function(double progress, String status)? onProgress,
+  }) async {
+    if (langCode == 'en' || langCode == 'hi') {
+      // hi has native content in texts.json, en needs no translation
+      // But we should still ensure ML Kit model is downloaded for hi/bn
+      if (langCode == 'hi') {
+        final online = await hasInternet();
+        if (online) await TranslationService.instance.downloadMlKitModel('hi');
+      }
+      return;
+    }
+    // For bn, ne, as: pre-translate all English source content
+    final alreadyReady = await TranslationService.instance.isContentReady(langCode);
+    if (alreadyReady) {
+      onProgress?.call(1.0, 'Already cached');
+      return;
+    }
+    // Ensure ML Kit model downloaded (for bn/ne — uses Hindi bridge offline)
+    await TranslationService.instance.downloadMlKitModel(langCode);
+    await TranslationService.instance.translateAllContent(
+      targetLang: langCode,
+      onProgress: onProgress,
+    );
+  }
+
+  /// On app startup, silently pre-translate for all previously selected
+  /// game languages (if internet available). Runs in background — no blocking.
+  Future<void> prefetchAllGameLanguages() async {
+    final online = await hasInternet();
+    if (!online) return;
+    for (final lang in _gameLanguages) {
+      if (lang == 'en') continue;
+      final ready = await TranslationService.instance.isContentReady(lang);
+      if (!ready) {
+        // Fire and forget — don't await, let it run in background
+        TranslationService.instance.translateAllContent(targetLang: lang);
+      }
+    }
   }
 }
 

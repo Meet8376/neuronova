@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/extensions/l10n_ext.dart';
 import 'admin_dashboard_screen.dart';
 import 'admin_progress_screen.dart';
 import 'care_config_screen.dart';
@@ -47,31 +48,31 @@ class _AdminShellState extends State<AdminShell> {
           currentIndex: _currentIndex,
           type: BottomNavigationBarType.fixed,
           onTap: (i) => setState(() => _currentIndex = i),
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_outlined),
-              activeIcon: Icon(Icons.dashboard_rounded),
-              label: 'Dashboard',
+              icon: const Icon(Icons.dashboard_outlined),
+              activeIcon: const Icon(Icons.dashboard_rounded),
+              label: context.l.adminDashTitle,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_outline_rounded),
-              activeIcon: Icon(Icons.favorite_rounded),
-              label: 'Care Plan',
+              icon: const Icon(Icons.favorite_outline_rounded),
+              activeIcon: const Icon(Icons.favorite_rounded),
+              label: context.l.careplanTitle,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.people_outline_rounded),
-              activeIcon: Icon(Icons.people_rounded),
-              label: 'Patients',
+              icon: const Icon(Icons.people_outline_rounded),
+              activeIcon: const Icon(Icons.people_rounded),
+              label: context.l.patientsTabLabel,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart_outlined),
-              activeIcon: Icon(Icons.bar_chart_rounded),
-              label: 'Progress',
+              icon: const Icon(Icons.bar_chart_outlined),
+              activeIcon: const Icon(Icons.bar_chart_rounded),
+              label: context.l.progressTitle,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline_rounded),
-              activeIcon: Icon(Icons.person_rounded),
-              label: 'Profile',
+              icon: const Icon(Icons.person_outline_rounded),
+              activeIcon: const Icon(Icons.person_rounded),
+              label: context.l.profileTitle,
             ),
           ],
         ),
