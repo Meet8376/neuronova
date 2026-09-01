@@ -1,6 +1,6 @@
 {
-    "name": "neuronova",
-    "short_name": "neuronova",
+    "name": "cognicare_prototype",
+    "short_name": "cognicare_prototype",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/utils/connectivity.dart';
-import '../../../services/language_service.dart';
 import '../../../services/secure_settings_service.dart';
 import '../../role_select/presentation/role_select_screen.dart';
 import '../../auth/login_screen.dart';
-import '../../language/presentation/language_change_sheet.dart';
 
 /// Profile tab — shows name, role, switch role button, settings.
 /// Shared by patient and admin (just different current-role display).
@@ -23,7 +20,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   String _patientName = '';
   String _adminName = '';
   String _caregiverPhone = '';
-  String _currentLangCode = LanguageService.instance.currentLanguage;
+  String _village = '';
+  String _familyNotes = '';
 
   @override
   bool get wantKeepAlive => true;
@@ -38,17 +36,18 @@ class _ProfileScreenState extends State<ProfileScreen>
     final p = await _secure.getPatientName();
     final a = await _secure.getAdminName();
     final ph = await _secure.getCaregiverPhone();
+    final vil = await _secure.getPatientVillage();
+    final fam = await _secure.getFamilyNotes();
     if (!mounted) return;
     setState(() {
       _patientName = p ?? '';
       _adminName = a ?? '';
       _caregiverPhone = ph;
-      _currentLangCode = LanguageService.instance.currentLanguage;
+      _village = vil;
+      _familyNotes = fam;
     });
   }
 
-  /// Clears UUID session token → returns to LoginScreen.
-  /// Names and task/game history are preserved.
   Future<void> _logout() async {
     await _secure.logout();
     if (!mounted) return;
@@ -56,34 +55,6 @@ class _ProfileScreenState extends State<ProfileScreen>
       MaterialPageRoute(builder: (_) => const LoginScreen()),
       (_) => false,
     );
-  }
-
-  Future<void> _changeLanguage() async {
-    // Language ARBs are compiled into the app — no internet needed
-    final newLang = await showModalBottomSheet<String>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => LanguageChangeSheet(currentCode: _currentLangCode),
-    );
-
-    if (newLang != null && newLang != _currentLangCode) {
-      await LanguageService.instance.setCurrentLanguage(newLang);
-      if (!mounted) return;
-      setState(() => _currentLangCode = newLang);
-      // No need to restart — ListenableBuilder in main.dart already rebuilds MaterialApp
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Language changed to ${LanguageService.supportedLanguages[newLang]?.name ?? newLang}',
-            style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600),
-          ),
-          backgroundColor: AppColors.primary,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
-    }
   }
 
   Future<void> _resetSetup() async {
@@ -150,6 +121,79 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
   }
 
+  Future<void> _editVillage() async {
+    final ctrl = TextEditingController(text: _village);
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Patient Home Village/Location',
+            style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)),
+        content: TextField(
+          controller: ctrl,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Village / Town name',
+            helperText: 'Used for Dementia Reality Orientation',
+            prefixIcon: Icon(Icons.location_on_rounded),
+          ),
+          style: const TextStyle(fontFamily: 'Nunito', fontSize: 18),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    if (result != null && result.isNotEmpty) {
+      await _secure.setPatientVillage(result);
+      if (!mounted) return;
+      setState(() => _village = result);
+    }
+  }
+
+  Future<void> _editFamilyNotes() async {
+    final ctrl = TextEditingController(text: _familyNotes);
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Family Members & Notes',
+            style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w700)),
+        content: TextField(
+          controller: ctrl,
+          maxLines: 2,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Family details',
+            helperText: 'e.g. Son: Rajesh (lives nearby) · Daughter: Meena',
+            prefixIcon: Icon(Icons.family_restroom_rounded),
+          ),
+          style: const TextStyle(fontFamily: 'Nunito', fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    if (result != null && result.isNotEmpty) {
+      await _secure.setFamilyNotes(result);
+      if (!mounted) return;
+      setState(() => _familyNotes = result);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -172,12 +216,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                   Container(
                     width: 100,
                     height: 100,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [AppColors.primary, AppColors.primaryLight],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                    decoration: const BoxDecoration(
+                      gradient: AppGradients.hero,
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -195,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   const SizedBox(height: 16),
                   Text(
                     displayName.isEmpty ? 'Profile' : displayName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 26,
                       fontWeight: FontWeight.w800,
@@ -237,12 +277,26 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
             const SizedBox(height: 32),
 
-            // People section
-            _Section(label: 'People'),
+            // People & Reminiscence Details
+            _Section(label: widget.isAdmin ? 'Patient Reminiscence Details' : 'Identity Details'),
             _InfoRow(
               icon: Icons.elderly,
-              label: 'Patient',
+              label: 'Patient Name',
               value: _patientName.isEmpty ? 'Not set' : _patientName,
+            ),
+            const SizedBox(height: 4),
+            _InfoRow(
+              icon: Icons.location_on_rounded,
+              label: 'Home Village',
+              value: _village.isEmpty ? 'Not set' : _village,
+              onTap: widget.isAdmin ? _editVillage : null,
+            ),
+            const SizedBox(height: 4),
+            _InfoRow(
+              icon: Icons.family_restroom_rounded,
+              label: 'Family Members',
+              value: _familyNotes.isEmpty ? 'Not set' : _familyNotes,
+              onTap: widget.isAdmin ? _editFamilyNotes : null,
             ),
             const SizedBox(height: 4),
             _InfoRow(
@@ -250,7 +304,6 @@ class _ProfileScreenState extends State<ProfileScreen>
               label: 'Caregiver',
               value: _adminName.isEmpty ? 'Not set' : _adminName,
             ),
-            // Admin-only: editable emergency contact number
             if (widget.isAdmin) ...[
               const SizedBox(height: 4),
               _InfoRow(
@@ -260,44 +313,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                 onTap: _editPhone,
               ),
             ],
-            const SizedBox(height: 20),
-
-            // Language
-            _Section(label: 'Language'),
-            Builder(builder: (context) {
-              final info = LanguageService.supportedLanguages[_currentLangCode];
-              return Card(
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  leading: const Icon(Icons.translate_rounded,
-                      color: AppColors.primary, size: 26),
-                  title: Text(
-                    info?.nativeName ?? _currentLangCode,
-                    style: const TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  subtitle: Text(
-                    info?.name ?? '',
-                    style: TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 13,
-                        color: AppColors.textHint),
-                  ),
-                  trailing: TextButton.icon(
-                    onPressed: _changeLanguage,
-                    icon: const Icon(Icons.wifi_rounded, size: 16),
-                    label: const Text('Change'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      textStyle: const TextStyle(
-                          fontFamily: 'Nunito', fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                ),
-              );
-            }),
             const SizedBox(height: 20),
 
             // Logout
@@ -313,7 +328,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         fontFamily: 'Nunito',
                         fontSize: 17,
                         fontWeight: FontWeight.w600)),
-                subtitle: Text(
+                subtitle: const Text(
                   'Return to the login screen',
                   style: TextStyle(
                       fontFamily: 'Nunito',
@@ -365,7 +380,7 @@ class _Section extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(label,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Nunito',
             fontSize: 13,
             fontWeight: FontWeight.w700,
@@ -401,10 +416,15 @@ class _InfoRow extends StatelessWidget {
               Icon(icon, color: AppColors.primary, size: 22),
               const SizedBox(width: 12),
               Text(label,
-                  style: TextStyle(fontFamily: 'Nunito', fontSize: 16, color: AppColors.textSecondary)),
+                  style: const TextStyle(fontFamily: 'Nunito', fontSize: 16, color: AppColors.textSecondary)),
               const Spacer(),
-              Text(value,
-                  style: TextStyle(fontFamily: 'Nunito', fontSize: 17, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+              Flexible(
+                child: Text(
+                  value,
+                  style: const TextStyle(fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
               if (onTap != null) ...[
                 const SizedBox(width: 8),
                 const Icon(Icons.edit_rounded, size: 16, color: AppColors.textHint),

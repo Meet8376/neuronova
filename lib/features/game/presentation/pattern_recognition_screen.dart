@@ -4,7 +4,6 @@ import 'package:uuid/uuid.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/db/database_helper.dart';
 import '../../../services/adaptive_difficulty_service.dart';
-import '../../../core/extensions/l10n_ext.dart';
 
 class PatternQuestion {
   final List<IconData> sequence;
@@ -152,7 +151,7 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
           children: [
             const Icon(Icons.stars_rounded, color: Colors.purple, size: 36),
             const SizedBox(width: 12),
-            Text(context.l.patternCompleted, style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
+            const Text('Pattern Completed!', style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
           ],
         ),
         content: Column(
@@ -160,7 +159,7 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              context.l.youSolved(_correctAnswers, _questions.length, _elapsedSeconds),
+              'You solved $_correctAnswers out of ${_questions.length} pattern sequences correctly in ${_elapsedSeconds}s!',
               style: const TextStyle(fontFamily: 'Nunito', fontSize: 16),
             ),
             const SizedBox(height: 16),
@@ -191,7 +190,7 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
               Navigator.pop(ctx);
               Navigator.pop(context);
             },
-            child: Text(context.l.backToGames, style: const TextStyle(color: Colors.white, fontFamily: 'Nunito')),
+            child: const Text('Back to Games', style: TextStyle(color: Colors.white, fontFamily: 'Nunito')),
           ),
         ],
       ),
@@ -205,7 +204,7 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
       appBar: AppBar(
-        title: Text(context.l.patternRecognitionTitle, style: const TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
+        title: const Text('Pattern Recognition', style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -219,8 +218,8 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    context.l.questionLabel(_currentIndex + 1, _questions.length),
-                    style: const TextStyle(
+                    'Question ${_currentIndex + 1}/${_questions.length}',
+                    style: TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -250,8 +249,8 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                context.l.lookAtPattern,
-                style: const TextStyle(
+                'Look at the pattern below. Which motif comes next?',
+                style: TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 16,
                   color: AppColors.textSecondary,
@@ -302,8 +301,8 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
               const SizedBox(height: 36),
 
               Text(
-                context.l.selectCorrectMotif,
-                style: const TextStyle(
+                'Select the correct motif:',
+                style: TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

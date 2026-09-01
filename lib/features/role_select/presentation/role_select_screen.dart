@@ -73,7 +73,7 @@ class _RoleSelectScreenState extends State<RoleSelectScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('NeuroNova',
+                        Text('CogniCare',
                             style: TextStyle(
                               fontFamily: 'Nunito',
                               fontSize: 28,

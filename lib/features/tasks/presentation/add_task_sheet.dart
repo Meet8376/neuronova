@@ -118,57 +118,6 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             const SizedBox(height: 20),
 
             // Task name
-            // Admin quick-pick suggestions (game + other common tasks)
-            if (widget.createdBy == TaskCreator.admin) ...[
-              Text(
-                'Quick pick',
-                style: TextStyle(
-                  fontFamily: 'Nunito',
-                  fontSize: 14,
-                  color: AppColors.textHint,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Wrap(
-                spacing: 8,
-                runSpacing: 6,
-                children: [
-                  _QuickChip(emoji: '🧠', label: 'Cognitive Game',    name: 'Cognitive Game Session',   nameCtrl: _nameCtrl, setState: setState),
-                  _QuickChip(emoji: '💊', label: 'Take Medicine',    name: 'Take Medicine',            nameCtrl: _nameCtrl, setState: setState),
-                  _QuickChip(emoji: '🚶', label: 'Walk',             name: 'Morning Walk',             nameCtrl: _nameCtrl, setState: setState),
-                  _QuickChip(emoji: '📞', label: 'Family Call',     name: 'Call family member',       nameCtrl: _nameCtrl, setState: setState),
-                  _QuickChip(emoji: '📝', label: 'Doctor Appt.',   name: 'Doctor appointment',       nameCtrl: _nameCtrl, setState: setState),
-                  // 'Other' clears the field so caregiver can type a custom name
-                  GestureDetector(
-                    onTap: () {
-                      setState(() => _nameCtrl.clear());
-                      // A tiny delay so the field renders before requesting focus
-                      Future.delayed(const Duration(milliseconds: 80), () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.08),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
-                      ),
-                      child: Text(
-                        '✏️ Other',
-                        style: TextStyle(
-                          fontFamily: 'Nunito',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-            ],
             TextFormField(
               controller: _nameCtrl,
               autofocus: true,
@@ -286,48 +235,6 @@ class _DateTimeButton extends StatelessWidget {
                   color: AppColors.textPrimary,
                 )),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Quick-pick suggestion chip — fills the task name field when tapped.
-/// Only shown in admin (caregiver) task creation mode.
-class _QuickChip extends StatelessWidget {
-  final String emoji;
-  final String label;
-  final String name;
-  final TextEditingController nameCtrl;
-  final void Function(void Function()) setState;
-
-  const _QuickChip({
-    required this.emoji,
-    required this.label,
-    required this.name,
-    required this.nameCtrl,
-    required this.setState,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => setState(() => nameCtrl.text = name),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceVariant,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.divider),
-        ),
-        child: Text(
-          '$emoji $label',
-          style: TextStyle(
-            fontFamily: 'Nunito',
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
         ),
       ),
     );

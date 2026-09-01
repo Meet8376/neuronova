@@ -26,7 +26,15 @@ class NotificationService {
     tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
 
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const initSettings = InitializationSettings(android: androidSettings);
+
+	const linuxSettings = LinuxInitializationSettings(
+	  defaultActionName: 'Open notification',
+	);
+
+	const initSettings = InitializationSettings(
+	  android: androidSettings,
+	  linux: linuxSettings,
+	);
 
     await _plugin.initialize(
       initSettings,
@@ -36,8 +44,8 @@ class NotificationService {
 
     // Create the high-priority alarm channel
     const channel = AndroidNotificationChannel(
-      'neuronova_alarms',
-      'NeuroNova Alarms',
+      'cognicare_alarms',
+      'CogniCare Alarms',
       description: 'Full-screen reminders for tasks and medicines',
       importance: Importance.max,
       playSound: true,
@@ -130,8 +138,8 @@ class NotificationService {
 
   AndroidNotificationDetails _buildAndroidDetails(String body) {
     return AndroidNotificationDetails(
-      'neuronova_alarms',
-      'NeuroNova Alarms',
+      'cognicare_alarms',
+      'CogniCare Alarms',
       channelDescription: 'Full-screen reminders for tasks and medicines',
       importance: Importance.max,
       priority: Priority.high,

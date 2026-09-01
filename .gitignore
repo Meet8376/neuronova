@@ -48,11 +48,7 @@ app.*.map.json
 # AI planning notes — internal only, not relevant to developers
 specs/
 
-# AI settings and custom rules
-.agents/
-
-# Internal planning / AI session docs — not for developers
-walkthrough.md
+# PRD and personal planning docs
 docs.md
 
 # Flutter plugins list (auto-generated)

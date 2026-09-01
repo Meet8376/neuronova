@@ -4,17 +4,11 @@ import '../../../core/theme/app_theme.dart';
 import '../../../data/models/game_session.dart';
 import '../../../data/models/content_item.dart';
 import '../../../data/repositories/game_repository.dart';
-import '../../../core/extensions/l10n_ext.dart';
 import '../../game/presentation/read_memorize_hub_screen.dart';
+import '../../game/presentation/game_hub_screen.dart';
 
-/// Practice tab (Patient view) — formerly called "Progress"
-/// Shows warm, encouraging history of past sessions.
-///
-/// CRITICAL RULE (per specs/features/elderly_ux_spec.md Part 7):
-///   - Session cards show: date, stars (based on score tier), warm message, category
-///   - Session cards do NOT show: score %, word counts, what they said, difficulty number
-///   - Once a patient leaves the game screen, past mistakes are NEVER shown again
-///   - Admin sees full clinical data on the admin progress view
+/// Practice tab (Patient view)
+/// Shows warm, encouraging history of past sessions and practice launcher.
 class ProgressScreen extends StatefulWidget {
   const ProgressScreen({super.key});
 
@@ -46,6 +40,113 @@ class _ProgressScreenState extends State<ProgressScreen>
     });
   }
 
+  void _openPracticeChooser() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        decoration: const BoxDecoration(
+          color: AppColors.cardBgWarm,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 44,
+                height: 5,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: AppColors.divider,
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+            ),
+            const Text(
+              'Choose Practice Activity',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Select what you would like to practice today:',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 14,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: ListTile(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                tileColor: Colors.white,
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.menu_book_rounded, color: AppColors.primary, size: 26),
+                ),
+                title: const Text('Read, Memorize & Speak',
+                    style: TextStyle(fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.w700)),
+                subtitle: const Text('Read passages aloud and test memory recall',
+                    style: TextStyle(fontFamily: 'Nunito', fontSize: 13)),
+                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ReadMemorizeHubScreen()),
+                  ).then((_) => _load());
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: ListTile(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                tileColor: Colors.white,
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF9C27B0).withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.extension_rounded, color: Color(0xFF9C27B0), size: 26),
+                ),
+                title: const Text('Brain & Memory Games',
+                    style: TextStyle(fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.w700)),
+                subtitle: const Text('Picture matching, routine recall & pattern recognition',
+                    style: TextStyle(fontFamily: 'Nunito', fontSize: 13)),
+                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const GameHubScreen()),
+                  ).then((_) => _load());
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // Group sessions by date for display
   List<GameSession> get _todaysSessions {
     final now = DateTime.now();
@@ -56,8 +157,13 @@ class _ProgressScreenState extends State<ProgressScreen>
     }).toList();
   }
 
-  String _encouragementMessage(BuildContext context) {
-    return context.l.practiseMemoryHint; // Using the localized hint for encouragement
+  String get _encouragementMessage {
+    final count = _todaysSessions.length;
+    if (count == 0) return 'Ready for a brain workout today? 🌟';
+    if (count == 1) return 'Great start today! Keep it up! 💪';
+    if (count == 2) return 'You\'re doing wonderful today! 🌸';
+    if (count >= 3) return 'Amazing effort today! You\'re a star! ⭐';
+    return 'Keep going! Every practice counts! 🎯';
   }
 
   @override
@@ -72,7 +178,7 @@ class _ProgressScreenState extends State<ProgressScreen>
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
               child: Text(
-                context.l.practiceTitle,
+                'Practice ✨',
                 style: const TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 28,
@@ -109,7 +215,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                       child: Column(
                         children: [
                           Text(
-                            _encouragementMessage(context),
+                            _encouragementMessage,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontFamily: 'Nunito',
@@ -125,16 +231,17 @@ class _ProgressScreenState extends State<ProgressScreen>
                               children: [
                                 _CountBadge(
                                   icon: Icons.today_rounded,
-                                  label: context.l.todayLabel,
+                                  label: 'Today',
                                   count: _todaysSessions.length,
                                 ),
                                 Container(
-                                  width: 1, height: 40,
+                                  width: 1,
+                                  height: 40,
                                   color: AppColors.primary.withOpacity(0.2),
                                 ),
                                 _CountBadge(
                                   icon: Icons.history_rounded,
-                                  label: context.l.totalLabel,
+                                  label: 'Total',
                                   count: _sessions.length,
                                 ),
                               ],
@@ -146,9 +253,9 @@ class _ProgressScreenState extends State<ProgressScreen>
                     const SizedBox(height: 24),
 
                     // Past sessions — warm cards, no scores, no mistakes
-                    Text(
-                      context.l.whatYouPractised,
-                      style: const TextStyle(
+                    const Text(
+                      'What you practised',
+                      style: TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -162,12 +269,13 @@ class _ProgressScreenState extends State<ProgressScreen>
                     const SizedBox(height: 24),
                     Center(
                       child: ElevatedButton.icon(
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const ReadMemorizeHubScreen()),
-                        ).then((_) => _load()),
-                        icon: const Icon(Icons.menu_book_rounded, size: 24),
-                        label: Text(context.l.practiceAgain),
+                        onPressed: _openPracticeChooser,
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(200, 50),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        icon: const Icon(Icons.play_circle_fill_rounded, size: 24),
+                        label: const Text('Practice Again', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                       ),
                     ),
                   ],
@@ -188,9 +296,9 @@ class _ProgressScreenState extends State<ProgressScreen>
           children: [
             Icon(Icons.psychology_rounded, size: 80, color: AppColors.primary.withOpacity(0.4)),
             const SizedBox(height: 20),
-            Text(
-              context.l.readyToBegin,
-              style: const TextStyle(
+            const Text(
+              'Ready to begin?',
+              style: TextStyle(
                 fontFamily: 'Nunito',
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
@@ -198,10 +306,10 @@ class _ProgressScreenState extends State<ProgressScreen>
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              context.l.practiseMemoryHint,
+            const Text(
+              'Practise your memory — every session helps your brain stay sharp!',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Nunito',
                 fontSize: 17,
                 color: AppColors.textHint,
@@ -210,12 +318,13 @@ class _ProgressScreenState extends State<ProgressScreen>
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ReadMemorizeHubScreen()),
-              ).then((_) => _load()),
-              icon: const Icon(Icons.menu_book_rounded, size: 24),
-              label: Text(context.l.startPractising),
+              onPressed: _openPracticeChooser,
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(220, 54),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              icon: const Icon(Icons.play_circle_fill_rounded, size: 26),
+              label: const Text('Start Practising', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
             ),
           ],
         ),
@@ -223,8 +332,6 @@ class _ProgressScreenState extends State<ProgressScreen>
     );
   }
 }
-
-// ─── Count badge ────────────────────────────────────────────────────────────────
 
 class _CountBadge extends StatelessWidget {
   final IconData icon;
@@ -243,7 +350,7 @@ class _CountBadge extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               '$count',
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Nunito',
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
@@ -254,7 +361,7 @@ class _CountBadge extends StatelessWidget {
         ),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Nunito',
             fontSize: 13,
             color: AppColors.textHint,
@@ -264,8 +371,6 @@ class _CountBadge extends StatelessWidget {
     );
   }
 }
-
-// ─── Session card (stars + warm message — NO score, NO word count) ─────────────
 
 class _SessionCard extends StatelessWidget {
   final GameSession session;
@@ -277,15 +382,14 @@ class _SessionCard extends StatelessWidget {
     return 1;
   }
 
-  String _warmMessage(BuildContext context) {
-    if (session.scorePercent >= 70) return context.l.warmMessage3Stars;
-    if (session.scorePercent >= 40) return context.l.warmMessage2Stars;
-    return context.l.warmMessage1Star;
+  String get _warmMessage {
+    if (session.scorePercent >= 70) return 'Wonderful practice!';
+    if (session.scorePercent >= 40) return 'Great effort today!';
+    return 'Every practice helps! ❤️';
   }
 
   @override
   Widget build(BuildContext context) {
-    // Format: "Tuesday, 26 Aug · 3:45 PM"
     final dayStr = DateFormat('EEE, d MMM').format(session.playedAt);
     final timeStr = DateFormat('h:mm a').format(session.playedAt);
 
@@ -299,7 +403,6 @@ class _SessionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top row: game icon + title + stars
             Row(
               children: [
                 Container(
@@ -338,7 +441,6 @@ class _SessionCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Stars — warm, non-numeric indicator
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: List.generate(
@@ -357,12 +459,11 @@ class _SessionCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            // Warm message + category pill
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    _warmMessage(context),
+                    _warmMessage,
                     style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 15,

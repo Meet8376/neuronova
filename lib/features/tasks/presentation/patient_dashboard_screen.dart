@@ -1,27 +1,24 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/extensions/l10n_ext.dart';
 import '../../../data/models/task.dart';
 import '../../../data/repositories/task_repository.dart';
 import '../../../services/secure_settings_service.dart';
 import '../../../services/notification_service.dart';
+import '../../../services/tts_service.dart';
+import '../../patient/presentation/identity_card_sheet.dart';
+import '../../patient/presentation/memory_gallery_sheet.dart';
+import '../../patient/presentation/safe_zone_sheet.dart';
+import '../../../services/offline_location_service.dart';
+import 'hydration_sheet.dart';
+import 'breathing_sheet.dart';
 import 'add_task_sheet.dart';
 import 'task_card.dart';
 import 'all_tasks_screen.dart';
 
-/// Patient home screen — the first thing they see every day.
-///
-/// Per specs/screens/screens.md P1 and elderly_ux_spec.md:
-///   - Greeting + reality orientation date+time line (one combined block)
-///   - Today's tasks sorted by time
-///   - Emergency call button placeholder (feature pending)
-///   - FAB for adding own tasks
-///
-/// Health is now its own primary tab — NOT shown here as a sub-tab.
-/// The DefaultTabController that was here before is gone.
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({super.key});
 
@@ -31,18 +28,22 @@ class PatientDashboardScreen extends StatefulWidget {
 
 class _PatientDashboardScreenState extends State<PatientDashboardScreen>
     with AutomaticKeepAliveClientMixin {
-  final _repo = TaskRepository();
+  final _repo   = TaskRepository();
   final _secure = SecureSettingsService.instance;
+  final _tts    = TtsService.instance;
 
-  String _patientName = '';
-  String _caregiverName = '';
+  String _patientName    = '';
+  String _caregiverName  = 'Caregiver';
   String _caregiverPhone = '';
   List<Task> _todayTasks = [];
-  bool _loading = true;
+  bool _loading          = true;
+  bool _ttsSpeaking      = false;
 
-  // Live clock — updates every minute for reality orientation
-  late Timer _clockTimer;
+  Timer? _timer;
   DateTime _now = DateTime.now();
+
+  StreamSubscription<LocationPoint>? _locationSub;
+  bool _hasShownSafeZoneDialog = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -51,42 +52,135 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   void initState() {
     super.initState();
     _load();
-    // Tick every 30s: updates clock display every minute, refreshes tasks on every tick.
-    // This ensures admin-added tasks appear within 30s without requiring logout.
-    _clockTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (mounted) {
-        final now = DateTime.now();
-        setState(() => _now = now);
-        // Refresh task list on every tick so admin-added tasks show up promptly
-        _load();
+    _initTts();
+    _timer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() => _now = DateTime.now());
+    });
+
+    _locationSub = OfflineLocationService.instance.locationStream.listen((point) {
+      final isOutside = OfflineLocationService.instance.safeZoneStatus == SafeZoneStatus.outside;
+      if (isOutside && !_hasShownSafeZoneDialog && mounted) {
+        _hasShownSafeZoneDialog = true;
+        _showSafeZoneSheet();
+      } else if (!isOutside) {
+        _hasShownSafeZoneDialog = false;
       }
     });
   }
 
+  Future<void> _initTts() async {
+    await _tts.init();
+    _tts.onComplete = () { if (mounted) setState(() => _ttsSpeaking = false); };
+  }
+
   @override
   void dispose() {
-    _clockTimer.cancel();
+    _locationSub?.cancel();
+    _timer?.cancel();
+    _tts.stop();
     super.dispose();
   }
 
   Future<void> _load() async {
-    final name = await _secure.getPatientName();
-    final cName = await _secure.getAdminName();
-    final phone = await _secure.getCaregiverPhone();
-    final tasks = await _repo.getTodayTasks();
+    final name   = await _secure.getPatientName();
+    final cName  = await _secure.getAdminName();
+    final cPhone = await _secure.getCaregiverPhone();
+    final tasks  = await _repo.getTodayTasks();
     if (!mounted) return;
     setState(() {
-      _patientName = name ?? '';
-      _caregiverName = cName ?? 'Caregiver';
-      _caregiverPhone = phone;
-      _todayTasks = tasks;
-      _loading = false;
+      _patientName    = name ?? '';
+      _caregiverName  = cName ?? 'Caregiver';
+      _caregiverPhone = cPhone;
+      _todayTasks     = tasks;
+      _loading        = false;
     });
   }
 
-  // ── Greeting helpers — now computed inside build() with context ────────────────
+  // ── TTS ────────────────────────────────────────────────────────────────────
 
-  // ── Actions ────────────────────────────────────────────────────────────────
+  Future<void> _toggleTts() async {
+    if (_ttsSpeaking) {
+      await _tts.stop();
+      setState(() => _ttsSpeaking = false);
+    } else {
+      if (_todayTasks.isEmpty) {
+        await _tts.speak('You have no tasks for today. Enjoy your day!');
+      } else {
+        final text = StringBuffer('You have ${_todayTasks.length} tasks today. ');
+        for (final t in _todayTasks) {
+          text.write('${t.name}. ');
+        }
+        await _tts.speak(text.toString());
+      }
+      setState(() => _ttsSpeaking = true);
+    }
+  }
+
+  void _showIdentitySheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const IdentityCardSheet(),
+    );
+  }
+
+  void _showHydrationSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const HydrationSheet(),
+    );
+  }
+
+  void _showBreathingSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const BreathingSheet(),
+    );
+  }
+
+  void _showMemoryGallerySheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const MemoryGallerySheet(),
+    );
+  }
+
+  void _showSafeZoneSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const SafeZoneSheet(),
+    );
+  }
+
+  // ── Greeting ───────────────────────────────────────────────────────────────
+
+  String get _greeting {
+    final h = _now.hour;
+    if (h < 12) return 'Good Morning';
+    if (h < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  }
+
+  String get _greetingEmoji {
+    final h = _now.hour;
+    if (h < 12) return '🌅';
+    if (h < 17) return '☀️';
+    return '🌙';
+  }
+
+  String get _dateTimeLine =>
+      '${DateFormat('EEEE, d MMMM yyyy').format(_now)} · ${DateFormat('h:mm a').format(_now)}';
+
+  // ── Task actions ───────────────────────────────────────────────────────────
 
   Future<void> _addTask() async {
     final result = await showModalBottomSheet<bool>(
@@ -102,12 +196,10 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
     switch (action) {
       case 'done':
         await _repo.updateStatus(task.id, TaskStatus.done);
-        // Cancel the alarm — patient confirmed they're done
         await NotificationService.instance.cancel(task.notifId);
         break;
       case 'in_progress':
         await _repo.updateStatus(task.id, TaskStatus.inProgress);
-        // Cancel pending alarm — they've acknowledged it
         await NotificationService.instance.cancel(task.notifId);
         break;
       case 'delete':
@@ -117,243 +209,396 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
           await NotificationService.instance.cancel(task.notifId);
         }
         break;
-      case 'edit':
-        // TODO: open edit sheet
-        break;
     }
     _load();
   }
 
-  Future<bool?> _showDeleteConfirm(String taskName) {
-    return showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(ctx.l.deleteTaskTitle),
-        content: Text('Remove "$taskName"? This cannot be undone.'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
-          TextButton(
+  Future<bool?> _showDeleteConfirm(String name) => showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Delete task?'),
+          content: Text('Remove "$name"?'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+            TextButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: TextButton.styleFrom(foregroundColor: AppColors.error),
-              child: Text(ctx.l.yesDelete)),
-        ],
+              child: const Text('Yes, Delete'),
+            ),
+          ],
+        ),
+      );
+
+  // ── Emergency call ─────────────────────────────────────────────────────────
+
+  Future<void> _callCaregiver() async {
+    HapticFeedback.heavyImpact();
+    await _tts.speak('Don\'t worry, help is right here. You can call your caregiver or send an emergency location message.');
+    
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Icon(Icons.emergency_rounded, color: AppColors.emergency, size: 32),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Emergency SOS', style: TextStyle(fontFamily: 'Nunito', fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.emergency)),
+                      Text('Caregiver: $_caregiverName', style: const TextStyle(fontFamily: 'Nunito', fontSize: 14, color: AppColors.textSecondary)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            // Button 1: Direct Call
+            ElevatedButton.icon(
+              onPressed: () async {
+                Navigator.pop(ctx);
+                final uri = Uri(scheme: 'tel', path: _caregiverPhone);
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
+                } else {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Please call $_caregiverName manually: $_caregiverPhone'), backgroundColor: AppColors.error),
+                  );
+                }
+              },
+              icon: const Icon(Icons.phone_in_talk_rounded, size: 24),
+              label: Text('Call $_caregiverName ($_caregiverPhone)', style: const TextStyle(fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.w700)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.emergency,
+                foregroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(54),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Button 2: Send Emergency SMS with GPS
+            OutlinedButton.icon(
+              onPressed: () async {
+                Navigator.pop(ctx);
+                final msg = OfflineLocationService.instance.generateSmsLocationMessage(_patientName);
+                final Uri smsUri = Uri.parse('sms:$_caregiverPhone?body=${Uri.encodeComponent(msg)}');
+                try {
+                  if (await canLaunchUrl(smsUri)) {
+                    await launchUrl(smsUri);
+                  } else {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Emergency Location:\n$msg'), duration: const Duration(seconds: 5)),
+                    );
+                  }
+                } catch (_) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Location:\n$msg')),
+                  );
+                }
+              },
+              icon: const Icon(Icons.sms_rounded, size: 24, color: AppColors.primary),
+              label: const Text('Send Emergency Location SMS', style: TextStyle(fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.primary)),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(54),
+                side: const BorderSide(color: AppColors.primary, width: 2),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Button 3: Guide Me Home
+            TextButton.icon(
+              onPressed: () {
+                Navigator.pop(ctx);
+                _showSafeZoneSheet();
+              },
+              icon: const Icon(Icons.navigation_rounded, color: AppColors.accent),
+              label: const Text('Guide Me Home (Voice Compass)', style: TextStyle(fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.accent)),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }
+
+  // ─────────────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    // Greeting computed here so it uses AppLocalizations
-    final t = context.l;
-    final h = _now.hour;
-    final greeting = h < 12 ? t.goodMorning : (h < 17 ? t.goodAfternoon : t.goodEvening);
-    final greetingEmoji = h < 12 ? '🌅' : (h < 17 ? '🌞' : '🌙');
-    final dateTimeLine = '${DateFormat('EEEE, d MMMM yyyy').format(_now)} · ${DateFormat('h:mm a').format(_now)}';
-
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ── Greeting + Reality Orientation ─────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Greeting line — large and warm
-                  Text(
-                    '$greeting, $_patientName $greetingEmoji',
-                    style: AppTextStyles.greeting(context),
-                  ),
-                  const SizedBox(height: 4),
-                  // Date + time line — reality orientation
-                  Text(
-                    dateTimeLine,
-                    style: AppTextStyles.dateText(context),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
+      body: Column(
+        children: [
+          // ── Gradient hero header ──────────────────────────────────────────
+          _HeroHeader(
+            greeting: '$_greeting, $_patientName $_greetingEmoji',
+            dateTimeLine: _dateTimeLine,
+            caregiverName: _caregiverName,
+            onSosTap: _callCaregiver,
+            onWhoAmITap: _showIdentitySheet,
+          ),
 
-            // ── Section header ─────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: [
-                  const Icon(Icons.today_rounded,
-                      size: 22, color: AppColors.primary),
-                  const SizedBox(width: 8),
-                  Text(
-                    t.todaysTasks,
-                    style: AppTextStyles.sectionHeader(context),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
+          // ── Quick action pills ────────────────────────────────────────────
+          _QuickActions(
+            onTtsToggle: _toggleTts,
+            ttsSpeaking: _ttsSpeaking,
+            onWhoAmITap: _showIdentitySheet,
+            onHydrationTap: _showHydrationSheet,
+            onBreatheTap: _showBreathingSheet,
+            onMemoriesTap: _showMemoryGallerySheet,
+            onSafeZoneTap: _showSafeZoneSheet,
+          ),
 
-            // ── Task list ──────────────────────────────────────────────────
-            Expanded(
-              child: _loading
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                          color: AppColors.primary))
-                  : _todayTasks.isEmpty
-                      ? _buildEmptyTasks()
-                      : ListView(
-                          padding:
-                              const EdgeInsets.fromLTRB(20, 0, 20, 180),
-                          children: [
-                            ...(_todayTasks.map((t) => TaskCard(
+          // ── Section header ────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+            child: Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text("Today's Tasks", style: AppTextStyles.sectionHeader(context)),
+                const Spacer(),
+                if (!_loading)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '${_todayTasks.length}',
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          // ── Task list ─────────────────────────────────────────────────────
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                : _todayTasks.isEmpty
+                    ? _buildEmpty()
+                    : ListView(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                        children: [
+                          ...(_todayTasks.map((t) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: TaskCard(
                                   task: t,
                                   isPatientView: true,
-                                  onAction: (action) =>
-                                      _onTaskAction(t, action),
-                                ))),
-                            const SizedBox(height: 8),
-                            TextButton.icon(
-                               onPressed: () => Navigator.push(
-                                 context,
-                                 MaterialPageRoute(
-                                     builder: (_) => const AllTasksScreen()),
-                               ).then((_) => _load()),
-                               icon: const Icon(
-                                   Icons.calendar_today_outlined,
-                                   size: 20),
-                               label: Text(t.seeAllTasks),
-                             ),
-                          ],
-                        ),
-            ),
-          ],
-        ),
-      ),
-
-      // ── FAB + Emergency call ─────────────────────────────────────────────
-      // Emergency call button sits above the FAB
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          // Emergency contact — live dialer
-          _EmergencyCallButton(
-            caregiverName: _caregiverName,
-            caregiverPhone: _caregiverPhone,
-          ),
-          const SizedBox(height: 12),
-          FloatingActionButton.extended(
-            heroTag: 'add_task_fab',
-            onPressed: _addTask,
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            icon: const Icon(Icons.add_rounded, size: 28),
-            label: Text(
-              t.addTask,
-              style: const TextStyle(
-                  fontFamily: 'Nunito',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700),
-            ),
+                                  onAction: (a) => _onTaskAction(t, a),
+                                ),
+                              ))),
+                          Center(
+                            child: TextButton.icon(
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const AllTasksScreen()),
+                              ).then((_) => _load()),
+                              icon: const Icon(Icons.calendar_today_outlined, size: 18),
+                              label: const Text('See all tasks'),
+                            ),
+                          ),
+                        ],
+                      ),
           ),
         ],
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'add_task_fab',
+        onPressed: _addTask,
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add_rounded, size: 30),
       ),
     );
   }
 
-  Widget _buildEmptyTasks() {
-    final t = context.l;
+  Widget _buildEmpty() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.check_circle_outline,
-              size: 72, color: AppColors.textHint),
-          const SizedBox(height: 16),
-          Text(
-            t.noTasksToday,
-            style: AppTextStyles.sectionHeader(context)
-                .copyWith(color: AppColors.textSecondary),
+          Container(
+            width: 88,
+            height: 88,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.08),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.check_circle_outline_rounded,
+                size: 48, color: AppColors.primary.withOpacity(0.5)),
           ),
-          const SizedBox(height: 8),
-          Text(
-            t.noTasksHint,
-            style: AppTextStyles.cardSubtitle(context),
-          ),
+          const SizedBox(height: 18),
+          Text('All clear!',
+              style: AppTextStyles.sectionHeader(context)
+                  .copyWith(color: AppColors.textSecondary)),
+          const SizedBox(height: 6),
+          Text('No tasks for today — tap + to add one',
+              style: AppTextStyles.label(context)),
         ],
       ),
     );
   }
 }
 
-// ─── Emergency Call Button ──────────────────────────────────────────────────
-// Dials the caregiver's phone number via the native phone app.
-// Phone number is set by the caregiver in their profile.
+// ─── Gradient Hero Header ────────────────────────────────────────────────────
 
-class _EmergencyCallButton extends StatelessWidget {
+class _HeroHeader extends StatelessWidget {
+  final String greeting;
+  final String dateTimeLine;
   final String caregiverName;
-  final String caregiverPhone;
-  const _EmergencyCallButton({
-    required this.caregiverName,
-    required this.caregiverPhone,
-  });
+  final VoidCallback onSosTap;
+  final VoidCallback onWhoAmITap;
 
-  Future<void> _call(BuildContext context) async {
-    final uri = Uri(scheme: 'tel', path: caregiverPhone);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Could not open the phone app. Please dial $caregiverPhone manually.',
-            style: const TextStyle(fontFamily: 'Nunito', fontSize: 16),
-          ),
-          backgroundColor: AppColors.error,
-          duration: const Duration(seconds: 4),
-        ),
-      );
-    }
-  }
+  const _HeroHeader({
+    required this.greeting,
+    required this.dateTimeLine,
+    required this.caregiverName,
+    required this.onSosTap,
+    required this.onWhoAmITap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(28),
-        onTap: () => _call(context),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          decoration: BoxDecoration(
-            // Soft teal — safe and reassuring, not alarming red
-            color: AppColors.primaryLight.withValues(alpha: 0.92),
-            borderRadius: BorderRadius.circular(28),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.25),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: AppGradients.hero,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(28),
+          bottomRight: Radius.circular(28),
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(22, 16, 18, 22),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.phone_rounded, color: Colors.white, size: 22),
-              const SizedBox(width: 8),
+              // Top row: app name + SOS button
+              Row(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.psychology_rounded,
+                            color: Colors.white, size: 20),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'CogniCare',
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  // SOS button — compact, top-right
+                  _SosButton(
+                    caregiverName: caregiverName,
+                    onTap: onSosTap,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+
+              // Greeting
               Text(
-                'Call $caregiverName',
+                greeting,
                 style: const TextStyle(
                   fontFamily: 'Nunito',
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
                   color: Colors.white,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                dateTimeLine,
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white.withOpacity(0.78),
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // Compassionate Reality Orientation Pill
+              GestureDetector(
+                onTap: onWhoAmITap,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.person_pin_rounded, color: Colors.white, size: 18),
+                      SizedBox(width: 8),
+                      Text(
+                        '👤 Who Am I? · Tap for your story',
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 12),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -361,5 +606,202 @@ class _EmergencyCallButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+// ─── SOS Button ──────────────────────────────────────────────────────────────
+
+class _SosButton extends StatefulWidget {
+  final String caregiverName;
+  final VoidCallback onTap;
+  const _SosButton({required this.caregiverName, required this.onTap});
+
+  @override
+  State<_SosButton> createState() => _SosButtonState();
+}
+
+class _SosButtonState extends State<_SosButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulse = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: AnimatedBuilder(
+        animation: _pulse,
+        builder: (_, __) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFD93025), Color(0xFFE74C3C)],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.emergency.withOpacity(
+                    0.4 + 0.2 * _pulse.value),
+                blurRadius: 10 + 4 * _pulse.value,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.phone_rounded, color: Colors.white, size: 15),
+              const SizedBox(width: 5),
+              const Text(
+                'SOS',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Quick Action Row ─────────────────────────────────────────────────────────
+
+class _QuickActions extends StatelessWidget {
+  final VoidCallback onTtsToggle;
+  final bool ttsSpeaking;
+  final VoidCallback onWhoAmITap;
+  final VoidCallback onHydrationTap;
+  final VoidCallback onBreatheTap;
+  final VoidCallback onMemoriesTap;
+  final VoidCallback onSafeZoneTap;
+
+  const _QuickActions({
+    required this.onTtsToggle,
+    required this.ttsSpeaking,
+    required this.onWhoAmITap,
+    required this.onHydrationTap,
+    required this.onBreatheTap,
+    required this.onMemoriesTap,
+    required this.onSafeZoneTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+      child: Row(
+        children: [
+          _QuickChip(
+            icon: Icons.person_pin_rounded,
+            label: 'Who Am I?',
+            color: AppColors.primary,
+            onTap: onWhoAmITap,
+          ),
+          const SizedBox(width: 8),
+          _QuickChip(
+            icon: Icons.share_location_rounded,
+            label: 'Safe Zone',
+            color: const Color(0xFFE11D48),
+            onTap: onSafeZoneTap,
+          ),
+          const SizedBox(width: 8),
+          _QuickChip(
+            icon: Icons.photo_library_rounded,
+            label: 'Memories',
+            color: AppColors.accent,
+            onTap: onMemoriesTap,
+          ),
+          const SizedBox(width: 8),
+          _QuickChip(
+            icon: ttsSpeaking ? Icons.stop_rounded : Icons.volume_up_rounded,
+            label: ttsSpeaking ? 'Stop' : 'Read tasks',
+            color: AppColors.info,
+            onTap: onTtsToggle,
+          ),
+          const SizedBox(width: 8),
+          _QuickChip(
+            icon: Icons.water_drop_outlined,
+            label: 'Hydration',
+            color: const Color(0xFF0288D1),
+            onTap: onHydrationTap,
+          ),
+          const SizedBox(width: 8),
+          _QuickChip(
+            icon: Icons.self_improvement_rounded,
+            label: 'Breathe',
+            color: AppColors.success,
+            onTap: onBreatheTap,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withOpacity(0.2), width: 1),
+        ),
+          child: Column(
+            children: [
+              Icon(icon, color: color, size: 22),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      );
   }
 }

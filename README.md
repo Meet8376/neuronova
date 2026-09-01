@@ -1,4 +1,4 @@
-# NeuroNova prototype — auth + Read & Memorize & Speak
+# CogniCare prototype — auth + Read & Memorize & Speak
 
 This is source code only (the `lib/` files + `pubspec.yaml`). It wasn't built or
 run here — this sandbox doesn't have the Flutter SDK or access to pub.dev — so
@@ -9,8 +9,8 @@ pre-tested binary.
 
 1. Create a fresh Flutter project:
    ```
-   flutter create neuronova
-   cd neuronova
+   flutter create cognicare_prototype
+   cd cognicare_prototype
    ```
 2. Replace the generated `lib/` folder and `pubspec.yaml` with the ones from
    this zip.

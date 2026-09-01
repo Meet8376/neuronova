@@ -2,160 +2,262 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ─── Colour tokens ────────────────────────────────────────────────────────────
-// All colours are defined here only. Every widget should reference AppColors
-// rather than hardcoding hex values, so a future re-theme is a one-line change.
+// Warm, cozy, comforting home colors — removing cold hospital blues/whites
 
 class AppColors {
   AppColors._();
 
-  // Primary — a warm teal that feels calm and trustworthy, not cold/clinical
-  static const Color primary = Color(0xFF2A7B6F);
-  static const Color primaryLight = Color(0xFF4CA99A);
-  static const Color primaryDark = Color(0xFF1A5C53);
+  // Primary — Warm Terracotta / Earthy Amber
+  static const Color primary      = Color(0xFFC85A17); // Warm Terracotta
+  static const Color primaryLight = Color(0xFFE07A5F); // Warm Coral
+  static const Color primaryDark  = Color(0xFF9E3D06);
 
-  // Accent — warm saffron, culturally familiar for Indian users
-  static const Color accent = Color(0xFFE8A020);
-  static const Color accentLight = Color(0xFFF5C45E);
+  // Accent — Warm Golden Honey
+  static const Color accent       = Color(0xFFF4A261);
+  static const Color accentLight  = Color(0xFFFFD166);
 
-  // Backgrounds
-  static const Color scaffoldBg = Color(0xFFF5F2EE); // warm off-white, not harsh
-  static const Color cardBg = Color(0xFFFFFFFF);
-  static const Color cardBgWarm = Color(0xFFFDF8F2);
+  // Emergency / SOS
+  static const Color emergency      = Color(0xFFD93025);
+  static const Color emergencyLight = Color(0xFFFF6B6B);
 
-  // Text — near-black, never pure #000000 (softer on aging eyes)
-  static const Color textPrimary = Color(0xFF1C1C2E);
-  static const Color textSecondary = Color(0xFF5A5A72);
-  static const Color textHint = Color(0xFF9A9AB0);
+  // Backgrounds — Soft Cream & Warm Vanilla
+  static const Color scaffoldBg   = Color(0xFFFAF5EC); // Soft Warm Cream
+  static const Color cardBg       = Color(0xFFFFFFFF);
+  static const Color cardBgWarm   = Color(0xFFFFF9F0); // Warm Vanilla
 
-  // Status colours — always paired with icon/text, never colour alone
-  static const Color success = Color(0xFF2E7D5A);   // done
-  static const Color warning = Color(0xFFD4760A);   // in-progress / snooze
-  static const Color error = Color(0xFFC0392B);     // missed / alert
-  static const Color info = Color(0xFF2A5C8A);      // upcoming
+  // Text — Soft Charcoal & Warm Slate
+  static const Color textPrimary   = Color(0xFF2B2D42);
+  static const Color textSecondary = Color(0xFF5D607B);
+  static const Color textHint      = Color(0xFF9A9AB0);
 
-  // Surface shades
-  static const Color divider = Color(0xFFE0DDD8);
-  static const Color surfaceVariant = Color(0xFFEFEBE6);
+  // Status
+  static const Color success = Color(0xFF2A9D8F); // Soft Sage Green
+  static const Color warning = Color(0xFFE76F51);
+  static const Color error   = Color(0xFFC0392B);
+  static const Color info    = Color(0xFF3D5A80);
 
-  // Bottom nav
-  static const Color navSelected = primary;
-  static const Color navUnselected = Color(0xFFA0A0B8);
+  // Surface
+  static const Color divider        = Color(0xFFE8E1D5);
+  static const Color surfaceVariant = Color(0xFFF3EDDF);
 
-  // Word highlight in TTS mode
-  static const Color wordHighlight = Color(0xFFFFE082); // warm yellow
-  static const Color wordHighlightText = Color(0xFF1C1C2E);
+  // Nav
+  static const Color navSelected   = primary;
+  static const Color navUnselected = Color(0xFF9E9EAF);
 
-  // Card border (subtle, used on login profile cards and selection cards)
-  static const Color cardBorder = Color(0xFFE0DDD8);
+  // TTS highlight
+  static const Color wordHighlight     = Color(0xFFFFE082);
+  static const Color wordHighlightText = Color(0xFF2B2D42);
+
+  static const Color cardBorder = Color(0xFFE8E1D5);
+
+  // Gradient stops for the header hero — Sunset Warmth
+  static const List<Color> heroGradient = [
+    Color(0xFFC85A17),
+    Color(0xFFE07A5F),
+    Color(0xFFF4A261),
+  ];
+}
+
+// ─── Gradient helpers ─────────────────────────────────────────────────────────
+
+class AppGradients {
+  AppGradients._();
+
+  static const LinearGradient hero = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFB84A07), Color(0xFFD96B27), Color(0xFFE88E48)],
+    stops: [0.0, 0.55, 1.0],
+  );
+
+  static const LinearGradient accentWarm = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFF4A261), Color(0xFFFFD166)],
+  );
+
+  static const LinearGradient emergencyGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFC0392B), Color(0xFFE74C3C)],
+  );
+
+  static LinearGradient card(Color color) => LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [color.withOpacity(0.12), color.withOpacity(0.04)],
+  );
+}
+
+// ─── Shadows ──────────────────────────────────────────────────────────────────
+
+class AppShadows {
+  AppShadows._();
+
+  static List<BoxShadow> get card => [
+    BoxShadow(
+      color: AppColors.primary.withOpacity(0.06),
+      blurRadius: 16,
+      offset: const Offset(0, 4),
+    ),
+    BoxShadow(
+      color: Colors.black.withOpacity(0.03),
+      blurRadius: 4,
+      offset: const Offset(0, 1),
+    ),
+  ];
+
+  static List<BoxShadow> get hero => [
+    BoxShadow(
+      color: AppColors.primaryDark.withOpacity(0.25),
+      blurRadius: 20,
+      offset: const Offset(0, 6),
+    ),
+  ];
+
+  static List<BoxShadow> get nav => [
+    BoxShadow(
+      color: Colors.black.withOpacity(0.06),
+      blurRadius: 16,
+      offset: const Offset(0, -3),
+    ),
+  ];
+
+  static List<BoxShadow> emergency = [
+    BoxShadow(
+      color: AppColors.emergency.withOpacity(0.35),
+      blurRadius: 12,
+      offset: const Offset(0, 4),
+    ),
+  ];
 }
 
 // ─── Typography ───────────────────────────────────────────────────────────────
-// All font sizes are intentionally large for elderly readability.
-// We use Nunito — warm, rounded, highly legible.
 
 class AppTextStyles {
   AppTextStyles._();
 
-  static TextStyle _nunito(double size, FontWeight weight, Color color) =>
-      GoogleFonts.nunito(fontSize: size, fontWeight: weight, color: color, height: 1.4);
+  static TextStyle _nunito(double size, FontWeight weight, Color color,
+          {double height = 1.4}) =>
+      GoogleFonts.nunito(
+          fontSize: size, fontWeight: weight, color: color, height: height);
 
-  // Greeting headline: "Good Morning, Rajan"
   static TextStyle greeting(BuildContext ctx) => _nunito(
-      28 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w700, AppColors.textPrimary);
+      26 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w800,
+      Colors.white);
 
-  // Date text below greeting
+  static TextStyle greetingOnDark(BuildContext ctx) => _nunito(
+      26 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w800,
+      Colors.white);
+
   static TextStyle dateText(BuildContext ctx) => _nunito(
-      20 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w500, AppColors.textSecondary);
+      14 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w500,
+      Colors.white.withOpacity(0.9));
 
-  // Section headers
   static TextStyle sectionHeader(BuildContext ctx) => _nunito(
-      22 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w700, AppColors.textPrimary);
+      19 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w700,
+      AppColors.textPrimary);
 
-  // Task / card title
   static TextStyle cardTitle(BuildContext ctx) => _nunito(
-      20 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w600, AppColors.textPrimary);
+      18 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w600,
+      AppColors.textPrimary);
 
-  // Task / card subtitle (time, dose info)
   static TextStyle cardSubtitle(BuildContext ctx) => _nunito(
-      17 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w400, AppColors.textSecondary);
+      15 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w400,
+      AppColors.textSecondary);
 
-  // Body text in game (the passage to memorise)
   static TextStyle gameText(BuildContext ctx) => _nunito(
-      22 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w400, AppColors.textPrimary);
+      22 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w400,
+      AppColors.textPrimary);
 
-  // Live transcript text
   static TextStyle transcriptText(BuildContext ctx) => _nunito(
-      18 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w400, AppColors.textSecondary);
+      18 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w400,
+      AppColors.textSecondary);
 
-  // General body text (content passages, spoken text display)
   static TextStyle body(BuildContext ctx) => _nunito(
-      18 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w400, AppColors.textPrimary);
+      18 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w400,
+      AppColors.textPrimary);
 
-  // Button labels
   static TextStyle button(BuildContext ctx) => _nunito(
-      20 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w700, Colors.white);
+      18 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w700, Colors.white);
 
-  // Score on results screen
   static TextStyle scoreLarge(BuildContext ctx) => _nunito(
-      56 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w800, AppColors.textPrimary);
+      56 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w800,
+      AppColors.textPrimary);
 
-  // Badge text (status chips)
   static TextStyle badge(BuildContext ctx) => _nunito(
-      14 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w600, Colors.white);
+      13 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w600, Colors.white);
 
-  // Small labels (e.g. "Added by admin")
-  static TextStyle label(BuildContext ctx) =>
-      _nunito(15 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w400, AppColors.textHint);
+  static TextStyle label(BuildContext ctx) => _nunito(
+      14 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w400,
+      AppColors.textHint);
 
-  // ── Login-specific tokens ────────────────────────────────────────────────
+  static TextStyle appTitle(BuildContext ctx) => _nunito(
+      26 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w800,
+      AppColors.textPrimary);
 
-  // App name in the logo row ("NeuroNova")
-  static TextStyle appTitle(BuildContext ctx) =>
-      _nunito(26 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w800, AppColors.textPrimary);
+  static TextStyle appTagline(BuildContext ctx) => _nunito(
+      14 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w500,
+      AppColors.textSecondary);
 
-  // App tagline under title
-  static TextStyle appTagline(BuildContext ctx) =>
-      _nunito(15 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w500, AppColors.textSecondary);
+  static TextStyle loginHeadline(BuildContext ctx) => _nunito(
+      28 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w800,
+      AppColors.textPrimary);
 
-  // "Who is using the app today?" headline on login screen
-  static TextStyle loginHeadline(BuildContext ctx) =>
-      _nunito(30 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w800, AppColors.textPrimary);
+  static TextStyle loginSubtitle(BuildContext ctx) => _nunito(
+      16 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w500,
+      AppColors.textSecondary);
 
-  // Subtitle under login headline
-  static TextStyle loginSubtitle(BuildContext ctx) =>
-      _nunito(18 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w500, AppColors.textSecondary);
+  static TextStyle avatarInitial(BuildContext ctx, Color color) => _nunito(
+      32 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w800, color);
 
-  // Large initial letter inside profile card avatar circle
-  static TextStyle avatarInitial(BuildContext ctx, Color color) =>
-      _nunito(34 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w800, color);
+  static TextStyle profileCardName(BuildContext ctx) => _nunito(
+      22 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w800,
+      AppColors.textPrimary);
 
-  // Profile card name (e.g. "Pqr")
-  static TextStyle profileCardName(BuildContext ctx) =>
-      _nunito(24 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w800, AppColors.textPrimary);
+  static TextStyle profileCardRole(BuildContext ctx, Color color) => _nunito(
+      14 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w600, color);
 
-  // Profile card role label (e.g. "Patient")
-  static TextStyle profileCardRole(BuildContext ctx, Color color) =>
-      _nunito(15 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w600, color);
+  static TextStyle pinGreeting(BuildContext ctx) => _nunito(
+      22 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w800,
+      AppColors.textPrimary);
 
-  // PIN pad "Hi Name!" prompt
-  static TextStyle pinGreeting(BuildContext ctx) =>
-      _nunito(22 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w800, AppColors.textPrimary);
+  static TextStyle pinSubtitle(BuildContext ctx) => _nunito(
+      16 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w400,
+      AppColors.textSecondary);
 
-  // PIN pad subtitle
-  static TextStyle pinSubtitle(BuildContext ctx) =>
-      _nunito(17 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w400, AppColors.textSecondary);
+  static TextStyle pinKey(BuildContext ctx) => _nunito(
+      26 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w700,
+      AppColors.textPrimary);
 
-  // PIN pad number keys
-  static TextStyle pinKey(BuildContext ctx) =>
-      _nunito(28 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w700, AppColors.textPrimary);
+  static TextStyle pinBackspace(BuildContext ctx) => _nunito(
+      22 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w700,
+      AppColors.textSecondary);
 
-  // PIN pad backspace key
-  static TextStyle pinBackspace(BuildContext ctx) =>
-      _nunito(24 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w700, AppColors.textSecondary);
-
-  // Footer note at bottom of login screen
-  static TextStyle footerNote(BuildContext ctx) =>
-      _nunito(13 * MediaQuery.textScalerOf(ctx).scale(1), FontWeight.w400, AppColors.textHint);
+  static TextStyle footerNote(BuildContext ctx) => _nunito(
+      12 * MediaQuery.textScalerOf(ctx).scale(1),
+      FontWeight.w400,
+      AppColors.textHint);
 }
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
@@ -173,48 +275,48 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: AppColors.scaffoldBg,
 
-      // Card
       cardTheme: CardThemeData(
         color: AppColors.cardBg,
-        elevation: 2,
-        shadowColor: AppColors.primary.withOpacity(0.08),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
+        elevation: 0,
+        shadowColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
       ),
 
-      // Elevated button — large, full-width by default
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 64),
-          textStyle: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w700),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          elevation: 2,
+          minimumSize: const Size(double.infinity, 56),
+          textStyle:
+              GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.w700),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          elevation: 0,
         ),
       ),
 
-      // Outlined button
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
-          minimumSize: const Size(double.infinity, 56),
-          textStyle: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.w600),
+          minimumSize: const Size(double.infinity, 52),
+          textStyle:
+              GoogleFonts.nunito(fontSize: 16, fontWeight: FontWeight.w600),
           side: const BorderSide(color: AppColors.primary, width: 2),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       ),
 
-      // Text button
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
-          textStyle: GoogleFonts.nunito(fontSize: 16, fontWeight: FontWeight.w600),
-          minimumSize: const Size(48, 48),
+          textStyle:
+              GoogleFonts.nunito(fontSize: 15, fontWeight: FontWeight.w600),
+          minimumSize: const Size(48, 44),
         ),
       ),
 
-      // Input fields
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.cardBg,
@@ -230,61 +332,64 @@ class AppTheme {
           borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
-        labelStyle: GoogleFonts.nunito(fontSize: 18, color: AppColors.textSecondary),
-        hintStyle: GoogleFonts.nunito(fontSize: 18, color: AppColors.textHint),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        labelStyle:
+            GoogleFonts.nunito(fontSize: 16, color: AppColors.textSecondary),
+        hintStyle:
+            GoogleFonts.nunito(fontSize: 16, color: AppColors.textHint),
       ),
 
-      // Chip
       chipTheme: ChipThemeData(
-        labelStyle: GoogleFonts.nunito(fontSize: 16, fontWeight: FontWeight.w600),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        labelStyle:
+            GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.w600),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
 
-      // App bar
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.scaffoldBg,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: GoogleFonts.nunito(
-          fontSize: 22,
+          fontSize: 20,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
-        iconTheme: const IconThemeData(color: AppColors.textPrimary, size: 28),
+        iconTheme:
+            const IconThemeData(color: AppColors.textPrimary, size: 26),
       ),
 
-      // Bottom navigation
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.cardBg,
         selectedItemColor: AppColors.navSelected,
         unselectedItemColor: AppColors.navUnselected,
-        selectedLabelStyle: GoogleFonts.nunito(fontSize: 13, fontWeight: FontWeight.w700),
-        unselectedLabelStyle: GoogleFonts.nunito(fontSize: 13, fontWeight: FontWeight.w500),
+        selectedLabelStyle:
+            GoogleFonts.nunito(fontSize: 11, fontWeight: FontWeight.w700),
+        unselectedLabelStyle:
+            GoogleFonts.nunito(fontSize: 11, fontWeight: FontWeight.w500),
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 0,
       ),
 
-      // Divider
       dividerTheme: const DividerThemeData(
         color: AppColors.divider,
         thickness: 1,
         space: 1,
       ),
 
-      // Dialog
       dialogTheme: DialogThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: AppColors.cardBg,
         titleTextStyle: GoogleFonts.nunito(
-          fontSize: 22,
+          fontSize: 20,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
         contentTextStyle: GoogleFonts.nunito(
-          fontSize: 18,
+          fontSize: 16,
           color: AppColors.textSecondary,
         ),
       ),

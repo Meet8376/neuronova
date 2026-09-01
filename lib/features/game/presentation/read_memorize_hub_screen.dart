@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/content_item.dart';
 import '../../../data/repositories/game_repository.dart';
-import '../../../services/language_service.dart';
-import '../../../services/translation_service.dart';
 import 'reading_session_screen.dart';
 
 /// Step 1 of the game: Choose category, language, and length.
@@ -18,21 +16,14 @@ class ReadMemorizeHubScreen extends StatefulWidget {
 class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
   final _repo = GameRepository();
 
-  // Game-level language — defaults to the user's global app language,
-  // but can be changed just for this session without affecting settings.
-  late String _gameLanguage;
+  String _language = 'en';
   ContentCategory? _category;
   ContentLength? _length;
   bool _loading = false;
-  String _loadingStatus = '';
 
-  // All supported game languages with display info
-  static const _langOptions = [
-    {'code': 'en', 'label': 'English',   'flag': '🇬🇧'},
-    {'code': 'hi', 'label': 'Hindi',     'flag': '🇮🇳'},
-    {'code': 'bn', 'label': 'Bengali',   'flag': '🇧🇩'},
-    {'code': 'as', 'label': 'Assamese',  'flag': '🇮🇳'},
-    {'code': 'ne', 'label': 'Nepali',    'flag': '🇳🇵'},
+  final _languageOptions = [
+    {'code': 'en', 'label': '🇬🇧  English'},
+    {'code': 'hi', 'label': '🇮🇳  Hindi'},
   ];
 
   final _categoryOptions = [
@@ -40,13 +31,6 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
     {'value': ContentCategory.stories, 'label': 'Stories', 'icon': Icons.auto_stories_rounded},
     {'value': ContentCategory.wisdom, 'label': 'Wisdom', 'icon': Icons.self_improvement_rounded},
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    // Default to the user's current global language
-    _gameLanguage = LanguageService.instance.currentLanguage;
-  }
 
   final _lengthOptions = [
     {'value': ContentLength.short, 'label': 'Short', 'desc': '1–2 sentences'},
@@ -58,27 +42,21 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
 
   Future<void> _startSession() async {
     if (!_canStart) return;
-    setState(() {
-      _loading = true;
-      _loadingStatus = 'Loading content...';
-    });
+    setState(() => _loading = true);
 
-    final langCode = _gameLanguage;  // Use game-level selection, not global setting
     final difficulty = await _repo.getCurrentDifficulty();
-
-    // Fetch native content for en/hi; fall back to en for other languages
-    final fetchLang = (langCode == 'en' || langCode == 'hi') ? langCode : 'en';
     final content = await _repo.getRandomContent(
       category: _category!,
-      language: fetchLang,
+      language: _language,
       length: _length!,
       difficultyTier: difficulty,
     );
 
+    setState(() => _loading = false);
+
     if (!mounted) return;
 
     if (content == null) {
-      setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No content found for this selection. Try a different combination.'),
@@ -87,32 +65,12 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
       return;
     }
 
-    // Translate if user's language isn't in the JSON (bn / as / ne)
-    String translatedText = content.text;
-    String translatedTitle = content.title;
-    if (langCode != 'en' && langCode != 'hi') {
-      setState(() => _loadingStatus = 'Translating to ${LanguageService.supportedLanguages[langCode]?.name ?? langCode}...');
-      final result = await TranslationService.instance.getTranslation(
-        contentId: content.id,
-        sourceText: content.text,
-        sourceTitle: content.title,
-        targetLang: langCode,
-      );
-      translatedText = result.text;
-      translatedTitle = result.title;
-    }
-
-    setState(() => _loading = false);
-    if (!mounted) return;
-
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ReadingSessionScreen(
           content: content,
-          language: langCode,
-          translatedText: translatedText,
-          translatedTitle: translatedTitle,
+          language: _language,
         ),
       ),
     );
@@ -132,7 +90,6 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
         padding: const EdgeInsets.all(24),
         children: [
           // Info banner
-
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -151,7 +108,7 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Read a passage, then say it from memory. Take your time!',
+                    'You will read a passage, then try to say it from memory. Take your time!',
                     style: TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 16,
@@ -163,62 +120,28 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
 
-          // ── Game language selector ──────────────────────────────────────────
-          // Independent of the global app language — lets patient practice in
-          // any language they want without changing app settings.
-          _SectionLabel(label: '1. Choose practice language'),
-          const SizedBox(height: 4),
-          Text(
-            'Your app language is pre-selected. Change just for this game.',
-            style: TextStyle(
-              fontFamily: 'Nunito',
-              fontSize: 13,
-              color: AppColors.textHint,
-            ),
-          ),
+          // Language
+          _SectionLabel(label: '1. Choose language'),
           const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _langOptions.map((l) {
-              final selected = _gameLanguage == l['code'];
-              return GestureDetector(
-                onTap: () => setState(() => _gameLanguage = l['code'] as String),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: selected ? AppColors.primary : AppColors.cardBg,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: selected ? AppColors.primary : AppColors.divider,
-                      width: 2,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(l['flag'] as String,
-                          style: const TextStyle(fontSize: 18)),
-                      const SizedBox(width: 6),
-                      Text(
-                        l['label'] as String,
-                        style: TextStyle(
-                          fontFamily: 'Nunito',
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: selected ? Colors.white : AppColors.textPrimary,
-                        ),
-                      ),
-                    ],
+          Row(
+            children: _languageOptions.map((l) {
+              final selected = _language == l['code'];
+              return Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      right: l == _languageOptions.last ? 0 : 12),
+                  child: _SelectCard(
+                    label: l['label'] as String,
+                    selected: selected,
+                    onTap: () => setState(() => _language = l['code'] as String),
                   ),
                 ),
               );
             }).toList(),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 24),
 
           // Category
           _SectionLabel(label: '2. Choose category'),
@@ -262,24 +185,7 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
 
           // Start button
           if (_loading)
-            Center(
-              child: Column(
-                children: [
-                  const CircularProgressIndicator(color: AppColors.primary),
-                  if (_loadingStatus.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      _loadingStatus,
-                      style: TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 14,
-                        color: AppColors.textHint,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            )
+            const Center(child: CircularProgressIndicator(color: AppColors.primary))
           else
             AnimatedOpacity(
               opacity: _canStart ? 1.0 : 0.4,

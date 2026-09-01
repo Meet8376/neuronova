@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/db/database_helper.dart';
-import '../../../core/extensions/l10n_ext.dart';
 
 /// Health tab — shows today's medicines and hydration.
 /// Now a primary bottom-nav tab (per specs/screens/screens.md Phase 2).
@@ -106,9 +105,9 @@ class _HealthScreenState extends State<HealthScreen>
       return Scaffold(
         backgroundColor: AppColors.scaffoldBg,
         appBar: AppBar(
-          title: Text(
-            '💊 ${context.l.healthTitle}',
-            style: const TextStyle(
+          title: const Text(
+            '💊 Health',
+            style: TextStyle(
               fontFamily: 'Nunito',
               fontWeight: FontWeight.w700,
               fontSize: 22,
@@ -136,15 +135,15 @@ class _HealthScreenState extends State<HealthScreen>
         // ── Medicines section ────────────────────────────────────────────
         _SectionHeader(
           icon: Icons.medication_rounded,
-          title: context.l.medicines,
+          title: 'Medicines',
           color: AppColors.info,
         ),
         const SizedBox(height: 8),
         if (_doses.isEmpty)
           _EmptySection(
             icon: Icons.medication_outlined,
-            message: context.l.noMedicinesScheduled,
-            subtext: context.l.askCaregiverMedicine,
+            message: 'No medicines scheduled for today',
+            subtext: 'Ask your caregiver to set up your medicine schedule',
           )
         else
           ..._doses.map((d) => _MedicineDoseCard(
@@ -157,7 +156,7 @@ class _HealthScreenState extends State<HealthScreen>
         // ── Hydration section ────────────────────────────────────────────
         _SectionHeader(
           icon: Icons.water_drop_rounded,
-          title: context.l.hydration,
+          title: 'Hydration',
           color: const Color(0xFF2196F3),
         ),
         const SizedBox(height: 8),
@@ -327,39 +326,33 @@ class _MedicineDoseCard extends StatelessWidget {
               ),
             ),
             // Take button
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
-              child: !isTaken
-                ? ElevatedButton(
-                    key: const ValueKey('take_btn'),
-                    onPressed: onTaken,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.success,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(80, 44),
-                      textStyle: const TextStyle(
-                          fontFamily: 'Nunito', fontSize: 15, fontWeight: FontWeight.w700),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      elevation: 0,
-                    ),
-                    child: Text(context.l.takenButton),
-                  )
-                : Container(
-                    key: const ValueKey('done_badge'),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(context.l.doneMark,
-                        style: const TextStyle(
-                            fontFamily: 'Nunito',
-                            fontSize: 14,
-                            color: AppColors.success,
-                            fontWeight: FontWeight.w600)),
-                  ),
-            ),
+            if (!isTaken)
+              ElevatedButton(
+                onPressed: onTaken,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.success,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(80, 44),
+                  textStyle: const TextStyle(
+                      fontFamily: 'Nunito', fontSize: 15, fontWeight: FontWeight.w700),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Taken'),
+              )
+            else
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text('Done ✓',
+                    style: TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 14,
+                        color: AppColors.success,
+                        fontWeight: FontWeight.w600)),
+              ),
           ],
         ),
       ),
@@ -397,7 +390,7 @@ class _HydrationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      done ? context.l.hydrationGreat : context.l.hydrationKeepGoing,
+                      done ? "Great job! 🎉" : "Keep drinking water!",
                       style: TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 18,
@@ -407,8 +400,8 @@ class _HydrationCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      context.l.glassesOfDay(glassesToday, dailyGoal),
-                      style: const TextStyle(
+                      '$glassesToday of $dailyGoal glasses today',
+                      style: TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 16,
                         color: AppColors.textSecondary,
@@ -465,7 +458,7 @@ class _HydrationCard extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onAddGlass,
                 icon: const Icon(Icons.add_rounded, size: 24),
-                label: Text(context.l.drankGlass),
+                label: const Text('I drank a glass of water'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2196F3),
                 ),
@@ -484,8 +477,8 @@ class _HydrationCard extends StatelessWidget {
                     const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 24),
                     const SizedBox(width: 8),
                     Text(
-                      context.l.dailyGoalReached,
-                      style: const TextStyle(
+                      'Daily water goal reached!',
+                      style: TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 17,
                         fontWeight: FontWeight.w700,

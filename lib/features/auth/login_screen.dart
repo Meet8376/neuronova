@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/extensions/l10n_ext.dart';
 import '../../services/secure_settings_service.dart';
 import '../patient/presentation/patient_shell.dart';
 import '../admin/presentation/admin_shell.dart';
+import 'register_screen.dart';
 
 /// Login screen — username + password form.
 ///
-/// Credentials (static, no registration):
+/// Static demo accounts (always available):
 ///   Patient:   username = patient   / password = care1234
 ///   Caregiver: username = caregiver / password = admin1234
 ///
-/// On success → session token written to FlutterSecureStorage → shell shown.
-/// Next app open → token found → login skipped automatically.
+/// DB-registered users (created via RegisterScreen) work automatically.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -38,9 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    // Hide keyboard
     FocusScope.of(context).unfocus();
-
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     setState(() {
@@ -57,15 +54,22 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = false);
 
     if (role == null) {
-      setState(() => _errorMessage = context.l.wrongCredentials);
+      setState(() => _errorMessage = 'Wrong username or password.');
       return;
     }
 
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
-        builder: (_) => role == 'patient' ? const PatientShell() : const AdminShell(),
+        builder: (_) =>
+            role == 'patient' ? const PatientShell() : const AdminShell(),
       ),
       (_) => false,
+    );
+  }
+
+  void _goToRegister() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RegisterScreen()),
     );
   }
 
@@ -97,25 +101,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(context.l.appName,
+                        Text('CogniCare',
                             style: AppTextStyles.appTitle(context)),
-                        Text(context.l.appTagline,
+                        Text('Your memory companion',
                             style: AppTextStyles.appTagline(context)),
                       ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 52),
+                const SizedBox(height: 48),
 
-                // ── Headline ─────────────────────────────────────────────────
-                Text(context.l.welcomeBack,
+                // ── Headline ──────────────────────────────────────────────────
+                Text('Welcome back',
                     style: AppTextStyles.loginHeadline(context)),
                 const SizedBox(height: 6),
-                Text(context.l.signInToContinue,
+                Text('Sign in to continue',
                     style: AppTextStyles.loginSubtitle(context)),
-                const SizedBox(height: 36),
+                const SizedBox(height: 32),
 
-                // ── Form ─────────────────────────────────────────────────────
+                // ── Form ──────────────────────────────────────────────────────
                 Form(
                   key: _formKey,
                   child: Column(
@@ -123,29 +127,33 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Username
                       _LargeTextField(
                         controller: _userCtrl,
-                        label: context.l.username,
-                        hint: context.l.enterUsername,
+                        label: 'Username',
+                        hint: 'Enter your username',
                         icon: Icons.person_outline_rounded,
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
                         autofillHints: const [AutofillHints.username],
                         validator: (v) =>
-                            (v == null || v.trim().isEmpty) ? context.l.enterUsername : null,
+                            (v == null || v.trim().isEmpty)
+                                ? 'Enter username'
+                                : null,
                       ),
                       const SizedBox(height: 16),
 
                       // Password
                       _LargeTextField(
                         controller: _passCtrl,
-                        label: context.l.password,
-                        hint: context.l.enterPassword,
+                        label: 'Password',
+                        hint: 'Enter your password',
                         icon: Icons.lock_outline_rounded,
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.done,
                         autofillHints: const [AutofillHints.password],
                         onFieldSubmitted: (_) => _login(),
                         validator: (v) =>
-                            (v == null || v.trim().isEmpty) ? context.l.enterPassword : null,
+                            (v == null || v.trim().isEmpty)
+                                ? 'Enter password'
+                                : null,
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
@@ -153,8 +161,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : Icons.visibility_off_outlined,
                             color: AppColors.textHint,
                           ),
-                          onPressed: () =>
-                              setState(() => _obscurePassword = !_obscurePassword),
+                          onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword),
                         ),
                       ),
                     ],
@@ -173,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(width: 8),
                         Text(
                           _errorMessage!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Nunito',
                             fontSize: 16,
                             color: AppColors.error,
@@ -186,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 8),
 
-                // ── Sign in button ─────────────────────────────────────────────
+                // ── Sign In button ────────────────────────────────────────────
                 SizedBox(
                   width: double.infinity,
                   height: 64,
@@ -195,7 +203,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor: AppColors.primary.withOpacity(0.6),
+                      disabledBackgroundColor:
+                          AppColors.primary.withOpacity(0.6),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18)),
                       elevation: 0,
@@ -207,9 +216,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: CircularProgressIndicator(
                                 strokeWidth: 2.5, color: Colors.white),
                           )
-                        : Text(
-                            context.l.signInButton,
-                            style: const TextStyle(
+                        : const Text(
+                            'Sign In',
+                            style: TextStyle(
                               fontFamily: 'Nunito',
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
@@ -218,12 +227,52 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 20),
 
-                // ── Footer ───────────────────────────────────────────────────
+                // ── Create Account link ───────────────────────────────────────
+                Center(
+                  child: GestureDetector(
+                    onTap: _goToRegister,
+                    child: RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 16,
+                          color: AppColors.textSecondary,
+                        ),
+                        children: [
+                          const TextSpan(text: "New here? "),
+                          TextSpan(
+                            text: 'Create Account',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 36),
+
+                // ── Demo hint (collapsed, subtle) ─────────────────────────────
+                _DemoHint(onPatient: () {
+                  _userCtrl.text = 'patient';
+                  _passCtrl.text = 'care1234';
+                  _login();
+                }, onCaregiver: () {
+                  _userCtrl.text = 'caregiver';
+                  _passCtrl.text = 'admin1234';
+                  _login();
+                }),
+
+                const SizedBox(height: 24),
+
                 Center(
                   child: Text(
-                    'NeuroNova • Prototype v0.1',
+                    'CogniCare • Prototype v0.1',
                     style: AppTextStyles.label(context),
                   ),
                 ),
@@ -236,8 +285,114 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// ─── Large touch-friendly text field ──────────────────────────────────────────
-// Extra tall, large font, clear label — important for elderly patients
+// ─── Demo hint (expandable) ───────────────────────────────────────────────────
+
+class _DemoHint extends StatefulWidget {
+  final VoidCallback onPatient;
+  final VoidCallback onCaregiver;
+  const _DemoHint({required this.onPatient, required this.onCaregiver});
+  @override
+  State<_DemoHint> createState() => _DemoHintState();
+}
+
+class _DemoHintState extends State<_DemoHint> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => setState(() => _expanded = !_expanded),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                _expanded
+                    ? Icons.expand_less_rounded
+                    : Icons.expand_more_rounded,
+                size: 18,
+                color: AppColors.textHint,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'Demo accounts',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontSize: 13,
+                  color: AppColors.textHint,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (_expanded) ...[
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _DemoButton(
+                  label: '👴  Patient',
+                  color: AppColors.primary,
+                  onTap: widget.onPatient,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _DemoButton(
+                  label: '🩺  Caregiver',
+                  color: const Color(0xFF2E7D6B),
+                  onTap: widget.onCaregiver,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _DemoButton extends StatelessWidget {
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _DemoButton({
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding:
+            const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          border:
+              Border.all(color: color.withOpacity(0.3), width: 1.5),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: Text(label,
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: color,
+              )),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Large touch-friendly text field ─────────────────────────────────────────
 
 class _LargeTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -303,19 +458,23 @@ class _LargeTextField extends StatelessWidget {
             const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.divider, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.divider, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.divider, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.divider, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide:
+              const BorderSide(color: AppColors.primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.error, width: 1.5),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

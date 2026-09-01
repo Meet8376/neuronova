@@ -111,6 +111,8 @@ class TaskRepository {
     await db.delete('tasks', where: 'id = ? AND created_by = ?', whereArgs: [id, 'patient']);
   }
 
+  // ── Missed task sweep ──────────────────────────────────────────────────────
+
   /// Call on app open to mark overdue "upcoming" tasks as "missed".
   /// A task is missed if it was scheduled > 30 minutes ago and is still upcoming.
   Future<void> sweepMissedTasks() async {
@@ -124,24 +126,5 @@ class TaskRepository {
       where: 'status = ? AND scheduled_at < ?',
       whereArgs: [TaskStatus.upcoming.value, threshold],
     );
-  }
-
-  /// Fetch all missed tasks — shown in caregiver dashboard alert.
-  /// [adminView] = true filters out private (patient-only) tasks.
-  Future<List<Task>> getMissedTasks({bool adminView = true}) async {
-    final db = await _db.database;
-    // Last 48 hours of missed tasks (don't go back too far)
-    final cutoff = DateTime.now()
-        .subtract(const Duration(hours: 48))
-        .millisecondsSinceEpoch;
-    final rows = await db.query(
-      'tasks',
-      where: adminView
-          ? 'status = ? AND is_private = 0 AND scheduled_at >= ?'
-          : 'status = ? AND scheduled_at >= ?',
-      whereArgs: [TaskStatus.missed.value, cutoff],
-      orderBy: 'scheduled_at DESC',
-    );
-    return rows.map(Task.fromMap).toList();
   }
 }

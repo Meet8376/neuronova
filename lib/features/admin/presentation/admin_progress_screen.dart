@@ -439,33 +439,6 @@ class _CategoryRow extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Game type → icon + color helper
-// ─────────────────────────────────────────────────────────────────────────────
-
-({IconData icon, Color color}) _gameTypeInfo(String gameType) {
-  switch (gameType) {
-    case 'picture_match':        return (icon: Icons.grid_view_rounded,   color: const Color(0xFF9C27B0));
-    case 'routine_recall':       return (icon: Icons.schedule_rounded,     color: const Color(0xFFE91E63));
-    case 'pattern_recognition':  return (icon: Icons.category_rounded,     color: const Color(0xFF4CAF50));
-    default:                     return (icon: Icons.menu_book_rounded,     color: AppColors.primary); // read_memorize_speak
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Language code → readable label helper
-// ─────────────────────────────────────────────────────────────────────────────
-
-String _langLabel(String code) {
-  switch (code.toLowerCase()) {
-    case 'hi': return '🇮🇳 Hindi';
-    case 'bn': return '🇧🇩 Bengali';
-    case 'as': return '🇮🇳 Assamese';
-    case 'ne': return '🇳🇵 Nepali';
-    default:   return '🇬🇧 English';
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Full session detail card — expandable
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -503,20 +476,6 @@ class _SessionDetailCardState extends State<_SessionDetailCard> {
               // Header row
               Row(
                 children: [
-                  // Game type icon
-                  Builder(builder: (_) {
-                    final info = _gameTypeInfo(s.gameType);
-                    return Container(
-                      width: 32,
-                      height: 32,
-                      margin: const EdgeInsets.only(right: 8),
-                      decoration: BoxDecoration(
-                        color: info.color.withOpacity(0.12),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(info.icon, size: 18, color: info.color),
-                    );
-                  }),
                   // Score circle
                   Container(
                     width: 48,
@@ -549,7 +508,7 @@ class _SessionDetailCardState extends State<_SessionDetailCard> {
                             overflow: TextOverflow.ellipsis),
                         const SizedBox(height: 2),
                         Text(
-                          '${s.category.displayName} · ${_langLabel(s.language)} · ${DateFormat('d MMM, h:mm a').format(s.playedAt)}',
+                          '${s.category.displayName} · ${s.language.toUpperCase()} · ${DateFormat('d MMM, h:mm a').format(s.playedAt)}',
                           style: TextStyle(
                               fontFamily: 'Nunito',
                               fontSize: 13,

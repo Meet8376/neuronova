@@ -71,10 +71,6 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
         _mode = ReminderScheduleMode.specificTimes;
         _selectedTimes.add(const TimeOfDay(hour: 17, minute: 0));
         _timeNames.add('Evening call');
-      case CareReminderType.other:
-        // Blank name — caregiver types their own custom health task name
-        _nameCtrl.text = '';
-        _mode = ReminderScheduleMode.specificTimes;
     }
   }
 

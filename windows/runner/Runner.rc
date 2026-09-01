@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.neuronova" "\0"
-            VALUE "FileDescription", "neuronova" "\0"
+            VALUE "FileDescription", "cognicare_prototype" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "neuronova" "\0"
+            VALUE "InternalName", "cognicare_prototype" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.neuronova. All rights reserved." "\0"
-            VALUE "OriginalFilename", "neuronova.exe" "\0"
-            VALUE "ProductName", "neuronova" "\0"
+            VALUE "OriginalFilename", "cognicare_prototype.exe" "\0"
+            VALUE "ProductName", "cognicare_prototype" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 /// TTS service wrapping flutter_tts.
@@ -5,8 +6,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 /// Supports play, pause (via stop+track position workaround), restart,
 /// and word-by-word highlighting via setProgressHandler.
 ///
-/// NOTE: flutter_tts.pause() is unreliable on some Android devices.
-/// We work around this by stopping and resuming from the last word offset.
+/// Handles platform availability gracefully (e.g. desktop fallback).
 class TtsService {
   TtsService._();
   static final TtsService instance = TtsService._();
@@ -14,6 +14,7 @@ class TtsService {
   final _tts = FlutterTts();
   bool _initialised = false;
   bool _isPlaying = false;
+  bool _supported = true;
   String _currentText = '';
   int _lastWordEnd = 0;
 
@@ -25,43 +26,53 @@ class TtsService {
     if (_initialised) return;
     _initialised = true;
 
-    await _tts.setLanguage(language);
-    await _tts.setSpeechRate(speed);
-    await _tts.setPitch(0.9); // slightly lower pitch — easier on elderly ears
-    await _tts.setVolume(1.0);
+    try {
+      await _tts.setLanguage(language);
+      await _tts.setSpeechRate(speed);
+      await _tts.setPitch(0.9); // slightly lower pitch — easier on elderly ears
+      await _tts.setVolume(1.0);
 
-    _tts.setStartHandler(() => _isPlaying = true);
-    _tts.setCancelHandler(() => _isPlaying = false);
-    _tts.setCompletionHandler(() {
-      _isPlaying = false;
-      _lastWordEnd = 0;
-      onComplete?.call();
-    });
+      _tts.setStartHandler(() => _isPlaying = true);
+      _tts.setCancelHandler(() => _isPlaying = false);
+      _tts.setCompletionHandler(() {
+        _isPlaying = false;
+        _lastWordEnd = 0;
+        onComplete?.call();
+      });
 
-    _tts.setProgressHandler((text, startOffset, endOffset, word) {
-      _lastWordEnd = endOffset;
-      onWordProgress?.call(word, startOffset, endOffset);
-    });
+      _tts.setProgressHandler((text, startOffset, endOffset, word) {
+        _lastWordEnd = endOffset;
+        onWordProgress?.call(word, startOffset, endOffset);
+      });
+    } catch (e) {
+      debugPrint('TTS not natively supported on this platform: $e');
+      _supported = false;
+    }
   }
 
   Future<void> speak(String text) async {
     _currentText = text;
     _lastWordEnd = 0;
-    await _tts.stop();
-    await _tts.speak(text);
-    _isPlaying = true;
+    if (!_supported) return;
+    try {
+      await _tts.stop();
+      await _tts.speak(text);
+      _isPlaying = true;
+    } catch (e) {
+      debugPrint('TTS speak error: $e');
+    }
   }
 
-  /// Pause-like behavior: stop and remember position.
-  /// On resume, we re-speak from the last tracked word boundary.
   Future<void> pause() async {
-    await _tts.stop();
+    if (!_supported) return;
+    try {
+      await _tts.stop();
+    } catch (_) {}
     _isPlaying = false;
   }
 
-  /// Resume from approximately where we stopped.
   Future<void> resume() async {
-    if (_currentText.isEmpty) return;
+    if (_currentText.isEmpty || !_supported) return;
     if (_lastWordEnd > 0 && _lastWordEnd < _currentText.length) {
       await speak(_currentText.substring(_lastWordEnd).trim());
     } else {
@@ -74,7 +85,10 @@ class TtsService {
   }
 
   Future<void> stop() async {
-    await _tts.stop();
+    if (!_supported) return;
+    try {
+      await _tts.stop();
+    } catch (_) {}
     _isPlaying = false;
     _lastWordEnd = 0;
   }
@@ -82,14 +96,19 @@ class TtsService {
   bool get isPlaying => _isPlaying;
 
   Future<void> setLanguage(String language) async {
-    await _tts.setLanguage(language);
+    if (!_supported) return;
+    try {
+      await _tts.setLanguage(language);
+    } catch (_) {}
   }
 
   Future<void> setSpeed(double speed) async {
-    await _tts.setSpeechRate(speed);
+    if (!_supported) return;
+    try {
+      await _tts.setSpeechRate(speed);
+    } catch (_) {}
   }
 
-  /// Returns the language code for flutter_tts based on our app language code.
   static String ttsLocale(String appLanguage) {
     switch (appLanguage) {
       case 'hi': return 'hi-IN';

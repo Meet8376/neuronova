@@ -3,8 +3,8 @@ import 'package:neuronova/main.dart';
 
 void main() {
   testWidgets('App smoke test', (WidgetTester tester) async {
-    await tester.pumpWidget(const NeuroNovaApp());
+    await tester.pumpWidget(const CogniCareApp());
     // Just verify the app renders without crashing
-    expect(find.byType(NeuroNovaApp), findsOneWidget);
+    expect(find.byType(CogniCareApp), findsOneWidget);
   });
 }

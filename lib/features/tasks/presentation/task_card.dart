@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/task.dart';
-import '../../../core/extensions/l10n_ext.dart';
 import 'alarm_screen.dart';
 
 /// A single task card displayed in the dashboard.
@@ -109,8 +108,8 @@ class TaskCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              task.createdBy == TaskCreator.admin ? context.l.byCaregiver : context.l.byYou,
-                              style: const TextStyle(
+                              task.createdBy == TaskCreator.admin ? 'By caregiver' : 'By you',
+                              style: TextStyle(
                                 fontFamily: 'Nunito',
                                 fontSize: 12,
                                 color: AppColors.info,
@@ -139,20 +138,20 @@ class TaskCard extends StatelessWidget {
                         onSelected: onAction,
                         icon: const Icon(Icons.more_vert, color: AppColors.textSecondary, size: 22),
                         itemBuilder: (_) => [
-                          PopupMenuItem(
+                          const PopupMenuItem(
                             value: 'edit',
                             child: Row(children: [
-                              const Icon(Icons.edit_outlined, size: 20),
-                              const SizedBox(width: 8),
-                              Text(context.l.editTask),
+                              Icon(Icons.edit_outlined, size: 20),
+                              SizedBox(width: 8),
+                              Text('Edit task'),
                             ]),
                           ),
-                          PopupMenuItem(
+                          const PopupMenuItem(
                             value: 'delete',
                             child: Row(children: [
-                              const Icon(Icons.delete_outline, size: 20, color: AppColors.error),
-                              const SizedBox(width: 8),
-                              Text(context.l.yesDelete, style: const TextStyle(color: AppColors.error)),
+                              Icon(Icons.delete_outline, size: 20, color: AppColors.error),
+                              SizedBox(width: 8),
+                              Text('Delete', style: TextStyle(color: AppColors.error)),
                             ]),
                           ),
                         ],
@@ -194,7 +193,7 @@ class _StatusBadge extends StatelessWidget {
       case TaskStatus.done:
         bg = AppColors.success.withOpacity(0.12);
         text = AppColors.success;
-        label = context.l.taskStatusDone;
+        label = 'Done';
         icon = Icons.check_circle_rounded;
         break;
       case TaskStatus.inProgress:
@@ -206,13 +205,13 @@ class _StatusBadge extends StatelessWidget {
       case TaskStatus.missed:
         bg = AppColors.error.withOpacity(0.12);
         text = AppColors.error;
-        label = context.l.taskStatusMissed;
+        label = 'Missed';
         icon = Icons.warning_amber_rounded;
         break;
       case TaskStatus.upcoming:
         bg = AppColors.info.withOpacity(0.10);
         text = AppColors.info;
-        label = context.l.taskStatusUpcoming;
+        label = 'Upcoming';
         icon = Icons.schedule_rounded;
         break;
     }
@@ -264,7 +263,7 @@ class _TaskActionsSheet extends StatelessWidget {
           const SizedBox(height: 24),
           _ActionButton(
             icon: Icons.task_alt_rounded,
-            label: context.l.markAsDone,
+            label: 'Mark as Done',
             color: AppColors.success,
             onTap: () {
               Navigator.pop(context);
@@ -274,7 +273,7 @@ class _TaskActionsSheet extends StatelessWidget {
           const SizedBox(height: 12),
           _ActionButton(
             icon: Icons.play_circle_outline_rounded,
-            label: context.l.imStartingNow,
+            label: "I'm Starting Now",
             color: AppColors.warning,
             onTap: () {
               Navigator.pop(context);
@@ -284,7 +283,7 @@ class _TaskActionsSheet extends StatelessWidget {
           const SizedBox(height: 12),
           _ActionButton(
             icon: Icons.alarm_rounded,
-            label: context.l.remindMeLater,
+            label: 'Remind Me Later',
             color: AppColors.info,
             onTap: () {
               Navigator.pop(context);

@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:uuid/uuid.dart';
+import '../data/repositories/user_repository.dart';
 
 /// Stores sensitive settings using the OS-level keystore (FlutterSecureStorage).
 ///
@@ -38,6 +39,8 @@ class SecureSettingsService {
   static const _keyAdminName      = 'admin_name';
   static const _keySetupDone      = 'setup_done';
   static const _keyCaregiverPhone = 'caregiver_phone';
+  static const _keyPatientVillage  = 'patient_village';
+  static const _keyFamilyNotes     = 'family_notes';
 
   // ── Session ────────────────────────────────────────────────────────────────
 
@@ -51,7 +54,7 @@ class SecureSettingsService {
 
   Future<String?> getSessionToken() => _storage.read(key: _keySessionToken);
 
-  /// Validates username + password.
+  /// Validates username + password against static accounts AND registered DB users.
   /// On success: writes session token + stores display names + returns role.
   /// On failure: returns null.
   Future<String?> loginWithCredentials(String username, String password) async {
@@ -59,24 +62,32 @@ class SecureSettingsService {
     final p = password.trim();
 
     String role;
+    String displayName;
+
+    // ── 1. Check static demo accounts first ──────────────────────────────────
     if (u == _patientUsername && p == _patientPassword) {
       role = 'patient';
+      displayName = _patientDisplayName;
     } else if (u == _caregiverUsername && p == _caregiverPassword) {
       role = 'admin';
+      displayName = _caregiverDisplayName;
     } else {
-      return null;
+      // ── 2. Check DB-registered users ───────────────────────────────────────
+      final dbUser = await UserRepository().validateUser(u, p);
+      if (dbUser == null) return null;
+      role = dbUser['role'] as String;
+      displayName = dbUser['display_name'] as String;
     }
 
     final token = _uuid.v4();
     await Future.wait([
-      _storage.write(key: _keySessionToken,    value: token),
-      _storage.write(key: _keySessionRole,     value: role),
-      _storage.write(key: _keySessionLoginAt,  value: DateTime.now().toIso8601String()),
-      _storage.write(key: _keyRole,            value: role),
-      // Store display names so all screens can greet by name
-      _storage.write(key: _keyPatientName,     value: _patientDisplayName),
-      _storage.write(key: _keyAdminName,       value: _caregiverDisplayName),
-      _storage.write(key: _keySetupDone,       value: 'true'),
+      _storage.write(key: _keySessionToken,   value: token),
+      _storage.write(key: _keySessionRole,    value: role),
+      _storage.write(key: _keySessionLoginAt, value: DateTime.now().toIso8601String()),
+      _storage.write(key: _keyRole,           value: role),
+      _storage.write(key: _keyPatientName,    value: role == 'patient' ? displayName : _patientDisplayName),
+      _storage.write(key: _keyAdminName,      value: role == 'admin'   ? displayName : _caregiverDisplayName),
+      _storage.write(key: _keySetupDone,      value: 'true'),
     ]);
     return role;
   }
@@ -110,6 +121,32 @@ class SecureSettingsService {
   }
   Future<void> setCaregiverPhone(String phone) =>
       _storage.write(key: _keyCaregiverPhone, value: phone);
+
+  Future<String> getPatientVillage() async {
+    final stored = await _storage.read(key: _keyPatientVillage);
+    return stored ?? 'Barabanki';
+  }
+  Future<void> setPatientVillage(String v) =>
+      _storage.write(key: _keyPatientVillage, value: v);
+
+  Future<String> getFamilyNotes() async {
+    final stored = await _storage.read(key: _keyFamilyNotes);
+    return stored ?? 'Son: Rajesh · Daughter: Meena';
+  }
+  Future<void> setFamilyNotes(String notes) =>
+      _storage.write(key: _keyFamilyNotes, value: notes);
+
+  Future<int> getHydrationCups() async {
+    final stored = await _storage.read(key: 'hydration_cups');
+    return int.tryParse(stored ?? '0') ?? 0;
+  }
+  Future<void> setHydrationCups(int count) =>
+      _storage.write(key: 'hydration_cups', value: count.toString());
+
+  // ── Generic Key-Value Storage ────────────────────────────────────────────────
+  Future<String?> read(String key) => _storage.read(key: key);
+  Future<void> write(String key, String value) =>
+      _storage.write(key: key, value: value);
 
   // ── Setup flag ─────────────────────────────────────────────────────────────
   Future<bool> isSetupDone() async {

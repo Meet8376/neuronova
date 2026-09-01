@@ -21,7 +21,7 @@ class DatabaseHelper {
 
   Future<Database> _initDb() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'neuronova.db');
+    final path = join(dbPath, 'cognicare.db');
     return openDatabase(
       path,
       version: 4,
@@ -120,6 +120,18 @@ class DatabaseHelper {
         CREATE TABLE app_settings (
           key TEXT PRIMARY KEY,
           value TEXT NOT NULL
+        )
+      ''');
+
+      // ── Registered users ─────────────────────────────────────────────────
+      await txn.execute('''
+        CREATE TABLE users (
+          id TEXT PRIMARY KEY,
+          username TEXT NOT NULL UNIQUE,
+          password_hash TEXT NOT NULL,
+          display_name TEXT NOT NULL,
+          role TEXT NOT NULL,
+          created_at INTEGER NOT NULL
         )
       ''');
 
@@ -297,22 +309,15 @@ class DatabaseHelper {
     }
     if (oldVersion < 4) {
       await db.execute('''
-        CREATE TABLE IF NOT EXISTS content_translations (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          content_id TEXT NOT NULL,
-          language_code TEXT NOT NULL,
-          translated_text TEXT NOT NULL,
-          translated_title TEXT NOT NULL,
-          created_at INTEGER NOT NULL,
-          UNIQUE(content_id, language_code)
+        CREATE TABLE IF NOT EXISTS users (
+          id TEXT PRIMARY KEY,
+          username TEXT NOT NULL UNIQUE,
+          password_hash TEXT NOT NULL,
+          display_name TEXT NOT NULL,
+          role TEXT NOT NULL,
+          created_at INTEGER NOT NULL
         )
       ''');
-      // Seed game_languages setting (primary language only by default)
-      await db.insert(
-        'app_settings',
-        {'key': 'game_languages', 'value': 'en'},
-        conflictAlgorithm: ConflictAlgorithm.ignore,
-      );
     }
   }
 
