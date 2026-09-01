@@ -137,7 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 28),
 
               // ── Role selector ─────────────────────────────────────────────
-              Text('I am a…',
+              const Text('I am a…',
                   style: TextStyle(
                     fontFamily: 'Nunito',
                     fontSize: 15,
@@ -327,14 +327,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
                   child: RichText(
-                    text: TextSpan(
+                    text: const TextSpan(
                       style: TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 15,
                         color: AppColors.textSecondary,
                       ),
                       children: [
-                        const TextSpan(text: 'Already have an account? '),
+                        TextSpan(text: 'Already have an account? '),
                         TextSpan(
                           text: 'Sign In',
                           style: TextStyle(
@@ -382,7 +382,7 @@ class _RoleChip extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
           decoration: BoxDecoration(
-            color: selected ? color.withOpacity(0.1) : AppColors.cardBg,
+            color: selected ? color.withValues(alpha: 0.1) : AppColors.cardBg,
             border: Border.all(
               color: selected ? color : AppColors.divider,
               width: selected ? 2 : 1.5,
@@ -409,7 +409,7 @@ class _RoleChip extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(subtitle,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Nunito',
                     fontSize: 11,
                     color: AppColors.textSecondary,

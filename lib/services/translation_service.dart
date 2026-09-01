@@ -95,7 +95,7 @@ class TranslationService {
     void Function(double progress, String status)? onProgress,
   }) async {
     if (targetLang == 'en') {
-      return BatchTranslationResult(total: 0, translated: 0, failed: 0);
+      return const BatchTranslationResult(total: 0, translated: 0, failed: 0);
     }
 
     // Load English content from assets

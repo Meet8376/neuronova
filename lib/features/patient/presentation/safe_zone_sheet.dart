@@ -135,11 +135,11 @@ class _SafeZoneSheetState extends State<SafeZoneSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
+                const Expanded(
                   child: Row(
                     children: [
-                      const Icon(Icons.share_location_rounded, color: AppColors.primary, size: 26),
-                      const SizedBox(width: 6),
+                      Icon(Icons.share_location_rounded, color: AppColors.primary, size: 26),
+                      SizedBox(width: 6),
                       Flexible(
                         child: Text(
                           'Safe Return 🏡',
@@ -158,7 +158,7 @@ class _SafeZoneSheetState extends State<SafeZoneSheet> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: isOutside ? AppColors.error.withOpacity(0.15) : AppColors.success.withOpacity(0.15),
+                    color: isOutside ? AppColors.error.withValues(alpha: 0.15) : AppColors.success.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isOutside ? AppColors.error : AppColors.success,
@@ -189,7 +189,7 @@ class _SafeZoneSheetState extends State<SafeZoneSheet> {
               ],
             ),
             const SizedBox(height: 4),
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 'Offline GPS tracking & directional safe return compass',
@@ -381,7 +381,7 @@ class _OfflineRadarPainter extends CustomPainter {
       ..strokeWidth = 2.5;
 
     final safeFillPaint = Paint()
-      ..color = (isOutside ? const Color(0xFFEF4444) : const Color(0xFF10B981)).withOpacity(0.08)
+      ..color = (isOutside ? const Color(0xFFEF4444) : const Color(0xFF10B981)).withValues(alpha: 0.08)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, safeRingRadius, safeFillPaint);
@@ -426,7 +426,7 @@ class _OfflineRadarPainter extends CustomPainter {
     canvas.drawCircle(patientPos, 10, patientPaint);
 
     final patientPulsePaint = Paint()
-      ..color = (isOutside ? const Color(0xFFEF4444) : const Color(0xFF38BDF8)).withOpacity(0.3)
+      ..color = (isOutside ? const Color(0xFFEF4444) : const Color(0xFF38BDF8)).withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
     canvas.drawCircle(patientPos, 18, patientPulsePaint);
 

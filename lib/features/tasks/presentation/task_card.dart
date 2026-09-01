@@ -43,7 +43,7 @@ class TaskCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isDone
-                        ? AppColors.success.withOpacity(0.12)
+                        ? AppColors.success.withValues(alpha: 0.12)
                         : AppColors.surfaceVariant,
                     border: Border.all(
                       color: isDone ? AppColors.success : AppColors.divider,
@@ -88,11 +88,11 @@ class TaskCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.access_time_rounded, size: 15, color: AppColors.textHint),
+                        const Icon(Icons.access_time_rounded, size: 15, color: AppColors.textHint),
                         const SizedBox(width: 4),
                         Text(
                           DateFormat('h:mm a').format(task.scheduledAt),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Nunito',
                             fontSize: 15,
                             color: AppColors.textSecondary,
@@ -104,12 +104,12 @@ class TaskCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppColors.info.withOpacity(0.1),
+                              color: AppColors.info.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               task.createdBy == TaskCreator.admin ? 'By caregiver' : 'By you',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'Nunito',
                                 fontSize: 12,
                                 color: AppColors.info,
@@ -191,25 +191,25 @@ class _StatusBadge extends StatelessWidget {
 
     switch (status) {
       case TaskStatus.done:
-        bg = AppColors.success.withOpacity(0.12);
+        bg = AppColors.success.withValues(alpha: 0.12);
         text = AppColors.success;
         label = 'Done';
         icon = Icons.check_circle_rounded;
         break;
       case TaskStatus.inProgress:
-        bg = AppColors.warning.withOpacity(0.12);
+        bg = AppColors.warning.withValues(alpha: 0.12);
         text = AppColors.warning;
         label = 'In Progress';
         icon = Icons.timelapse_rounded;
         break;
       case TaskStatus.missed:
-        bg = AppColors.error.withOpacity(0.12);
+        bg = AppColors.error.withValues(alpha: 0.12);
         text = AppColors.error;
         label = 'Missed';
         icon = Icons.warning_amber_rounded;
         break;
       case TaskStatus.upcoming:
-        bg = AppColors.info.withOpacity(0.10);
+        bg = AppColors.info.withValues(alpha: 0.10);
         text = AppColors.info;
         label = 'Upcoming';
         icon = Icons.schedule_rounded;

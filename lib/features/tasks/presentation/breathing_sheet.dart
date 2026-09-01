@@ -17,7 +17,6 @@ class _BreathingSheetState extends State<BreathingSheet> with SingleTickerProvid
   String _phaseText = 'Inhale slowly...';
   int _secondsLeft = 4;
   int _currentPhase = 0; // 0: Inhale, 1: Hold, 2: Exhale, 3: Hold
-  bool _active = false;
 
   final List<String> _phases = [
     'Breathe in slowly...',
@@ -41,7 +40,6 @@ class _BreathingSheetState extends State<BreathingSheet> with SingleTickerProvid
 
   void _startExercise() {
     setState(() {
-      _active = true;
       _currentPhase = 0;
       _phaseText = _phases[0];
       _secondsLeft = 4;
@@ -110,7 +108,7 @@ class _BreathingSheetState extends State<BreathingSheet> with SingleTickerProvid
             ),
           ),
           const SizedBox(height: 4),
-          Text(
+          const Text(
             'Follow the circle to relax your mind and relieve stress',
             style: TextStyle(
               fontFamily: 'Nunito',
@@ -136,13 +134,13 @@ class _BreathingSheetState extends State<BreathingSheet> with SingleTickerProvid
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            AppColors.success.withOpacity(0.9),
-                            AppColors.success.withOpacity(0.3),
+                            AppColors.success.withValues(alpha: 0.9),
+                            AppColors.success.withValues(alpha: 0.3),
                           ],
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.success.withOpacity(0.35),
+                            color: AppColors.success.withValues(alpha: 0.35),
                             blurRadius: 24,
                             spreadRadius: 8,
                           ),

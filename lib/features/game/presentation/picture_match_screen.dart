@@ -38,7 +38,6 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
   int _matchesFound = 0;
   int _totalPairs = 2;
 
-  late DateTime _startTime;
   int _elapsedSeconds = 0;
   Timer? _timer;
 
@@ -60,7 +59,6 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
   }
 
   void _setupGame() {
-    _startTime = DateTime.now();
     _moves = 0;
     _matchesFound = 0;
     _firstFlippedIndex = -1;
@@ -185,11 +183,11 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
+        title: const Row(
           children: [
-            const Icon(Icons.stars_rounded, color: Colors.amber, size: 36),
-            const SizedBox(width: 12),
-            const Text('Wonderful Job!', style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
+            Icon(Icons.stars_rounded, color: Colors.amber, size: 36),
+            SizedBox(width: 12),
+            Text('Wonderful Job!', style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
           ],
         ),
         content: Column(
@@ -204,7 +202,7 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -213,7 +211,7 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Cognitive Score: ${finalScore}%\nNext Difficulty: Tier ${metrics.currentTier}',
+                      'Cognitive Score: $finalScore%\nNext Difficulty: Tier ${metrics.currentTier}',
                       style: const TextStyle(
                         fontFamily: 'Nunito',
                         fontWeight: FontWeight.bold,
@@ -293,7 +291,7 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
                               : null,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 6,
                               offset: const Offset(0, 3),
                             ),
@@ -336,7 +334,7 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -361,13 +359,11 @@ class _PictureMatchScreenState extends State<PictureMatchScreen> {
 class _CardTileData {
   final NERCardItem item;
   final int pairId;
-  bool isFaceUp;
-  bool isMatched;
+  bool isFaceUp = false;
+  bool isMatched = false;
 
   _CardTileData({
     required this.item,
     required this.pairId,
-    this.isFaceUp = false,
-    this.isMatched = false,
   });
 }

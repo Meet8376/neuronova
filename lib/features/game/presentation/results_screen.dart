@@ -97,7 +97,7 @@ class ResultsScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.check_circle_outline_rounded,
+                  const Icon(Icons.check_circle_outline_rounded,
                       color: AppColors.success, size: 22),
                   const SizedBox(width: 8),
                   Text(
@@ -113,7 +113,7 @@ class ResultsScreen extends StatelessWidget {
             const SizedBox(height: 28),
 
             // ── Word comparison — helpful for "do I try again?" ───────────────
-            _SectionLabel(text: 'The original passage:'),
+            const _SectionLabel(text: 'The original passage:'),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(16),
@@ -129,7 +129,7 @@ class ResultsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            _SectionLabel(text: 'What you said:'),
+            const _SectionLabel(text: 'What you said:'),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(16),
@@ -169,7 +169,7 @@ class ResultsScreen extends StatelessWidget {
               onPressed: () => Navigator.of(context).popUntil((r) => r.isFirst),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(60),
-                side: BorderSide(color: AppColors.primary.withOpacity(0.4)),
+                side: BorderSide(color: AppColors.primary.withValues(alpha: 0.4)),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
               ),
@@ -215,7 +215,7 @@ class _StarRating extends StatelessWidget {
         const SizedBox(height: 8),
         // Star count label
         Text(
-          '${['⭐', '⭐⭐', '⭐⭐⭐'][starCount - 1]}',
+          ['⭐', '⭐⭐', '⭐⭐⭐'][starCount - 1],
           style: const TextStyle(fontSize: 28),
         ),
       ],
@@ -265,7 +265,7 @@ class _HighlightedSourceText extends StatelessWidget {
                 : null,
             decoration: matched
                 ? BoxDecoration(
-                    color: AppColors.success.withOpacity(0.15),
+                    color: AppColors.success.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   )
                 : null,

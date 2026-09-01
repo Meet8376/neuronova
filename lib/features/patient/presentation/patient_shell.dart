@@ -71,7 +71,7 @@ class _ModernNavBar extends StatelessWidget {
         color: AppColors.cardBg,
         boxShadow: AppShadows.nav,
         border: Border(
-          top: BorderSide(color: AppColors.divider.withOpacity(0.5), width: 0.5),
+          top: BorderSide(color: AppColors.divider.withValues(alpha: 0.5), width: 0.5),
         ),
       ),
       child: SafeArea(
@@ -123,7 +123,7 @@ class _NavTile extends StatelessWidget {
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary.withOpacity(0.12) : Colors.transparent,
+          color: selected ? AppColors.primary.withValues(alpha: 0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Column(

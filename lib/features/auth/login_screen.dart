@@ -204,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       disabledBackgroundColor:
-                          AppColors.primary.withOpacity(0.6),
+                          AppColors.primary.withValues(alpha: 0.6),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18)),
                       elevation: 0,
@@ -234,14 +234,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: GestureDetector(
                     onTap: _goToRegister,
                     child: RichText(
-                      text: TextSpan(
-                        style: const TextStyle(
+                      text: const TextSpan(
+                        style: TextStyle(
                           fontFamily: 'Nunito',
                           fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                         children: [
-                          const TextSpan(text: "New here? "),
+                          TextSpan(text: "New here? "),
                           TextSpan(
                             text: 'Create Account',
                             style: TextStyle(
@@ -315,7 +315,7 @@ class _DemoHintState extends State<_DemoHint> {
                 color: AppColors.textHint,
               ),
               const SizedBox(width: 4),
-              Text(
+              const Text(
                 'Demo accounts',
                 style: TextStyle(
                   fontFamily: 'Nunito',
@@ -373,9 +373,9 @@ class _DemoButton extends StatelessWidget {
         padding:
             const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           border:
-              Border.all(color: color.withOpacity(0.3), width: 1.5),
+              Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Center(

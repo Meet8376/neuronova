@@ -71,12 +71,12 @@ class _AllTasksScreenState extends State<AllTasksScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
           : _tasks.isEmpty
-              ? Center(
+              ? const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.inbox_outlined, size: 72, color: AppColors.textHint),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       Text('No tasks yet',
                           style: TextStyle(
                             fontFamily: 'Nunito',
@@ -99,7 +99,7 @@ class _AllTasksScreenState extends State<AllTasksScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Text(
                             key,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontFamily: 'Nunito',
                               fontSize: 18,
                               fontWeight: FontWeight.w700,

@@ -19,6 +19,22 @@ class DatabaseHelper {
     return _db!;
   }
 
+  /// For tests: allow injecting or resetting the database instance.
+  void setDatabaseForTesting(Database? db) {
+    _db = db;
+  }
+
+  /// Initializes a clean in-memory database for isolated unit tests.
+  Future<Database> initInMemoryDatabase() async {
+    _db = await openDatabase(
+      inMemoryDatabasePath,
+      version: 4,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
+    return _db!;
+  }
+
   Future<Database> _initDb() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'cognicare.db');
@@ -159,6 +175,7 @@ class DatabaseHelper {
           status TEXT NOT NULL DEFAULT 'upcoming',
           started_at INTEGER,
           done_at INTEGER,
+          goal_count INTEGER NOT NULL DEFAULT 0,
           FOREIGN KEY (reminder_id) REFERENCES care_reminders(id)
         )
       ''');
@@ -268,6 +285,7 @@ class DatabaseHelper {
           status TEXT NOT NULL DEFAULT 'upcoming',
           started_at INTEGER,
           done_at INTEGER,
+          goal_count INTEGER NOT NULL DEFAULT 0,
           FOREIGN KEY (reminder_id) REFERENCES care_reminders(id)
         )
       ''');

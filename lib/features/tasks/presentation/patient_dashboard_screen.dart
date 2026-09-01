@@ -386,12 +386,12 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       '${_todayTasks.length}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -457,11 +457,11 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
             width: 88,
             height: 88,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.08),
+              color: AppColors.primary.withValues(alpha: 0.08),
               shape: BoxShape.circle,
             ),
             child: Icon(Icons.check_circle_outline_rounded,
-                size: 48, color: AppColors.primary.withOpacity(0.5)),
+                size: 48, color: AppColors.primary.withValues(alpha: 0.5)),
           ),
           const SizedBox(height: 18),
           Text('All clear!',
@@ -520,7 +520,7 @@ class _HeroHeader extends StatelessWidget {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Icon(Icons.psychology_rounded,
@@ -533,7 +533,7 @@ class _HeroHeader extends StatelessWidget {
                           fontFamily: 'Nunito',
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                       ),
                     ],
@@ -566,7 +566,7 @@ class _HeroHeader extends StatelessWidget {
                   fontFamily: 'Nunito',
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
-                  color: Colors.white.withOpacity(0.78),
+                  color: Colors.white.withValues(alpha: 0.78),
                 ),
               ),
               const SizedBox(height: 14),
@@ -577,13 +577,13 @@ class _HeroHeader extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.3)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Icon(Icons.person_pin_rounded, color: Colors.white, size: 18),
                       SizedBox(width: 8),
                       Text(
@@ -654,19 +654,19 @@ class _SosButtonState extends State<_SosButton>
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: AppColors.emergency.withOpacity(
-                    0.4 + 0.2 * _pulse.value),
+                color: AppColors.emergency.withValues(
+                    alpha: 0.4 + 0.2 * _pulse.value),
                 blurRadius: 10 + 4 * _pulse.value,
                 offset: const Offset(0, 3),
               ),
             ],
           ),
-          child: Row(
+          child: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.phone_rounded, color: Colors.white, size: 15),
-              const SizedBox(width: 5),
-              const Text(
+              Icon(Icons.phone_rounded, color: Colors.white, size: 15),
+              SizedBox(width: 5),
+              Text(
                 'SOS',
                 style: TextStyle(
                   fontFamily: 'Nunito',
@@ -779,9 +779,9 @@ class _QuickChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withOpacity(0.2), width: 1),
+          border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
         ),
           child: Column(
             children: [

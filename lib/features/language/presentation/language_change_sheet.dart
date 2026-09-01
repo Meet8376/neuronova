@@ -48,12 +48,12 @@ class _LanguageChangeSheetState extends State<LanguageChangeSheet> {
           ),
 
           // Title
-          Row(
+          const Row(
             children: [
-              const Icon(Icons.translate_rounded,
+              Icon(Icons.translate_rounded,
                   color: AppColors.primary, size: 22),
-              const SizedBox(width: 10),
-              const Text(
+              SizedBox(width: 10),
+              Text(
                 'Change Language',
                 style: TextStyle(
                   fontFamily: 'Nunito',
@@ -65,7 +65,7 @@ class _LanguageChangeSheetState extends State<LanguageChangeSheet> {
             ],
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Translation will download in background',
             style: TextStyle(
               fontFamily: 'Nunito',
@@ -196,7 +196,7 @@ class _SheetOption extends StatelessWidget {
                       ),
                       Text(
                         '${info.name} · ${info.hasFullOfflineSupport ? "Offline ready" : "Needs internet once"}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Nunito',
                           fontSize: 12,
                           color: AppColors.textHint,

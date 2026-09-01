@@ -123,8 +123,8 @@ class _HydrationSheetState extends State<HydrationSheet> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: const [
+                          const Row(
+                            children: [
                               Icon(Icons.local_drink_rounded, color: Color(0xFF0288D1), size: 22),
                               SizedBox(width: 8),
                               Text(

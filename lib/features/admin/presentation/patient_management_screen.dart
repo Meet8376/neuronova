@@ -104,10 +104,10 @@ class _PatientManagementScreenState extends State<PatientManagementScreen> {
   void _switchPatient(String id) {
     setState(() => _activePatientId = id);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Active patient profile switched'),
+      const SnackBar(
+        content: Text('Active patient profile switched'),
         backgroundColor: AppColors.primary,
-        duration: const Duration(seconds: 2),
+        duration: Duration(seconds: 2),
       ),
     );
   }
@@ -177,13 +177,13 @@ class _PatientManagementScreenState extends State<PatientManagementScreen> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.white.withOpacity(0.3)),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisSize: MainAxisSize.min,
-                              children: const [
+                              children: [
                                 Icon(Icons.person_add_rounded, color: Colors.white, size: 16),
                                 SizedBox(width: 5),
                                 Text('Add', style: TextStyle(fontFamily: 'Nunito', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
@@ -262,7 +262,7 @@ class _PatientManagementScreenState extends State<PatientManagementScreen> {
         padding: const EdgeInsets.only(top: 48),
         child: Column(
           children: [
-            Icon(Icons.people_outline, size: 64, color: AppColors.textHint),
+            const Icon(Icons.people_outline, size: 64, color: AppColors.textHint),
             const SizedBox(height: 16),
             Text('No patients assigned yet', style: AppTextStyles.sectionHeader(context).copyWith(color: AppColors.textSecondary)),
             const SizedBox(height: 8),
@@ -290,16 +290,16 @@ class _StatPill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
         decoration: BoxDecoration(
-          color: highlight ? AppColors.error.withOpacity(0.15) : Colors.white.withOpacity(0.15),
+          color: highlight ? AppColors.error.withValues(alpha: 0.15) : Colors.white.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: highlight ? AppColors.error.withOpacity(0.4) : Colors.white.withOpacity(0.2)),
+          border: Border.all(color: highlight ? AppColors.error.withValues(alpha: 0.4) : Colors.white.withValues(alpha: 0.2)),
         ),
         child: Column(
           children: [
             Icon(icon, color: highlight ? AppColors.emergencyLight : Colors.white, size: 18),
             const SizedBox(height: 3),
-            Text(value, style: TextStyle(fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-            Text(label, style: TextStyle(fontFamily: 'Nunito', fontSize: 10, color: Colors.white.withOpacity(0.78))),
+            Text(value, style: const TextStyle(fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
+            Text(label, style: TextStyle(fontFamily: 'Nunito', fontSize: 10, color: Colors.white.withValues(alpha: 0.78))),
           ],
         ),
       ),
@@ -332,7 +332,7 @@ class _SyncCard extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
                 child: const Icon(Icons.sync_rounded, color: AppColors.primary, size: 20),
               ),
               const SizedBox(width: 10),
@@ -340,7 +340,7 @@ class _SyncCard extends StatelessWidget {
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: AppColors.success.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
                 child: const Text('Online', style: TextStyle(fontFamily: 'Nunito', fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.success)),
               ),
             ],
@@ -348,7 +348,7 @@ class _SyncCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             'Pending: ${syncSummary?.pendingItems ?? 0} items\nLast sync: ${syncSummary?.lastSyncTime ?? "Never"}',
-            style: TextStyle(fontFamily: 'Nunito', fontSize: 13, color: AppColors.textSecondary, height: 1.5),
+            style: const TextStyle(fontFamily: 'Nunito', fontSize: 13, color: AppColors.textSecondary, height: 1.5),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -412,7 +412,7 @@ class _PatientCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: _avatarColor.withOpacity(0.15),
+                color: _avatarColor.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -444,7 +444,7 @@ class _PatientCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text('Age ${patient.age} · ${patient.village}',
-                      style: TextStyle(fontFamily: 'Nunito', fontSize: 13, color: AppColors.textSecondary)),
+                      style: const TextStyle(fontFamily: 'Nunito', fontSize: 13, color: AppColors.textSecondary)),
                   const SizedBox(height: 4),
                   Row(
                     children: [
@@ -462,14 +462,14 @@ class _PatientCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text('${patient.cognitiveIndex}%',
-                          style: TextStyle(fontFamily: 'Nunito', fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary)),
+                          style: const TextStyle(fontFamily: 'Nunito', fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary)),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                     decoration: BoxDecoration(
-                      color: patient.statusColor.withOpacity(0.1),
+                      color: patient.statusColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(patient.statusLabel,
@@ -486,9 +486,9 @@ class _PatientCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
                   ),
                   child: const Text('Select',
                       style: TextStyle(fontFamily: 'Nunito', fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primary)),

@@ -115,7 +115,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                             children: [
                               Text(
                                 'Hi, $_adminName 👋',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'Nunito',
                                   fontSize: 22,
                                   fontWeight: FontWeight.w700,
@@ -125,7 +125,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                               const SizedBox(height: 2),
                               Text(
                                 "Patient: $_patientName",
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'Nunito',
                                   fontSize: 17,
                                   color: AppColors.textSecondary,
@@ -133,7 +133,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                               ),
                               Text(
                                 DateFormat('EEEE, d MMMM').format(DateTime.now()),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'Nunito',
                                   fontSize: 15,
                                   color: AppColors.textHint,
@@ -147,7 +147,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: AppColors.accent.withOpacity(0.15),
+                            color: AppColors.accent.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: Center(
@@ -205,14 +205,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
 
                     // ── Latest game session ────────────────────────────────
                     if (_latestSession != null) ...[
-                      _SectionHeader(label: 'Latest Game Session'),
+                      const _SectionHeader(label: 'Latest Game Session'),
                       const SizedBox(height: 8),
                       _LatestSessionCard(session: _latestSession!),
                       const SizedBox(height: 24),
                     ],
 
                     // ── Safe Zone Geofence Setup ────────────────────────────
-                    _SectionHeader(label: 'Safe Zone & Emergency Protection'),
+                    const _SectionHeader(label: 'Safe Zone & Emergency Protection'),
                     const SizedBox(height: 8),
                     _SafeZoneConfigCard(onUpdate: _load),
                     const SizedBox(height: 24),
@@ -227,10 +227,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                           color: AppColors.surfaceVariant,
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Column(
+                        child: const Column(
                           children: [
                             Icon(Icons.inbox_outlined, size: 44, color: AppColors.textHint),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text('No tasks scheduled for today',
                                 style: TextStyle(
                                     fontFamily: 'Nunito',
@@ -271,7 +271,7 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(label,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: 'Nunito',
           fontSize: 18,
           fontWeight: FontWeight.w700,
@@ -301,7 +301,7 @@ class _QuickStat extends StatelessWidget {
             const SizedBox(height: 2),
             Text(label,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontFamily: 'Nunito', fontSize: 12, color: AppColors.textHint)),
+                style: const TextStyle(fontFamily: 'Nunito', fontSize: 12, color: AppColors.textHint)),
           ],
         ),
       ),
@@ -330,7 +330,7 @@ class _LatestSessionCard extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: _scoreColor.withOpacity(0.12),
+                color: _scoreColor.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -351,13 +351,13 @@ class _LatestSessionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(session.textTitle,
-                      style: TextStyle(fontFamily: 'Nunito', fontSize: 17, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                      style: const TextStyle(fontFamily: 'Nunito', fontSize: 17, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
                   const SizedBox(height: 4),
                   Text('${session.category.displayName} • ${DateFormat('d MMM, h:mm a').format(session.playedAt)}',
-                      style: TextStyle(fontFamily: 'Nunito', fontSize: 13, color: AppColors.textSecondary)),
+                      style: const TextStyle(fontFamily: 'Nunito', fontSize: 13, color: AppColors.textSecondary)),
                   const SizedBox(height: 4),
                   Text('${session.wordMatchCount}/${session.totalWords} words matched',
-                      style: TextStyle(fontFamily: 'Nunito', fontSize: 13, color: AppColors.textHint)),
+                      style: const TextStyle(fontFamily: 'Nunito', fontSize: 13, color: AppColors.textHint)),
                 ],
               ),
             ),
@@ -412,7 +412,7 @@ class _SafeZoneConfigCardState extends State<_SafeZoneConfigCard> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: (isInside ? AppColors.success : AppColors.error).withOpacity(0.12),
+                    color: (isInside ? AppColors.success : AppColors.error).withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -466,7 +466,7 @@ class _SafeZoneConfigCardState extends State<_SafeZoneConfigCard> {
                 return ChoiceChip(
                   label: Text('${r.round()}m'),
                   selected: selected,
-                  selectedColor: AppColors.primary.withOpacity(0.2),
+                  selectedColor: AppColors.primary.withValues(alpha: 0.2),
                   labelStyle: TextStyle(
                     fontFamily: 'Nunito',
                     fontWeight: selected ? FontWeight.w800 : FontWeight.w600,

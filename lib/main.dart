@@ -100,13 +100,13 @@ class _AppRootState extends State<_AppRoot> {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(28),
               ),
               child: const Icon(Icons.psychology_rounded, size: 60, color: Colors.white),
             ),
             const SizedBox(height: 24),
-            Text(
+            const Text(
               'CogniCare',
               style: TextStyle(
                 fontFamily: 'Nunito',
@@ -123,7 +123,7 @@ class _AppRootState extends State<_AppRoot> {
                 fontFamily: 'Nunito',
                 fontSize: 18,
                 fontWeight: FontWeight.w400,
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
               ),
             ),
             const SizedBox(height: 48),

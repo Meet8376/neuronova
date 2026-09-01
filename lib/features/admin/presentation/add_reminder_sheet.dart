@@ -162,9 +162,9 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
       minChildSize: 0.5,
       maxChildSize: 0.95,
       builder: (_, ctrl) => Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppColors.scaffoldBg,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           children: [
@@ -188,7 +188,7 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                   const SizedBox(width: 10),
                   Text(
                     'Add ${widget.type.displayName} Reminder',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
@@ -217,7 +217,7 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                   const SizedBox(height: 20),
 
                   // Schedule mode selector
-                  Text(
+                  const Text(
                     'Schedule type',
                     style: TextStyle(
                       fontFamily: 'Nunito',
@@ -235,7 +235,7 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
 
                   // Mode-specific config
                   if (_mode == ReminderScheduleMode.specificTimes) ...[
-                    Text(
+                    const Text(
                       'Times',
                       style: TextStyle(
                         fontFamily: 'Nunito',
@@ -297,7 +297,7 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                     // Interval slider
                     Text(
                       'Remind every  ${_intervalHours % 1 == 0 ? _intervalHours.toInt() : _intervalHours} hours',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
@@ -349,7 +349,7 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                     ),
                   ] else ...[
                     // Daily goal
-                    Text(
+                    const Text(
                       'Daily goal',
                       style: TextStyle(
                         fontFamily: 'Nunito',
@@ -373,7 +373,7 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
                         const SizedBox(width: 8),
                         Text(
                           '$_dailyGoal',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Nunito',
                             fontSize: 32,
                             fontWeight: FontWeight.w800,
@@ -483,13 +483,13 @@ class _TimeTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(label,
-                style: TextStyle(
+                style: const TextStyle(
                     fontFamily: 'Nunito',
                     fontSize: 13,
                     color: AppColors.textHint)),
             Text(
               time.format(context),
-              style: TextStyle(
+              style: const TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 20,
                   fontWeight: FontWeight.w700,

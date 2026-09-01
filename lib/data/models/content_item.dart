@@ -3,6 +3,7 @@
 /// Content is bundled with the app as JSON assets under assets/content/.
 /// In the final round, this is extended to support downloadable language packs
 /// (patient's default language always available, others download-on-demand).
+library;
 
 enum ContentCategory { dailyConversation, stories, wisdom }
 

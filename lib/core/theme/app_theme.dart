@@ -85,7 +85,7 @@ class AppGradients {
   static LinearGradient card(Color color) => LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [color.withOpacity(0.12), color.withOpacity(0.04)],
+    colors: [color.withValues(alpha: 0.12), color.withValues(alpha: 0.04)],
   );
 }
 
@@ -96,12 +96,12 @@ class AppShadows {
 
   static List<BoxShadow> get card => [
     BoxShadow(
-      color: AppColors.primary.withOpacity(0.06),
+      color: AppColors.primary.withValues(alpha: 0.06),
       blurRadius: 16,
       offset: const Offset(0, 4),
     ),
     BoxShadow(
-      color: Colors.black.withOpacity(0.03),
+      color: Colors.black.withValues(alpha: 0.03),
       blurRadius: 4,
       offset: const Offset(0, 1),
     ),
@@ -109,7 +109,7 @@ class AppShadows {
 
   static List<BoxShadow> get hero => [
     BoxShadow(
-      color: AppColors.primaryDark.withOpacity(0.25),
+      color: AppColors.primaryDark.withValues(alpha: 0.25),
       blurRadius: 20,
       offset: const Offset(0, 6),
     ),
@@ -117,7 +117,7 @@ class AppShadows {
 
   static List<BoxShadow> get nav => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.06),
+      color: Colors.black.withValues(alpha: 0.06),
       blurRadius: 16,
       offset: const Offset(0, -3),
     ),
@@ -125,7 +125,7 @@ class AppShadows {
 
   static List<BoxShadow> emergency = [
     BoxShadow(
-      color: AppColors.emergency.withOpacity(0.35),
+      color: AppColors.emergency.withValues(alpha: 0.35),
       blurRadius: 12,
       offset: const Offset(0, 4),
     ),
@@ -155,7 +155,7 @@ class AppTextStyles {
   static TextStyle dateText(BuildContext ctx) => _nunito(
       14 * MediaQuery.textScalerOf(ctx).scale(1),
       FontWeight.w500,
-      Colors.white.withOpacity(0.9));
+      Colors.white.withValues(alpha: 0.9));
 
   static TextStyle sectionHeader(BuildContext ctx) => _nunito(
       19 * MediaQuery.textScalerOf(ctx).scale(1),

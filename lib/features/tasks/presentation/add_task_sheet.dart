@@ -106,7 +106,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             ),
             const SizedBox(height: 20),
 
-            Text(
+            const Text(
               'New Task',
               style: TextStyle(
                 fontFamily: 'Nunito',

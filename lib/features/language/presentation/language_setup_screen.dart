@@ -161,7 +161,7 @@ class _LanguageSetupScreenState extends State<LanguageSetupScreen>
               elevation: 0,
             ),
             child: _saving
-                ? SizedBox(
+                ? const SizedBox(
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(

@@ -95,17 +95,17 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary.withOpacity(0.12),
-                  AppColors.primaryLight.withOpacity(0.06),
+                  AppColors.primary.withValues(alpha: 0.12),
+                  AppColors.primaryLight.withValues(alpha: 0.06),
                 ],
               ),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Row(
+            child: const Row(
               children: [
-                const Icon(Icons.lightbulb_outline_rounded,
+                Icon(Icons.lightbulb_outline_rounded,
                     color: AppColors.primary, size: 28),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'You will read a passage, then try to say it from memory. Take your time!',
@@ -123,7 +123,7 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
           const SizedBox(height: 28),
 
           // Language
-          _SectionLabel(label: '1. Choose language'),
+          const _SectionLabel(label: '1. Choose language'),
           const SizedBox(height: 10),
           Row(
             children: _languageOptions.map((l) {
@@ -144,7 +144,7 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
           const SizedBox(height: 24),
 
           // Category
-          _SectionLabel(label: '2. Choose category'),
+          const _SectionLabel(label: '2. Choose category'),
           const SizedBox(height: 10),
           ..._categoryOptions.map((c) {
             final selected = _category == c['value'];
@@ -161,7 +161,7 @@ class _ReadMemorizeHubScreenState extends State<ReadMemorizeHubScreen> {
           const SizedBox(height: 24),
 
           // Length
-          _SectionLabel(label: '3. Choose length'),
+          const _SectionLabel(label: '3. Choose length'),
           const SizedBox(height: 10),
           Row(
             children: _lengthOptions.asMap().entries.map((entry) {
@@ -210,7 +210,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(label,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: 'Nunito',
           fontSize: 20,
           fontWeight: FontWeight.w700,
@@ -270,7 +270,7 @@ class _IconSelectCard extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary.withOpacity(0.08) : AppColors.cardBg,
+          color: selected ? AppColors.primary.withValues(alpha: 0.08) : AppColors.cardBg,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: selected ? AppColors.primary : AppColors.divider,

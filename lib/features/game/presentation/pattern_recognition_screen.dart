@@ -147,11 +147,11 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
+        title: const Row(
           children: [
-            const Icon(Icons.stars_rounded, color: Colors.purple, size: 36),
-            const SizedBox(width: 12),
-            const Text('Pattern Completed!', style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
+            Icon(Icons.stars_rounded, color: Colors.purple, size: 36),
+            SizedBox(width: 12),
+            Text('Pattern Completed!', style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.bold)),
           ],
         ),
         content: Column(
@@ -166,7 +166,7 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.purple.withOpacity(0.1),
+                color: Colors.purple.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -219,7 +219,7 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
                 children: [
                   Text(
                     'Question ${_currentIndex + 1}/${_questions.length}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -240,7 +240,7 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
               const SizedBox(height: 16),
               Text(
                 q.title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -248,7 +248,7 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Look at the pattern below. Which motif comes next?',
                 style: TextStyle(
                   fontFamily: 'Nunito',
@@ -266,7 +266,7 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
+                      color: Colors.black.withValues(alpha: 0.06),
                       blurRadius: 10,
                     ),
                   ],
@@ -279,7 +279,7 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.12),
+                        color: AppColors.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: AppColors.primary, width: 2),
                       ),
@@ -300,7 +300,7 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
               ),
               const SizedBox(height: 36),
 
-              Text(
+              const Text(
                 'Select the correct motif:',
                 style: TextStyle(
                   fontFamily: 'Nunito',
@@ -323,10 +323,10 @@ class _PatternRecognitionScreenState extends State<PatternRecognitionScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.primary.withOpacity(0.4), width: 2),
+                        border: Border.all(color: AppColors.primary.withValues(alpha: 0.4), width: 2),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.06),
+                            color: Colors.black.withValues(alpha: 0.06),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),

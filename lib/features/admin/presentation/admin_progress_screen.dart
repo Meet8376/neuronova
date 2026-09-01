@@ -130,7 +130,7 @@ class _AdminProgressScreenState extends State<AdminProgressScreen>
                     fontSize: 22,
                     fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
-            Text('Game session data will appear here once the patient starts practising.',
+            const Text('Game session data will appear here once the patient starts practising.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontFamily: 'Nunito',
@@ -149,13 +149,13 @@ class _AdminProgressScreenState extends State<AdminProgressScreen>
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
         children: [
           // Header
-          Text('Patient Progress',
+          const Text('Patient Progress',
               style: TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary)),
-          Text('Clinical view — not visible to patient',
+          const Text('Clinical view — not visible to patient',
               style: TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 14,
@@ -201,14 +201,14 @@ class _AdminProgressScreenState extends State<AdminProgressScreen>
           const SizedBox(height: 28),
 
           // ── 7-day bar chart ──────────────────────────────────────────────
-          _SectionTitle('7-Day Score Trend'),
+          const _SectionTitle('7-Day Score Trend'),
           const SizedBox(height: 12),
           _BarChart(bars: _last7DayBars),
           const SizedBox(height: 28),
 
           // ── Category breakdown ───────────────────────────────────────────
           if (_categoryCounts.isNotEmpty) ...[
-            _SectionTitle('Activity by Category'),
+            const _SectionTitle('Activity by Category'),
             const SizedBox(height: 12),
             ..._categoryCounts.entries.map((e) => _CategoryRow(
                   label: e.key,
@@ -219,7 +219,7 @@ class _AdminProgressScreenState extends State<AdminProgressScreen>
           ],
 
           // ── Full session log ─────────────────────────────────────────────
-          _SectionTitle('Session Log'),
+          const _SectionTitle('Session Log'),
           const SizedBox(height: 12),
           ..._sessions.map((s) => _SessionDetailCard(session: s)),
         ],
@@ -277,7 +277,7 @@ class _StatCard extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                     color: color)),
             Text(label,
-                style: TextStyle(
+                style: const TextStyle(
                     fontFamily: 'Nunito',
                     fontSize: 13,
                     color: AppColors.textSecondary)),
@@ -299,7 +299,7 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(text,
-        style: TextStyle(
+        style: const TextStyle(
             fontFamily: 'Nunito',
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -341,7 +341,7 @@ class _BarChart extends StatelessWidget {
                       children: [
                         if (hasData)
                           Text('${bar.score.round()}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontFamily: 'Nunito',
                                   fontSize: 10,
                                   color: AppColors.primary,
@@ -369,7 +369,7 @@ class _BarChart extends StatelessWidget {
             children: bars.map((bar) => Expanded(
               child: Text(bar.label,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 11,
                       color: AppColors.textHint)),
@@ -410,13 +410,13 @@ class _CategoryRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(label,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary)),
               Text('$count session${count == 1 ? '' : 's'}',
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 13,
                       color: AppColors.textSecondary)),
@@ -509,7 +509,7 @@ class _SessionDetailCardState extends State<_SessionDetailCard> {
                         const SizedBox(height: 2),
                         Text(
                           '${s.category.displayName} · ${s.language.toUpperCase()} · ${DateFormat('d MMM, h:mm a').format(s.playedAt)}',
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontFamily: 'Nunito',
                               fontSize: 13,
                               color: AppColors.textSecondary),
@@ -535,7 +535,7 @@ class _SessionDetailCardState extends State<_SessionDetailCard> {
                 _DetailRow('Length', s.length.displayName),
                 const SizedBox(height: 12),
 
-                Text('Prompt text',
+                const Text('Prompt text',
                     style: TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 13,
@@ -549,7 +549,7 @@ class _SessionDetailCardState extends State<_SessionDetailCard> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(s.sourceText,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontFamily: 'Nunito',
                           fontSize: 14,
                           color: AppColors.textPrimary,
@@ -557,7 +557,7 @@ class _SessionDetailCardState extends State<_SessionDetailCard> {
                 ),
                 const SizedBox(height: 10),
 
-                Text('What patient said',
+                const Text('What patient said',
                     style: TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 13,
@@ -606,7 +606,7 @@ class _DetailRow extends StatelessWidget {
       child: Row(
         children: [
           Text(label,
-              style: TextStyle(
+              style: const TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 14,
                   color: AppColors.textSecondary)),

@@ -133,14 +133,14 @@ class _HealthScreenState extends State<HealthScreen>
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
       children: [
         // ── Medicines section ────────────────────────────────────────────
-        _SectionHeader(
+        const _SectionHeader(
           icon: Icons.medication_rounded,
           title: 'Medicines',
           color: AppColors.info,
         ),
         const SizedBox(height: 8),
         if (_doses.isEmpty)
-          _EmptySection(
+          const _EmptySection(
             icon: Icons.medication_outlined,
             message: 'No medicines scheduled for today',
             subtext: 'Ask your caregiver to set up your medicine schedule',
@@ -154,10 +154,10 @@ class _HealthScreenState extends State<HealthScreen>
         const SizedBox(height: 24),
 
         // ── Hydration section ────────────────────────────────────────────
-        _SectionHeader(
+        const _SectionHeader(
           icon: Icons.water_drop_rounded,
           title: 'Hydration',
-          color: const Color(0xFF2196F3),
+          color: Color(0xFF2196F3),
         ),
         const SizedBox(height: 8),
 
@@ -186,7 +186,7 @@ class _SectionHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.12),
+            color: color.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: color, size: 22),
@@ -194,7 +194,7 @@ class _SectionHeader extends StatelessWidget {
         const SizedBox(width: 10),
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Nunito',
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -228,7 +228,7 @@ class _EmptySection extends StatelessWidget {
           const SizedBox(height: 10),
           Text(message,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Nunito',
                 fontSize: 17,
                 fontWeight: FontWeight.w600,
@@ -237,7 +237,7 @@ class _EmptySection extends StatelessWidget {
           const SizedBox(height: 4),
           Text(subtext,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Nunito',
                 fontSize: 14,
                 color: AppColors.textHint,
@@ -277,8 +277,8 @@ class _MedicineDoseCard extends StatelessWidget {
               height: 52,
               decoration: BoxDecoration(
                 color: isTaken
-                    ? AppColors.success.withOpacity(0.12)
-                    : AppColors.info.withOpacity(0.10),
+                    ? AppColors.success.withValues(alpha: 0.12)
+                    : AppColors.info.withValues(alpha: 0.10),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -304,7 +304,7 @@ class _MedicineDoseCard extends StatelessWidget {
                   if (doseNote != null && doseNote.isNotEmpty) ...[
                     const SizedBox(height: 2),
                     Text(doseNote,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontFamily: 'Nunito',
                             fontSize: 14,
                             color: AppColors.textSecondary)),
@@ -316,7 +316,7 @@ class _MedicineDoseCard extends StatelessWidget {
                           size: 14, color: AppColors.textHint),
                       const SizedBox(width: 4),
                       Text(timeStr,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontFamily: 'Nunito',
                               fontSize: 14,
                               color: AppColors.textSecondary)),
@@ -343,10 +343,10 @@ class _MedicineDoseCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.12),
+                  color: AppColors.success.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text('Done ✓',
+                child: const Text('Done ✓',
                     style: TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 14,
@@ -401,7 +401,7 @@ class _HydrationCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '$glassesToday of $dailyGoal glasses today',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 16,
                         color: AppColors.textSecondary,
@@ -468,14 +468,14 @@ class _HydrationCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.1),
+                  color: AppColors.success.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 24),
-                    const SizedBox(width: 8),
+                    Icon(Icons.check_circle_rounded, color: AppColors.success, size: 24),
+                    SizedBox(width: 8),
                     Text(
                       'Daily water goal reached!',
                       style: TextStyle(

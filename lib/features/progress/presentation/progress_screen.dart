@@ -93,7 +93,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.12),
+                    color: AppColors.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(Icons.menu_book_rounded, color: AppColors.primary, size: 26),
@@ -122,7 +122,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF9C27B0).withOpacity(0.12),
+                    color: const Color(0xFF9C27B0).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(Icons.extension_rounded, color: Color(0xFF9C27B0), size: 26),
@@ -175,11 +175,11 @@ class _ProgressScreenState extends State<ProgressScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
               child: Text(
                 'Practice ✨',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
@@ -206,8 +206,8 @@ class _ProgressScreenState extends State<ProgressScreen>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            AppColors.primary.withOpacity(0.12),
-                            AppColors.primaryLight.withOpacity(0.06),
+                            AppColors.primary.withValues(alpha: 0.12),
+                            AppColors.primaryLight.withValues(alpha: 0.06),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(20),
@@ -237,7 +237,7 @@ class _ProgressScreenState extends State<ProgressScreen>
                                 Container(
                                   width: 1,
                                   height: 40,
-                                  color: AppColors.primary.withOpacity(0.2),
+                                  color: AppColors.primary.withValues(alpha: 0.2),
                                 ),
                                 _CountBadge(
                                   icon: Icons.history_rounded,
@@ -294,7 +294,7 @@ class _ProgressScreenState extends State<ProgressScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.psychology_rounded, size: 80, color: AppColors.primary.withOpacity(0.4)),
+            Icon(Icons.psychology_rounded, size: 80, color: AppColors.primary.withValues(alpha: 0.4)),
             const SizedBox(height: 20),
             const Text(
               'Ready to begin?',
@@ -409,7 +409,7 @@ class _SessionCard extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.menu_book_rounded,

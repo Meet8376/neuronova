@@ -124,8 +124,8 @@ class _IdentityCardSheetState extends State<IdentityCardSheet> {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: const Color(0xFFA5D6A7)),
                   ),
-                  child: Row(
-                    children: const [
+                  child: const Row(
+                    children: [
                       Icon(Icons.verified_user_rounded, color: Color(0xFF2E7D32), size: 24),
                       SizedBox(width: 12),
                       Expanded(
@@ -290,7 +290,7 @@ class _DetailItem extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: AppColors.primary, size: 22),

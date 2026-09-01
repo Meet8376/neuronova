@@ -78,9 +78,9 @@ class _MemoryGallerySheetState extends State<MemoryGallerySheet> {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.divider, width: 2),
               ),
-              child: Column(
+              child: const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(Icons.photo_library_rounded, size: 44, color: AppColors.primaryLight),
                   SizedBox(height: 6),
                   Text('Tap to choose photo from gallery', style: TextStyle(fontFamily: 'Nunito', fontSize: 13, color: AppColors.textSecondary)),
@@ -149,7 +149,7 @@ class _MemoryGallerySheetState extends State<MemoryGallerySheet> {
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
                   height: 200,
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   child: const Icon(Icons.photo, size: 60, color: AppColors.primary),
                 ),
               ),
@@ -220,8 +220,8 @@ class _MemoryGallerySheetState extends State<MemoryGallerySheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Icon(Icons.photo_library_rounded, color: AppColors.primary, size: 28),
                   SizedBox(width: 8),
                   Text(
@@ -290,7 +290,7 @@ class _MemoryGallerySheetState extends State<MemoryGallerySheet> {
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => Container(
                               height: 130,
-                              color: AppColors.primary.withOpacity(0.1),
+                              color: AppColors.primary.withValues(alpha: 0.1),
                               child: const Icon(Icons.photo, color: AppColors.primary, size: 40),
                             ),
                           ),

@@ -14,7 +14,7 @@ class ScoringService {
     final source = _normalise(sourceText);
     final spoken = _normalise(spokenText);
 
-    if (source.isEmpty) return ScoringResult(percent: 0, matched: 0, total: 0);
+    if (source.isEmpty) return const ScoringResult(percent: 0, matched: 0, total: 0);
     if (spoken.isEmpty) return ScoringResult(percent: 0, matched: 0, total: source.length);
 
     final matched = _countMatches(source, spoken);

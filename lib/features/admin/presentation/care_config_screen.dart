@@ -89,14 +89,14 @@ class _CareConfigScreenState extends State<CareConfigScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withOpacity(0.08),
+                    color: AppColors.accent.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Row(
+                  child: const Row(
                     children: [
-                      const Icon(Icons.info_outline_rounded,
+                      Icon(Icons.info_outline_rounded,
                           color: AppColors.accent, size: 24),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           'Set up reminders for your patient. These will appear on their Health screen and ring as alarms.',
@@ -114,7 +114,7 @@ class _CareConfigScreenState extends State<CareConfigScreen> {
 
                 // Existing reminders
                 if (_reminders.isNotEmpty) ...[
-                  Text(
+                  const Text(
                     'Current Reminders',
                     style: TextStyle(
                       fontFamily: 'Nunito',
@@ -133,7 +133,7 @@ class _CareConfigScreenState extends State<CareConfigScreen> {
                 ],
 
                 // Add new reminders — one button per category
-                Text(
+                const Text(
                   'Add Reminder',
                   style: TextStyle(
                     fontFamily: 'Nunito',
@@ -200,7 +200,7 @@ class _ReminderConfigCard extends StatelessWidget {
                   ),
                   Text(
                     _scheduleDesc(reminder),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 13,
                       color: AppColors.textSecondary,
@@ -274,7 +274,7 @@ class _AddCategoryButton extends StatelessWidget {
               Text(
                 type.displayName,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Nunito',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

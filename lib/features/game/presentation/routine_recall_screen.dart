@@ -36,14 +36,12 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
   ];
 
   late List<RoutineItem> _currentList;
-  late DateTime _startTime;
   int _elapsedSeconds = 0;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _startTime = DateTime.now();
     _currentList = List.from(_masterRoutine)..shuffle();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
@@ -138,7 +136,7 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -184,7 +182,7 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Order Your Daily Routine',
                 style: TextStyle(
                   fontFamily: 'Nunito',
@@ -194,7 +192,7 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
                 ),
               ),
               const SizedBox(height: 6),
-              Text(
+              const Text(
                 'Drag and reorder the cards from earliest in the morning to latest in the day.',
                 style: TextStyle(
                   fontFamily: 'Nunito',
@@ -206,6 +204,7 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
               Expanded(
                 child: ReorderableListView.builder(
                   itemCount: _currentList.length,
+                  // ignore: deprecated_member_use
                   onReorder: _onReorder,
                   itemBuilder: (context, index) {
                     final item = _currentList[index];
@@ -220,7 +219,7 @@ class _RoutineRecallScreenState extends State<RoutineRecallScreen> {
                           width: 48,
                           height: 48,
                           decoration: BoxDecoration(
-                            color: item.color.withOpacity(0.15),
+                            color: item.color.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(item.icon, color: item.color, size: 28),

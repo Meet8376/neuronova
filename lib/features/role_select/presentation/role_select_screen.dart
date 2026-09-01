@@ -63,14 +63,14 @@ class _RoleSelectScreenState extends State<RoleSelectScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.12),
+                        color: AppColors.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: const Icon(Icons.psychology_rounded,
                           size: 36, color: AppColors.primary),
                     ),
                     const SizedBox(width: 16),
-                    Column(
+                    const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('CogniCare',
@@ -93,7 +93,7 @@ class _RoleSelectScreenState extends State<RoleSelectScreen> {
                 const SizedBox(height: 36),
 
                 // Patient name
-                Text('Patient\'s name',
+                const Text('Patient\'s name',
                     style: TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 20,
@@ -115,7 +115,7 @@ class _RoleSelectScreenState extends State<RoleSelectScreen> {
                 const SizedBox(height: 28),
 
                 // Admin name
-                Text('Caregiver\'s name',
+                const Text('Caregiver\'s name',
                     style: TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 20,

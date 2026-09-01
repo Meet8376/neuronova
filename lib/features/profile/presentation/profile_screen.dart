@@ -247,8 +247,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                     decoration: BoxDecoration(
                       color: widget.isAdmin
-                          ? AppColors.accent.withOpacity(0.15)
-                          : AppColors.primary.withOpacity(0.12),
+                          ? AppColors.accent.withValues(alpha: 0.15)
+                          : AppColors.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -316,7 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             const SizedBox(height: 20),
 
             // Logout
-            _Section(label: 'Account'),
+            const _Section(label: 'Account'),
             Card(
               child: ListTile(
                 contentPadding:
@@ -344,7 +344,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
             // Danger Zone — caregiver only
             if (widget.isAdmin) ...[
-              _Section(label: 'Danger Zone'),
+              const _Section(label: 'Danger Zone'),
               Card(
                 child: ListTile(
                   contentPadding:
