@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 import '../db/database_helper.dart';
 import '../models/task.dart';
+import 'care_repository.dart';
 
 /// Task repository — all task CRUD and status management.
 /// BLoCs call this; this calls DatabaseHelper. Never call DatabaseHelper from a BLoC directly.
@@ -12,6 +13,11 @@ class TaskRepository {
 
   /// Today's tasks for the patient (all visibility).
   Future<List<Task>> getTodayTasks() async {
+    // Ensure active care plan reminders are generated for today
+    try {
+      await CareRepository().syncCarePlanToTodayTasks();
+    } catch (_) {}
+
     final db = await _db.database;
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day).millisecondsSinceEpoch;
@@ -27,6 +33,11 @@ class TaskRepository {
 
   /// Today's tasks visible to admin (non-private only).
   Future<List<Task>> getTodayAdminVisibleTasks() async {
+    // Ensure active care plan reminders are generated for today
+    try {
+      await CareRepository().syncCarePlanToTodayTasks();
+    } catch (_) {}
+
     final db = await _db.database;
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day).millisecondsSinceEpoch;
@@ -42,6 +53,10 @@ class TaskRepository {
 
   /// All tasks (for the "See all" screen).
   Future<List<Task>> getAllTasks({bool adminView = false}) async {
+    try {
+      await CareRepository().syncCarePlanToTodayTasks();
+    } catch (_) {}
+
     final db = await _db.database;
     final rows = await db.query(
       'tasks',
@@ -65,6 +80,7 @@ class TaskRepository {
     required TaskCreator createdBy,
     required bool isPrivate,
     int notifId = 0,
+    String? reminderId,
   }) async {
     final task = Task(
       id: _uuid.v4(),
@@ -75,6 +91,7 @@ class TaskRepository {
       status: TaskStatus.upcoming,
       notifId: notifId,
       createdAt: DateTime.now(),
+      reminderId: reminderId,
     );
     final db = await _db.database;
     await db.insert('tasks', task.toMap());
@@ -90,17 +107,40 @@ class TaskRepository {
 
   Future<void> updateStatus(String id, TaskStatus status) async {
     final db = await _db.database;
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
     await db.update(
       'tasks',
       {
         'status': status.value,
-        'completed_at': status == TaskStatus.done
-            ? DateTime.now().millisecondsSinceEpoch
-            : null,
+        'completed_at': status == TaskStatus.done ? nowMs : null,
       },
       where: 'id = ?',
       whereArgs: [id],
     );
+
+    // If this task was generated from a care reminder, sync corresponding care_log
+    final taskRows = await db.query('tasks', where: 'id = ?', whereArgs: [id], limit: 1);
+    if (taskRows.isNotEmpty) {
+      final reminderId = taskRows.first['reminder_id'] as String?;
+      final scheduledAt = taskRows.first['scheduled_at'] as int?;
+      if (reminderId != null && scheduledAt != null) {
+        final logStatus = status == TaskStatus.done
+            ? 'done'
+            : (status == TaskStatus.inProgress ? 'doing' : 'upcoming');
+        final logUpdate = <String, dynamic>{'status': logStatus};
+        if (status == TaskStatus.done) {
+          logUpdate['done_at'] = nowMs;
+        } else if (status == TaskStatus.inProgress) {
+          logUpdate['started_at'] = nowMs;
+        }
+        await db.update(
+          'care_logs',
+          logUpdate,
+          where: 'reminder_id = ? AND scheduled_at = ?',
+          whereArgs: [reminderId, scheduledAt],
+        );
+      }
+    }
   }
 
   // ── Delete ─────────────────────────────────────────────────────────────────

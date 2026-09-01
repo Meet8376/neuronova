@@ -111,5 +111,35 @@ void main() {
       await repo.deleteTask(task.id);
       expect(await repo.getById(task.id), isNull);
     });
+
+    test('Care plan reminders are reflected in patient today tasks and status updates sync', () async {
+      final careDb = await DatabaseHelper.instance.database;
+      // Simulate Caregiver adding a care plan reminder
+      await careDb.insert('care_reminders', {
+        'id': 'cr_med_1',
+        'type': 'medication',
+        'name': 'Heart Medication',
+        'schedule_mode': 'specific_times',
+        'config_data': '{"times":["09:00"],"names":["Morning Pill"]}',
+        'is_active': 1,
+        'created_at': DateTime.now().millisecondsSinceEpoch,
+      });
+
+      // Patient fetches today's tasks
+      final patientTasks = await repo.getTodayTasks();
+      final medTask = patientTasks.firstWhere((t) => t.reminderId == 'cr_med_1');
+
+      expect(medTask, isNotNull);
+      expect(medTask.createdBy, TaskCreator.admin);
+      expect(medTask.status, TaskStatus.upcoming);
+
+      // Patient completes task on dashboard
+      await repo.updateStatus(medTask.id, TaskStatus.done);
+
+      // Verify care_logs reflects done status
+      final logs = await careDb.query('care_logs', where: 'reminder_id = ?', whereArgs: ['cr_med_1']);
+      expect(logs.first['status'], 'done');
+      expect(logs.first['done_at'], isNotNull);
+    });
   });
 }

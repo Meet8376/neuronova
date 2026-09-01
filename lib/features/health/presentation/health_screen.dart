@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../data/models/care_reminder.dart';
+import '../../../data/repositories/care_repository.dart';
 import '../../../data/db/database_helper.dart';
 import '../../../core/extensions/l10n_ext.dart';
 
-/// Health tab — shows today's medicines and hydration.
-/// Now a primary bottom-nav tab (per specs/screens/screens.md Phase 2).
-///
-/// [standalone] = true when used as a primary tab (gives it own Scaffold+AppBar).
-/// [standalone] = false (default) when embedded inside another screen.
+/// Health tab — shows today's medicines, hydration, and care plan routines.
+/// Primary bottom-nav tab for patients.
 class HealthScreen extends StatefulWidget {
   final bool standalone;
   const HealthScreen({super.key, this.standalone = false});
@@ -19,10 +18,12 @@ class HealthScreen extends StatefulWidget {
 
 class _HealthScreenState extends State<HealthScreen>
     with AutomaticKeepAliveClientMixin {
+  final _careRepo = CareRepository();
   final _db = DatabaseHelper.instance;
-  List<Map<String, dynamic>> _doses = [];
-  Map<String, dynamic>? _hydrationConfig;
+
+  List<CareLog> _allLogs = [];
   int _glassesToday = 0;
+  int _dailyWaterGoal = 8;
   bool _loading = true;
 
   @override
@@ -35,53 +36,46 @@ class _HealthScreenState extends State<HealthScreen>
   }
 
   Future<void> _load() async {
+    // Sync active care plan reminders to today's logs/tasks
+    await _careRepo.syncCarePlanToTodayTasks();
+
+    final logs = await _careRepo.getTodayLogs();
+    final reminders = await _careRepo.getActiveReminders();
+
+    // Hydration goal from active hydration reminder if present
+    int hydGoal = 8;
+    for (final r in reminders) {
+      if (r.type == CareReminderType.hydration) {
+        if (r.scheduleMode == ReminderScheduleMode.dailyGoal) {
+          final g = r.configData['goal'] ?? r.configData['target_glasses'];
+          if (g is int && g > 0) hydGoal = g;
+        }
+      }
+    }
+
+    // Hydration glasses from hydration_logs table
     final db = await _db.database;
-
-    // Today's doses
     final now = DateTime.now();
-    final todayStart =
-        DateTime(now.year, now.month, now.day).millisecondsSinceEpoch;
-    final todayEnd =
-        DateTime(now.year, now.month, now.day, 23, 59, 59).millisecondsSinceEpoch;
-
-    final doses = await db.rawQuery('''
-      SELECT d.*, m.name as med_name, m.dose_note
-      FROM medicine_doses d
-      JOIN medicine_schedules m ON m.id = d.medicine_id
-      WHERE d.scheduled_at >= ? AND d.scheduled_at <= ?
-      ORDER BY d.scheduled_at ASC
-    ''', [todayStart, todayEnd]);
-
-    // Hydration
-    final hydrationRows = await db.query('hydration_config', limit: 1);
-    final hydConfig = hydrationRows.isEmpty ? null : hydrationRows.first;
-
     final todayStr =
         '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-    final hydLogs = await db.query('hydration_logs',
-        where: 'date = ?', whereArgs: [todayStr]);
-    final glasses = hydLogs.isEmpty ? 0 : hydLogs.first['glass_count'] as int;
+    final hydRows = await db.query(
+      'hydration_logs',
+      where: 'date = ?',
+      whereArgs: [todayStr],
+    );
+    final glasses = hydRows.isEmpty ? 0 : hydRows.first['glass_count'] as int;
 
     if (!mounted) return;
     setState(() {
-      _doses = doses;
-      _hydrationConfig = hydConfig;
+      _allLogs = logs;
       _glassesToday = glasses;
+      _dailyWaterGoal = hydGoal;
       _loading = false;
     });
   }
 
-  Future<void> _markDoseTaken(String doseId) async {
-    final db = await _db.database;
-    await db.update(
-      'medicine_doses',
-      {
-        'status': 'taken',
-        'taken_at': DateTime.now().millisecondsSinceEpoch,
-      },
-      where: 'id = ?',
-      whereArgs: [doseId],
-    );
+  Future<void> _markLogDone(String logId) async {
+    await _careRepo.updateLogStatus(logId, 'done');
     _load();
   }
 
@@ -130,44 +124,72 @@ class _HealthScreenState extends State<HealthScreen>
       return const Center(
           child: CircularProgressIndicator(color: AppColors.primary));
     }
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
-      children: [
-        // ── Medicines section ────────────────────────────────────────────
-        _SectionHeader(
-          icon: Icons.medication_rounded,
-          title: context.l.medicines,
-          color: AppColors.info,
-        ),
-        const SizedBox(height: 8),
-        if (_doses.isEmpty)
-          _EmptySection(
-            icon: Icons.medication_outlined,
-            message: context.l.noMedicinesScheduled,
-            subtext: context.l.askCaregiverMedicine,
-          )
-        else
-          ..._doses.map((d) => _MedicineDoseCard(
-                dose: d,
-                onTaken: () => _markDoseTaken(d['id'] as String),
-              )),
 
-        const SizedBox(height: 24),
+    final medLogs = _allLogs
+        .where((l) => l.type == CareReminderType.medication)
+        .toList();
+    final routineLogs = _allLogs
+        .where((l) =>
+            l.type != CareReminderType.medication &&
+            l.type != CareReminderType.hydration)
+        .toList();
 
-        // ── Hydration section ────────────────────────────────────────────
-        _SectionHeader(
-          icon: Icons.water_drop_rounded,
-          title: context.l.hydration,
-          color: const Color(0xFF2196F3),
-        ),
-        const SizedBox(height: 8),
+    return RefreshIndicator(
+      onRefresh: _load,
+      color: AppColors.primary,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+        children: [
+          // ── Medicines Section ──────────────────────────────────────────
+          _SectionHeader(
+            icon: Icons.medication_rounded,
+            title: context.l.medicines,
+            color: AppColors.info,
+          ),
+          const SizedBox(height: 8),
+          if (medLogs.isEmpty)
+            _EmptySection(
+              icon: Icons.medication_outlined,
+              message: context.l.noMedicinesScheduled,
+              subtext: context.l.askCaregiverMedicine,
+            )
+          else
+            ...medLogs.map((log) => _CareLogCard(
+                  log: log,
+                  onDone: () => _markLogDone(log.id),
+                )),
 
-        _HydrationCard(
-          glassesToday: _glassesToday,
-          dailyGoal: _hydrationConfig?['daily_goal'] as int? ?? 8,
-          onAddGlass: _addGlass,
-        ),
-      ],
+          const SizedBox(height: 24),
+
+          // ── Hydration Section ──────────────────────────────────────────
+          _SectionHeader(
+            icon: Icons.water_drop_rounded,
+            title: context.l.hydration,
+            color: const Color(0xFF2196F3),
+          ),
+          const SizedBox(height: 8),
+          _HydrationCard(
+            glassesToday: _glassesToday,
+            dailyGoal: _dailyWaterGoal,
+            onAddGlass: _addGlass,
+          ),
+
+          // ── Daily Care Routines Section (if any configured) ─────────────
+          if (routineLogs.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            const _SectionHeader(
+              icon: Icons.favorite_rounded,
+              title: 'Daily Care Routines',
+              color: AppColors.accent,
+            ),
+            const SizedBox(height: 8),
+            ...routineLogs.map((log) => _CareLogCard(
+                  log: log,
+                  onDone: () => _markLogDone(log.id),
+                )),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -255,20 +277,22 @@ class _EmptySection extends StatelessWidget {
 
 // ─── Medicine dose card ────────────────────────────────────────────────────────
 
-class _MedicineDoseCard extends StatelessWidget {
-  final Map<String, dynamic> dose;
-  final VoidCallback onTaken;
-  const _MedicineDoseCard({required this.dose, required this.onTaken});
+// ─── Care Log Card ─────────────────────────────────────────────────────────────
+
+class _CareLogCard extends StatelessWidget {
+  final CareLog log;
+  final VoidCallback onDone;
+  const _CareLogCard({required this.log, required this.onDone});
 
   @override
   Widget build(BuildContext context) {
-    final status = dose['status'] as String;
-    final isTaken = status == 'taken';
-    final name = dose['med_name'] as String;
-    final doseNote = dose['dose_note'] as String?;
-    final scheduledAt = DateTime.fromMillisecondsSinceEpoch(dose['scheduled_at'] as int);
+    final isDone = log.status == 'done';
+    final name = log.reminderName;
+    final scheduledAt = log.scheduledAt;
     final timeStr =
         '${scheduledAt.hour % 12 == 0 ? 12 : scheduledAt.hour % 12}:${scheduledAt.minute.toString().padLeft(2, '0')} ${scheduledAt.hour < 12 ? 'AM' : 'PM'}';
+
+    final isMedication = log.type == CareReminderType.medication;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
@@ -276,20 +300,23 @@ class _MedicineDoseCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            // Pill icon
+            // Category icon
             Container(
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: isTaken
+                color: isDone
                     ? AppColors.success.withOpacity(0.12)
-                    : AppColors.info.withOpacity(0.10),
+                    : (isMedication
+                        ? AppColors.info.withOpacity(0.10)
+                        : AppColors.accent.withOpacity(0.10)),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                isTaken ? Icons.check_circle_rounded : Icons.medication_rounded,
-                color: isTaken ? AppColors.success : AppColors.info,
-                size: 28,
+              child: Center(
+                child: isDone
+                    ? const Icon(Icons.check_circle_rounded,
+                        color: AppColors.success, size: 28)
+                    : Text(log.type.icon, style: const TextStyle(fontSize: 26)),
               ),
             ),
             const SizedBox(width: 14),
@@ -298,71 +325,81 @@ class _MedicineDoseCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name,
-                      style: TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 19,
-                        fontWeight: FontWeight.w600,
-                        color: isTaken ? AppColors.textHint : AppColors.textPrimary,
-                        decoration: isTaken ? TextDecoration.lineThrough : null,
-                      )),
-                  if (doseNote != null && doseNote.isNotEmpty) ...[
-                    const SizedBox(height: 2),
-                    Text(doseNote,
-                        style: TextStyle(
-                            fontFamily: 'Nunito',
-                            fontSize: 14,
-                            color: AppColors.textSecondary)),
-                  ],
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 19,
+                      fontWeight: FontWeight.w600,
+                      color:
+                          isDone ? AppColors.textHint : AppColors.textPrimary,
+                      decoration: isDone ? TextDecoration.lineThrough : null,
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
                       const Icon(Icons.access_time_rounded,
                           size: 14, color: AppColors.textHint),
                       const SizedBox(width: 4),
-                      Text(timeStr,
-                          style: TextStyle(
-                              fontFamily: 'Nunito',
-                              fontSize: 14,
-                              color: AppColors.textSecondary)),
+                      Text(
+                        timeStr,
+                        style: const TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
-            // Take button
+            // Action button
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
-              child: !isTaken
-                ? ElevatedButton(
-                    key: const ValueKey('take_btn'),
-                    onPressed: onTaken,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.success,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(80, 44),
-                      textStyle: const TextStyle(
-                          fontFamily: 'Nunito', fontSize: 15, fontWeight: FontWeight.w700),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      elevation: 0,
-                    ),
-                    child: Text(context.l.takenButton),
-                  )
-                : Container(
-                    key: const ValueKey('done_badge'),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(context.l.doneMark,
+              transitionBuilder: (child, animation) =>
+                  ScaleTransition(scale: animation, child: child),
+              child: !isDone
+                  ? ElevatedButton(
+                      key: const ValueKey('action_btn'),
+                      onPressed: onDone,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.success,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(80, 44),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(isMedication
+                          ? context.l.takenButton
+                          : context.l.markAsDone),
+                    )
+                  : Container(
+                      key: const ValueKey('done_badge'),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        context.l.doneMark,
                         style: const TextStyle(
-                            fontFamily: 'Nunito',
-                            fontSize: 14,
-                            color: AppColors.success,
-                            fontWeight: FontWeight.w600)),
-                  ),
+                          fontFamily: 'Nunito',
+                          fontSize: 14,
+                          color: AppColors.success,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
             ),
           ],
         ),

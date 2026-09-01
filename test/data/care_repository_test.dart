@@ -94,5 +94,56 @@ void main() {
       final all = await repo.getAllReminders();
       expect(all.any((r) => r.id == reminder.id), isFalse);
     });
+
+    test('Creating a CareReminder generates patient tasks in tasks table', () async {
+      final reminder = await repo.createReminder(
+        type: CareReminderType.meal,
+        name: 'Meals',
+        scheduleMode: ReminderScheduleMode.specificTimes,
+        configData: {
+          'times': ['08:00', '13:00'],
+          'names': ['Breakfast', 'Lunch'],
+        },
+      );
+
+      final db = await DatabaseHelper.instance.database;
+      final tasks = await db.query(
+        'tasks',
+        where: 'reminder_id = ?',
+        whereArgs: [reminder.id],
+      );
+
+      expect(tasks.length, 2);
+      expect(tasks.first['created_by'], 'admin');
+      expect(tasks.first['is_private'], 0);
+      expect(tasks.first['status'], 'upcoming');
+      expect((tasks.first['name'] as String).contains('Breakfast'), isTrue);
+    });
+
+    test('Updating care log status synchronizes corresponding task in tasks table', () async {
+      final reminder = await repo.createReminder(
+        type: CareReminderType.medication,
+        name: 'Morning BP Medicine',
+        scheduleMode: ReminderScheduleMode.specificTimes,
+        configData: {
+          'times': ['08:00'],
+          'names': ['Morning Dose'],
+        },
+      );
+
+      final logs = await repo.getTodayLogs();
+      final medLog = logs.firstWhere((l) => l.reminderId == reminder.id);
+      await repo.updateLogStatus(medLog.id, 'done');
+
+      final db = await DatabaseHelper.instance.database;
+      final tasks = await db.query(
+        'tasks',
+        where: 'reminder_id = ?',
+        whereArgs: [reminder.id],
+      );
+
+      expect(tasks.first['status'], 'done');
+      expect(tasks.first['completed_at'], isNotNull);
+    });
   });
 }

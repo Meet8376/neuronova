@@ -41,6 +41,7 @@ class Task {
   final int notifId;
   final DateTime createdAt;
   final DateTime? completedAt;
+  final String? reminderId;
 
   const Task({
     required this.id,
@@ -52,6 +53,7 @@ class Task {
     required this.notifId,
     required this.createdAt,
     this.completedAt,
+    this.reminderId,
   });
 
   /// Returns true if this task was created by the patient (shows 3-dot menu).
@@ -65,6 +67,7 @@ class Task {
     DateTime? scheduledAt,
     TaskStatus? status,
     DateTime? completedAt,
+    String? reminderId,
   }) {
     return Task(
       id: id,
@@ -76,6 +79,7 @@ class Task {
       notifId: notifId,
       createdAt: createdAt,
       completedAt: completedAt ?? this.completedAt,
+      reminderId: reminderId ?? this.reminderId,
     );
   }
 
@@ -89,6 +93,7 @@ class Task {
         'notif_id': notifId,
         'created_at': createdAt.millisecondsSinceEpoch,
         'completed_at': completedAt?.millisecondsSinceEpoch,
+        'reminder_id': reminderId,
       };
 
   factory Task.fromMap(Map<String, dynamic> m) => Task(
@@ -103,6 +108,7 @@ class Task {
         completedAt: m['completed_at'] != null
             ? DateTime.fromMillisecondsSinceEpoch(m['completed_at'] as int)
             : null,
+        reminderId: m['reminder_id'] as String?,
       );
 
   @override

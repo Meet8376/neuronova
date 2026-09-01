@@ -1,6 +1,7 @@
 /// Care reminder types — things dementia patients commonly forget.
 /// Each type maps to a specific UI icon and category in the Health tab.
 enum CareReminderType {
+  medication,
   hydration,
   meal,
   hygiene,
@@ -13,6 +14,7 @@ enum CareReminderType {
 extension CareReminderTypeX on CareReminderType {
   String get value {
     switch (this) {
+      case CareReminderType.medication: return 'medication';
       case CareReminderType.hydration: return 'hydration';
       case CareReminderType.meal: return 'meal';
       case CareReminderType.hygiene: return 'hygiene';
@@ -25,6 +27,7 @@ extension CareReminderTypeX on CareReminderType {
 
   String get displayName {
     switch (this) {
+      case CareReminderType.medication: return 'Medication';
       case CareReminderType.hydration: return 'Drink Water';
       case CareReminderType.meal: return 'Meals';
       case CareReminderType.hygiene: return 'Hygiene';
@@ -37,6 +40,7 @@ extension CareReminderTypeX on CareReminderType {
 
   String get icon {
     switch (this) {
+      case CareReminderType.medication: return '💊';
       case CareReminderType.hydration: return '💧';
       case CareReminderType.meal: return '🍽️';
       case CareReminderType.hygiene: return '🧹';

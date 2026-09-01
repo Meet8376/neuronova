@@ -28,7 +28,7 @@ class DatabaseHelper {
   Future<Database> initInMemoryDatabase() async {
     _db = await openDatabase(
       inMemoryDatabasePath,
-      version: 5,
+      version: 6,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -40,7 +40,7 @@ class DatabaseHelper {
     final path = join(dbPath, 'neuronova.db');
     return openDatabase(
       path,
-      version: 5,
+      version: 6,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -59,7 +59,8 @@ class DatabaseHelper {
           status TEXT NOT NULL DEFAULT 'upcoming',
           notif_id INTEGER NOT NULL DEFAULT 0,
           created_at INTEGER NOT NULL,
-          completed_at INTEGER
+          completed_at INTEGER,
+          reminder_id TEXT
         )
       ''');
 
@@ -369,6 +370,13 @@ class DatabaseHelper {
         {'key': 'game_languages', 'value': 'en'},
         conflictAlgorithm: ConflictAlgorithm.ignore,
       );
+    }
+    if (oldVersion < 6) {
+      try {
+        await db.execute('ALTER TABLE tasks ADD COLUMN reminder_id TEXT');
+      } catch (_) {
+        // Column might already exist in fresh or custom installs
+      }
     }
   }
 

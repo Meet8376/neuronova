@@ -63,12 +63,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         DateTime(now.year, now.month, now.day).millisecondsSinceEpoch;
     final todayEnd =
         DateTime(now.year, now.month, now.day, 23, 59, 59).millisecondsSinceEpoch;
-    final allDoses = await db.query(
-      'medicine_doses',
+    final careLogs = await db.query(
+      'care_logs',
       where: 'scheduled_at >= ? AND scheduled_at <= ?',
       whereArgs: [todayStart, todayEnd],
     );
-    final takenDoses = allDoses.where((d) => d['status'] == 'taken').length;
+    final medLogs = careLogs.where((l) => l['type'] == 'medication').toList();
+    final targetLogs = medLogs.isNotEmpty ? medLogs : careLogs;
+    final takenDoses = targetLogs.where((d) => d['status'] == 'done').length;
 
     if (!mounted) return;
     setState(() {
@@ -76,7 +78,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       _adminName = aName ?? '';
       _todayTasks = tasks;
       _latestSession = latestSession;
-      _totalMedicines = allDoses.length;
+      _totalMedicines = targetLogs.length;
       _takenMedicines = takenDoses;
       _loading = false;
     });

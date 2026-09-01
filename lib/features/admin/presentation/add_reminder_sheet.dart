@@ -42,6 +42,13 @@ class _AddReminderSheetState extends State<AddReminderSheet> {
     _nameCtrl.text = widget.type.displayName;
     // Sensible defaults per type
     switch (widget.type) {
+      case CareReminderType.medication:
+        _mode = ReminderScheduleMode.specificTimes;
+        _selectedTimes.addAll([
+          const TimeOfDay(hour: 8, minute: 0),
+          const TimeOfDay(hour: 20, minute: 0),
+        ]);
+        _timeNames.addAll(['Morning Dose', 'Night Dose']);
       case CareReminderType.hydration:
         _mode = ReminderScheduleMode.interval;
         _intervalHours = 2.0;
